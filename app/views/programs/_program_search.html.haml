@@ -1,0 +1,16 @@
+/ -icon = content_tag(:i, '', class: ["fa", "fa-angle-double-down", "fa-lg"])
+/ =content_tag(:span, "Modify search", {id: "show_search_text"})
+
+#search_form
+  .row
+    #tabs
+      %ul
+        %li 
+          %a{href: "#tabs-1"} Basic search
+        %li 
+          %a{href: "#tabs-2"} Advanced search
+      #tabs-1
+        =render 'program_basic_search'
+      #tabs-2
+        =render 'program_advanced_search'
+

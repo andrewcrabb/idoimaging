@@ -1,0 +1,2 @@
+json.extract! resource, :id, :type, :url, :description, :last_seen, :last_tested, :identifier, :program_id, :author_id, :feature_id, :created_at, :updated_at
+json.url resource_url(resource, format: :json)

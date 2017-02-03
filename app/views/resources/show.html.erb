@@ -1,0 +1,49 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Type:</strong>
+  <%= @resource.type %>
+</p>
+
+<p>
+  <strong>Url:</strong>
+  <%= @resource.url %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @resource.description %>
+</p>
+
+<p>
+  <strong>Last seen:</strong>
+  <%= @resource.last_seen %>
+</p>
+
+<p>
+  <strong>Last tested:</strong>
+  <%= @resource.last_tested %>
+</p>
+
+<p>
+  <strong>Identifier:</strong>
+  <%= @resource.identifier %>
+</p>
+
+<p>
+  <strong>Program:</strong>
+  <%= @resource.program %>
+</p>
+
+<p>
+  <strong>Author:</strong>
+  <%= @resource.author %>
+</p>
+
+<p>
+  <strong>Feature:</strong>
+  <%= @resource.feature %>
+</p>
+
+<%= link_to 'Edit', edit_resource_path(@resource) %> |
+<%= link_to 'Back', resources_path %>

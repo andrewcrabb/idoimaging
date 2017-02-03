@@ -1,0 +1,32 @@
+.notice= notice
+- provide(:title, "Programs")
+
+- if @programs
+  .row
+    .small-6.columns
+      =render 'program_search_summary'
+      %span{class: 'search_params_modify'}
+        %button#show_search_text Modify search
+.row
+  = render 'program_search'
+- if @programs
+  .row
+    .small-12.columns.programs-table
+      %table.hover
+        %thead
+          %tr
+            %th= sort_link(@q, :name )
+            %th Summary
+            %th= sort_link(@q, :rating )
+            %th{colspan: 2}  Features
+        %tbody
+          - @programs.each do |program|
+            %tr
+              %td= link_to(program.name, program_path(program))
+              %td= program.summary
+              %td= program_rating_str(program)
+              %td.tight= platforms_str(program, false)
+              %td.tight= source_str(program)
+    .small-6.columns.text-right
+      = page_entries_info @programs
+      = paginate @programs

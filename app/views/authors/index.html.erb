@@ -1,0 +1,30 @@
+<p id="notice"><%= notice %></p>
+<% provide(:title, "Authors") %>
+
+<h1>Listing Authors</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name last</th>
+      <th>Name first</th>
+      <th>Institution</th>
+      <th>Email</th>
+      <th>Country</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @authors.each do |author| %>
+      <tr>
+        <td><%= author.name_last %></td>
+        <td><%= author.name_first %></td>
+        <td><%= author.institution %></td>
+        <td><%= author.email %></td>
+        <td><%= author.country %></td>
+        <td><%= link_to 'Show', author %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

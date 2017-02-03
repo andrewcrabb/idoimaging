@@ -1,0 +1,11 @@
+.orbit{role: "region", :'data-orbit' => true}
+  %ul.orbit-container
+    %button.orbit-previous
+      %span.show-for-sr
+        Previous Slide
+      &#9664;&#xFE0E;
+    %button.orbit-next
+      %span.show-for-sr
+        Next Slide
+      &#9654;&#xFE0E;
+    = content

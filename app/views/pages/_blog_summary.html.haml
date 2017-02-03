@@ -1,0 +1,4 @@
+.blog_summary
+  %h4 From the blog
+  -entries.each do |entry| 
+    =render partial: 'pages/blog_entry', locals: {entry: entry}

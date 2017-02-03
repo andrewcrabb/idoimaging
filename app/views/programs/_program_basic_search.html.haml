@@ -1,0 +1,23 @@
+This is a simplified search form for end-user programs. Use the <strong>Advanced Search</strong> tab for all options.
+= search_form_for @q do |f|
+  =f.hidden_field(:for_audience, value: Feature.has_value(Feature::AUDIENCE_GENERAL_USER))
+  =f.hidden_field(Feature::SEARCH_LEVEL, value: Feature::SEARCH_LEVEL_BASIC)
+  .row#form-text-search
+    / .medium-2.columns
+    /   = f.label :for_audience, "Audience"
+    /   = f.select :for_audience, Feature.selector_values(Feature::AUDIENCE), prompt: '  -  '
+    .medium-2.columns
+      = f.label :function, "Function"
+      = f.select :function, Feature.basic.selector_values(Feature::FUNCTION), prompt: '  -  '
+    .medium-2.columns
+      = f.label :read_format, "File format"
+      = f.select :read_format, ImageFormat.basic.selector_values, prompt: '  -  '
+    .medium-2.columns
+      = f.label :platform, "Platform"
+      = f.select :platform, Feature.basic.selector_values(Feature::PLATFORM), prompt: '  -  '
+    .medium-2.columns
+      = f.label :name_cont, "Refine by name"
+      = f.search_field :name_cont
+  .row
+    = f.submit 'Search',:class => "button"
+    = f.submit "Clear", :type => "reset", class: 'button'

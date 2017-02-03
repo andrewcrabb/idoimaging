@@ -1,0 +1,41 @@
+.medium-6.medium-centered.large-4.large-centered.columns
+  .row.column.log-in-form
+    %h3 Edit #{resource_name.to_s.humanize}
+    .row
+      .column
+        = form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f|
+          = devise_error_messages!
+
+          .field
+            = f.label :email
+            = f.email_field :email, autofocus: true
+
+          - if devise_mapping.confirmable? && resource.pending_reconfirmation?
+            %div Currently waiting confirmation for: #{resource.unconfirmed_email}
+
+          .field
+            = f.label :password
+            %em (leave blank if you don't want to change it)
+            = f.password_field :password, autocomplete: "off"
+            - if @minimum_password_length
+              %em #{@minimum_password_length} characters minimum
+
+          .field
+            = f.label :password_confirmation
+            = f.password_field :password_confirmation, autocomplete: "off"
+
+          .field
+            = f.label :current_password
+            %em (To confirm your changes)
+            = f.password_field :current_password, autocomplete: "off"
+
+          .actions
+            = f.submit "Update", class: 'button expanded'
+  .row.column.log-in-form
+
+    %h3 Cancel my account
+    .row.column
+      Click the button below to remove your email address and all preferences from our database.
+    .field
+      .row.column
+        = button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure you want to cancel your account?" }, method: :delete, class: 'button expanded'

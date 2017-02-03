@@ -1,0 +1,20 @@
+.notice= notice
+.row
+  .medium-12.medium-centered.columns
+    .row
+      %h1 Features
+.row
+  .small-8.columns
+    %table
+      %thead
+        %tr
+          - %w(Name Value Description).each do |head|
+            %th= head
+      %tbody
+        - @features.each do |feature|
+          %tr
+            %td= feature.name
+            %td= feature.value
+            %td= feature.description
+.row
+  = link_to 'New Feature', new_feature_path

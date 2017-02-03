@@ -1,0 +1,53 @@
+<%= form_for(@resource) do |f| %>
+  <% if @resource.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@resource.errors.count, "error") %> prohibited this resource from being saved:</h2>
+
+      <ul>
+      <% @resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :type %><br>
+    <%= f.text_field :type %>
+  </div>
+  <div class="field">
+    <%= f.label :url %><br>
+    <%= f.text_field :url %>
+  </div>
+  <div class="field">
+    <%= f.label :description %><br>
+    <%= f.text_field :description %>
+  </div>
+  <div class="field">
+    <%= f.label :last_seen %><br>
+    <%= f.date_select :last_seen %>
+  </div>
+  <div class="field">
+    <%= f.label :last_tested %><br>
+    <%= f.date_select :last_tested %>
+  </div>
+  <div class="field">
+    <%= f.label :identifier %><br>
+    <%= f.text_field :identifier %>
+  </div>
+  <div class="field">
+    <%= f.label :program_id %><br>
+    <%= f.text_field :program_id %>
+  </div>
+  <div class="field">
+    <%= f.label :author_id %><br>
+    <%= f.text_field :author_id %>
+  </div>
+  <div class="field">
+    <%= f.label :feature_id %><br>
+    <%= f.text_field :feature_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

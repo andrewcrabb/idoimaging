@@ -1,0 +1,19 @@
+.row
+  - ratings = @user.ratings
+  .small-12.medium-6.columns
+    %h3 Your Programs
+    - if ratings.count > 0
+      You are monitoring #{ratings.count} programs:
+      %ul
+        = content_tag_for(:li, ratings) do |rating|
+          - program = rating.program
+          = link_to(program.name, program_path(program))
+
+    - else
+      You are not monitoring any applications.  Any applications you give a rating to, will appear here.
+
+  .small-12.medium-6.columns
+    %h3 Your Account
+    You can change your email or password, or cancel your account, below.
+
+    = link_to "Edit account", edit_user_registration_path

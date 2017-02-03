@@ -1,0 +1,76 @@
+#notice= notice
+- provide(:title, @program.name)
+/ Row 0: Title
+.row.prog-show
+  .medium-12.medium-centered.columns
+    .row
+      %h1= @program.name
+    .row
+      %h4= @program.summary
+.row.prog-show
+  .small-12.large-8.columns
+    .row
+      .small-12.columns
+        = simple_format(@program.description)
+    = program_version_str(@program)
+    = program_authors_str(@program)
+    / = program_link_str(@program)
+    = social_handle_str(@program, @resources, ResourceType::HOME_URL)
+    = program_source_str(@program)
+    = social_handle_str(@program, @resources, ResourceType::TWITTER)
+    = social_handle_str(@program, @resources, ResourceType::GITHUB)
+    = social_handle_str(@program, @resources, ResourceType::FACEBOOK)
+    = social_handle_str(@program, @resources, ResourceType::BLOG_URL)
+    = program_resource_str(@program, @resources)
+    = idi_rating_str(@program)
+    = user_rating_str(@program)
+  .small-12.large-4.columns.prog-sidebar
+    = program_features_list(@program, Feature::PLATFORM     , true)
+    = program_features_list(@program, Feature::FUNCTION     , true)
+    = program_features_list(@program, Feature::INTERFACE     , true)
+    = program_formats_list(@program, 'read')
+    = program_formats_list(@program, 'write')
+    = program_features_list(@program, Feature::SPECIALITY         , true)
+    = program_features_list(@program, Feature::DISPLAY    , true)
+    = program_features_list(@program, Feature::NETWORK    , true)
+    = program_features_list(@program, Feature::HEADER    , true)
+    = program_features_list(@program, Feature::OTHER      , true)
+    = program_features_list(@program, Feature::PROGRAMMING, true)
+    = program_features_list(@program, Feature::LANGUAGE, true)
+    = program_features_list(@program, Feature::AUDIENCE, true)
+
+    = program_related_list(@program, 'included'   , 'Built upon' )
+    = program_related_list(@program, 'including'  , 'Built into' )
+    = program_related_list(@program, 'collected'  , 'Includes'   )
+    = program_related_list(@program, 'collecting' , 'Included in')
+    = program_related_list(@program, 'required'   , 'Requires'   )
+    = program_related_list(@program, 'requiring'  , 'Required by')
+    = program_related_list(@program, 'all_related', 'Related to' )
+
+    = program_features_list(@program, Feature::DISTRIBUTION, true)
+- if @program.images.count > 0
+  .row
+    .medium-10.columns
+      = program_image_slider(@program)
+- if user_signed_in?
+  = content_tag( :div, '', id: "program_data", data: {userid: current_user.id, programid: @program.id, rating: @rating})
+- if can? :destroy, @program
+  .admin_functions
+    = content_tag(:div, "Hello Administrator", class: 'heading')
+    / Hmmm this used to work.
+    / = ratings_table(@program)
+    / .button.expanded
+    = link_to("Edit this program", admin_program_path(@program))
+
+:javascript
+  $(document).ready(function(){
+      $("#show_history").click(function(){
+          $("#versions_div").toggle(250);
+          $("i", this).toggleClass("fa-angle-double-down fa-angle-double-up");
+      });
+      $("#show_programs").click(function(){
+          $("#programs_div").toggle(250);
+          $("i", this).toggleClass("fa-angle-double-down fa-angle-double-up");
+      });
+
+  });
