@@ -53,10 +53,12 @@ gem 'carrierwave-aws'
 gem 'ransack', github: 'activerecord-hackery/ransack'
 gem 'compass-rails'
 gem 'simple_form'
-gem 'quiet_assets', group: :development
+# Won't install.
+# gem 'quiet_assets', group: :development
 gem 'haml'
 gem 'select2-rails'
-gem 'activeadmin-select2', github: 'mfairburn/activeadmin-select2'
+  # Gives infinite loop
+# gem 'activeadmin-select2', github: 'mfairburn/activeadmin-select2'
 gem 'rdiscount'
 gem 'twitter'
 gem 'jquery-ui-rails'

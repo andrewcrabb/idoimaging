@@ -1,0 +1,9 @@
+// Place all the styles related to the programs controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+// In programs/show, initially do not show the version history or other programs divs.
+
+#versions_div,#programs_div {
+	    display: none;
+}
