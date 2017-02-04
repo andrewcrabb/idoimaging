@@ -4,32 +4,32 @@
     %meta{"name" => "viewport", "content" => "width=device-width, initial-scale=1.0"}
     %meta{charset: "utf-8"}
     %title= content_for?(:title) ? "#{yield(:title)} : I Do Imaging" : "I Do Imaging"
-    =stylesheet_link_tag "application"
-    =stylesheet_link_tag "https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"
-    =stylesheet_link_tag "https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"
-    =stylesheet_link_tag "star-rating-svg.css"
-    <link href="https://fonts.googleapis.com/css?family=Fjalla+One|Roboto|Open+Sans" rel="stylesheet">
-
-    =javascript_include_tag "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"
-    =javascript_include_tag "jquery.star-rating-svg.js"
-    =javascript_include_tag "https://use.fontawesome.com/3b2399c77f.js"
-    =javascript_include_tag "application", 'data-turbolinks-track' => true
-    =javascript_include_tag "https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"
-    -#javascript_include_tag "https://www.google.com/recaptcha/api.js"
-
-    =javascript_include_tag "my_rating"
-    =javascript_include_tag "my_slick"
-    =javascript_include_tag "my_google_analytics"
-    - #javascript_include_tag "modernizr.js"
-
-
     = csrf_meta_tags
+    =stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
+    / =stylesheet_link_tag "https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"
+    / =stylesheet_link_tag "https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"
+    / =stylesheet_link_tag "star-rating-svg.css"
+    / <link href="https://fonts.googleapis.com/css?family=Fjalla+One|Roboto|Open+Sans" rel="stylesheet">
+    / =stylesheet_link_tag "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+
+
+    / =javascript_include_tag "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"
+    / =javascript_include_tag "jquery.star-rating-svg.js"
+    / =javascript_include_tag "https://use.fontawesome.com/3b2399c77f.js"
+    =javascript_include_tag "application", 'data-turbolinks-track' => 'reload'
+    =javascript_include_tag "https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
+    / =javascript_include_tag "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+    / =javascript_include_tag "https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"
+    / -#javascript_include_tag "https://www.google.com/recaptcha/api.js"
+
+    / =javascript_include_tag "my_rating"
+    / =javascript_include_tag "my_slick"
+    / =javascript_include_tag "my_google_analytics"
   %body
-  .container
-    %header.header
-      = render "shared/navigation2"
-    = render "layouts/messages"
-    = yield
-    = debug(params) if Rails.env.development?
-    = render 'layouts/footer'
+    .container
+      = render "shared/navigation"
+      = render "layouts/messages"
+      = yield
+      = debug(params) if Rails.env.development?
+      = render 'layouts/footer'
 

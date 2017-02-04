@@ -1,12 +1,12 @@
 - provide(:title, "Home")
 .row
-  .large-8.columns
+  .col-md-8.col-sm-12
     =raw render partial: 'pages/welcome'
     %h2 Newly-added programs
     =render partial: 'programs/short_summary_table', locals: {programs: @programs}
-  .large-4.columns.front-sidebar
+  .col-md-4.col-sm-12.front-sidebar
     - if (entries = get_blog_summary).count > 0
       =render partial: 'pages/blog_summary', locals: {entries: entries}
     .home_twitter
       =render partial: 'pages/twitter'
-    
+     

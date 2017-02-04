@@ -33,7 +33,7 @@ gem 'jbuilder', '~> 2.5'
 # gem 'bcrypt', '~> 3.1.7'
 
 # ahc
-gem 'bootstrap', '~> 4.0.0.alpha6'
+# gem 'bootstrap', '~> 4.0.0.alpha6'
 gem 'pg'
 gem 'minitest-reporters'
 gem 'high_voltage'
@@ -56,6 +56,7 @@ gem 'simple_form'
 # Won't install.
 # gem 'quiet_assets', group: :development
 gem 'haml'
+gem 'haml-rails'
 gem 'select2-rails'
   # Gives infinite loop
 # gem 'activeadmin-select2', github: 'mfairburn/activeadmin-select2'
@@ -69,7 +70,7 @@ gem 'unscoped_associations'
 gem 'concurrent-ruby'
 gem 'rails-i18n'
 gem 'thread_safe'
-
+gem 'tether-rails'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

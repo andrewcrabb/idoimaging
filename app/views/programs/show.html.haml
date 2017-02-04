@@ -8,9 +8,9 @@
     .row
       %h4= @program.summary
 .row.prog-show
-  .small-12.large-8.columns
+  .col-sm-12.col-md-8
     .row
-      .small-12.columns
+      .col-sm-12
         = simple_format(@program.description)
     = program_version_str(@program)
     = program_authors_str(@program)
@@ -24,7 +24,7 @@
     = program_resource_str(@program, @resources)
     = idi_rating_str(@program)
     = user_rating_str(@program)
-  .small-12.large-4.columns.prog-sidebar
+  .col-sm-12.col-md-4.columns.prog-sidebar
     = program_features_list(@program, Feature::PLATFORM     , true)
     = program_features_list(@program, Feature::FUNCTION     , true)
     = program_features_list(@program, Feature::INTERFACE     , true)
@@ -50,7 +50,7 @@
     = program_features_list(@program, Feature::DISTRIBUTION, true)
 - if @program.images.count > 0
   .row
-    .medium-10.columns
+    .col-md-10
       = program_image_slider(@program)
 - if user_signed_in?
   = content_tag( :div, '', id: "program_data", data: {userid: current_user.id, programid: @program.id, rating: @rating})

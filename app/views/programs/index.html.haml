@@ -3,7 +3,7 @@
 
 - if @programs
   .row
-    .small-6.columns
+    .col-sm-6
       =render 'program_search_summary'
       %span{class: 'search_params_modify'}
         %button#show_search_text Modify search
@@ -11,7 +11,7 @@
   = render 'program_search'
 - if @programs
   .row
-    .small-12.columns.programs-table
+    .col-sm-12.programs-table
       %table.hover
         %thead
           %tr
@@ -27,6 +27,6 @@
               %td= program_rating_str(program)
               %td.tight= platforms_str(program, false)
               %td.tight= source_str(program)
-    .small-6.columns.text-right
+    .col-sm-6.text-right
       = page_entries_info @programs
       = paginate @programs
