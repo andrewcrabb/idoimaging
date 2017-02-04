@@ -9,10 +9,14 @@
 //
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives.
+// require_tree dot
 //
-//= require tether
 //= require jquery
 //= require jquery_ujs
+//= require slick.min
+//= require jquery.star-rating-svg
+//= require tether
 //= require turbolinks
-//= require_tree .
 //= require bootstrap
+
+//= require my_rating

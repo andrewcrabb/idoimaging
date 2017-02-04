@@ -71,6 +71,7 @@ gem 'concurrent-ruby'
 gem 'rails-i18n'
 gem 'thread_safe'
 gem 'tether-rails'
+gem 'record_tag_helper'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

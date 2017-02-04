@@ -8,17 +8,12 @@
     =stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     / =stylesheet_link_tag "https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"
     / =stylesheet_link_tag "https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"
-    / =stylesheet_link_tag "star-rating-svg.css"
-    / <link href="https://fonts.googleapis.com/css?family=Fjalla+One|Roboto|Open+Sans" rel="stylesheet">
-    / =stylesheet_link_tag "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    =stylesheet_link_tag "star-rating-svg.css"
+    <link href="https://fonts.googleapis.com/css?family=Fjalla+One|Roboto|Open+Sans" rel="stylesheet">
 
-
-    / =javascript_include_tag "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"
     / =javascript_include_tag "jquery.star-rating-svg.js"
     / =javascript_include_tag "https://use.fontawesome.com/3b2399c77f.js"
     =javascript_include_tag "application", 'data-turbolinks-track' => 'reload'
-    =javascript_include_tag "https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
-    / =javascript_include_tag "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
     / =javascript_include_tag "https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"
     / -#javascript_include_tag "https://www.google.com/recaptcha/api.js"
 
@@ -32,4 +27,3 @@
       = yield
       = debug(params) if Rails.env.development?
       = render 'layouts/footer'
-
