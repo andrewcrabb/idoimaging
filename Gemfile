@@ -72,6 +72,7 @@ gem 'rails-i18n'
 gem 'thread_safe'
 gem 'tether-rails'
 gem 'record_tag_helper'
+gem 'json'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
