@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  version: MyString
+  date: 2016-08-14
+  note: MyString
+  rev_str: MyString
+  program_id: 
+
+two:
+  version: MyString
+  date: 2016-08-14
+  note: MyString
+  rev_str: MyString
+  program_id: 

@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  weight: 1
+  feature_id: 
+  image_format_id: 
+
+two:
+  weight: 1
+  feature_id: 
+  image_format_id: 

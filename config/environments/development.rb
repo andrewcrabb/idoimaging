@@ -51,4 +51,29 @@ Rails.application.configure do
   # Use an evented file watcher to asynchronously detect changes in source code,
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
+
+  # ------------------------------------------------
+  # ahc below here
+  # ------------------------------------------------
+
+  # ahc  http://goo.gl/OYyVBc
+  config.action_mailer.perform_deliveries = true
+  # config.action_mailer.delivery_method = :smtp
+  config.action_mailer.delivery_method = :letter_opener
+
+  config.action_mailer.smtp_settings = {
+    address:              'smtp.gmail.com',
+    port:                 587,
+    domain:               'idoimaging.com',
+    # user_name:            ENV['GMAIL_USERNAME'],
+    # password:             ENV['GMAIL_PASSWORD'],
+    user_name:            'quux11@gmail.com',
+    password:             'new2this',
+    authentication:       'plain',
+    enable_starttls_auto: true
+  }
+  # Devise needs this
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+  # http://wp.me/p46U8I-10
+
 end

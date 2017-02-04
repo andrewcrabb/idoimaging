@@ -1,25 +1,27 @@
-# SQLite version 3.x
-#   gem install sqlite3
-#
-#   Ensure the SQLite 3 gem is defined in your Gemfile
-#   gem 'sqlite3'
-#
 default: &default
-  adapter: sqlite3
+  adapter: postgresql
   pool: 5
-  timeout: 5000
 
 development:
   <<: *default
-  database: db/development.sqlite3
+  adapter:  postgresql
+  port:     <%= Rails.application.secrets.database_port %>
+  host:     <%= Rails.application.secrets.database_host %>
+  database: <%= Rails.application.secrets.database_database %>
+  username: <%= Rails.application.secrets.database_username %>
+  password: <%= Rails.application.secrets.database_password %>
 
-# Warning: The database defined as "test" will be erased and
-# re-generated from your development database when you run "rake".
-# Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: db/test.sqlite3
+  host:     localhost
+  database: idoimaging_test
 
 production:
   <<: *default
-  database: db/production.sqlite3
+  adapter:  postgresql
+  encoding: utf8
+  port:     <%= Rails.application.secrets.database_port %>
+  host:     <%= Rails.application.secrets.database_host %>
+  database: <%= Rails.application.secrets.database_database %>
+  username: <%= Rails.application.secrets.database_username %>
+  password: <%= Rails.application.secrets.database_password %>

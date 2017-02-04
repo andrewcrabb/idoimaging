@@ -65,7 +65,10 @@ gem 'jquery-ui-rails'
 gem 'lograge'
 gem 'unscoped_associations'
 # gem "just-datetime-picker"
-gem 'rails-assets-tether'
+# gem 'rails-assets-tether'
+gem 'concurrent-ruby'
+gem 'rails-i18n'
+gem 'thread_safe'
 
 
 # Use Capistrano for deployment
