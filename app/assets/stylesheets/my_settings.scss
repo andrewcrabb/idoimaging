@@ -1,0 +1,205 @@
+// ------------------------------------------------------------
+// Global defaults
+// ------------------------------------------------------------
+
+$idi-bg-1: #5b92a2;
+
+// ------------------------------------------------------------
+// Navbar
+// ------------------------------------------------------------
+
+.navbar {
+  background-color: $idi-bg-1;
+  a {
+    color: white;
+    text-shadow: none;
+    &:hover {
+      background: rgba(0, 80, 80, 0.4);
+    }
+  }
+}
+
+.navbar-brand {
+  text-shadow: none;
+  .brand {
+    font-family: 'Fjalla One', sans-serif;
+    font-size: 3.6rem;
+    color: #fff;
+    text-transform: uppercase;
+    a:hover {
+      color: #fff;
+    }
+    a:visited {
+      color: #fff;
+    }
+  }
+  .subbrand {
+    font-family: 'Fjalla One', sans-serif;
+    color: #eee;
+    font-size: 1.4rem;
+    padding-left: 2px;
+    float: left;
+    text-transform: uppercase;
+    position: relative;
+    top: 6px;
+  }
+}
+
+// ------------------------------------------------------------
+// Program page
+// ------------------------------------------------------------
+
+.ahc_right {
+  float: right;
+}
+
+td {
+  .nowrap {
+    white-space:nowrap;
+  }
+  .tight {
+    padding: 8px 2px;
+    border-collapse: collapse;
+  }
+}
+
+.prog-show {
+  padding: 10px;
+}
+
+.prog-sidebar {
+  float: right;
+  background-color: #D3DFE8;
+  background-color: #f9f9e5;
+  border: 1px solid gray;
+  border-radius: 8px;
+  padding: 8px;
+  .heading {
+    text-decoration: underline;
+  } 
+}
+
+
+// ------------------------------------------------------------
+// Blog summary in page/home
+// ------------------------------------------------------------
+
+$verylightgrey: #f8f8f8;
+
+.blog_summary {
+  background-color: $verylightgrey;
+  padding: 8px;
+  margin: 15px 0px 10px 0px;
+  border: 1px solid $verylightgrey;
+  border-radius: 6px;
+  h4 {
+    text-align: center;
+  }
+  .blog_entry:not(:last-child) {
+    border-bottom: 1px solid gray;
+  }
+}
+
+.blog_entry {
+  padding: 5px 0px 5px 0px;
+}
+
+.blog_entry_title {
+  font-weight: bold;
+  text-align: center;
+}
+
+.blog_entry_date {
+  font-size: 80%;
+  text-align: center;
+}
+
+// ------------------------------------------------------------
+// Font Awesome
+// ------------------------------------------------------------
+
+.fa {
+  color: #8ae;
+}
+
+.os-icon {
+  padding-left: 3px;
+}
+
+// ------------------------------------------------------------
+// Admin section on bottom of page for logged-in administrators
+// ------------------------------------------------------------
+
+.admin_functions {
+  float: left;
+  background-color: #eff;
+  margin: 10px;
+  border: 1px solid gray;
+  border-radius: 8px;
+  padding: 8px;
+  .heading {
+    text-decoration: underline;
+  } 
+}
+
+// -------------------------------------------------------
+// Footer
+// -------------------------------------------------------
+
+$footer-fg: #ffffff;
+
+.footer {
+  background-color: $idi-bg-1;
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 0rem 4rem 0rem 4rem;
+  p {
+    &.copywrite {
+      color: $footer-fg;
+      font-size: 75%;
+      margin: 0;
+    }
+    margin: 0.5rem 0 0.5rem 0;
+  }
+  .fa {
+    color: #ddd;
+  }
+  .links a {
+    // display: block;
+    list-style: none;
+    // font-weight: bold;
+    color: #ffffff;
+    // padding: 3rem 0 2rem;
+    margin: 0;
+    &::after {
+      content: "•";
+      padding: 0 0.4rem 0 0.8rem;
+    }
+    &:last-child::after {
+      content: "";
+      padding: 0 0.4rem 0 0.8rem;
+    }
+    &:hover {
+      background-color: $idi-bg-1;
+  // color: red;
+}
+}
+.social {
+    // color: green;
+  }
+  .social-handle {
+    padding-left: 0.7rem;
+    font-size: 75%;
+    color: $footer-fg;
+  }
+  .social-part {
+    font-size: 75%;
+    color: $footer-fg;
+  }
+  .copyright {
+    display: block;
+    padding-top: 0.7rem;
+  }
+
+
+}

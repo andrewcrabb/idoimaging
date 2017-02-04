@@ -1,25 +1,32 @@
-%nav.navbar.navbar-default
-  .container
-    .navbar-header
-      %button.navbar-toggle.collapsed{type: "button", :'data-toggle' => "collapse", :'data-target' => "#navbar", :'aria-expanded' => false}
-        %span{class: "icon-bar"}
-        %span{class: "icon-bar"}
-        %span{class: "icon-bar"}
-      %a.navbar-brand=link_to("I Do Imaging", root_path)
-    #navbar.collapse.navbar-collapse
-      %ul.nav.navbar-nav
-        %li=link_to "Home"    , home_path
-        %li=link_to "Programs", programs_path
-        %li=link_to "Demo"    , "http://idoimaging.com/demo", target: 'new'
-        %li=link_to "Data"    , "http://idoimaging.com/wiki/tiki-index.php?page=Sample+Data", target: 'new'
-        %li=link_to "Wiki"    , "http://idoimaging.com/wiki", target: 'new'
-        %li=link_to "Blog"    , "http://blog.idoimaging.com", target: 'new'
-      %ul.nav.navbar-nav.navbar-right
-        %li
-        - if signed_in?
-          %li= link_to current_user.email, current_user
-          %li= link_to("Log out", destroy_user_session_path, method: :delete)
-          %li= link_to("Admin", admin_root_path) if (current_user.admin? or current_user.editor?)
-        - else
-          %li= link_to "Register", new_user_registration_path
-          %li= link_to "Log in", new_user_session_path
+%nav.navbar.navbar-toggleable-md.sticky-top
+  %button.navbar-toggler.navbar-toggler-right{type: "button", :"data-toggle" => "collapse", :"data-target" => "#navbarContent"}
+    %span{class: "navbar-toggler-icon"}
+
+  .navbar-brand
+    .brand= link_to("I Do Imaging", root_path)
+    .subbrand Free Medical Imaging Software
+
+
+  .collapse.navbar-collapse#navbarContent
+    %ul.navbar-nav.mr-auto
+      %li.nav-item.active
+        =link_to("Home"    , home_path, class: 'nav-link')
+      %li.nav-item
+        =link_to("Programs", programs_path, class: 'nav-link')
+      %li.nav-item
+        =link_to("Demo"    , "http://idoimaging.com/demo", target: 'new', class: 'nav-link')
+      %li.nav-item
+        =link_to("Data"    , "http://idoimaging.com/wiki/tiki-index.php?page=Sample+Data", target: 'new', class: 'nav-link')
+      %li.nav-item
+        =link_to("Wiki"    , "http://idoimaging.com/wiki", target: 'new', class: 'nav-link')
+      %li.nav-item
+        =link_to("Blog"    , "http://blog.idoimaging.com", target: 'new', class: 'nav-link')
+    %ul.nav.navbar-nav.navbar-right
+      %li
+      - if signed_in?
+        %li= link_to current_user.email, current_user
+        %li= link_to("Log out", destroy_user_session_path, method: :delete)
+        %li= link_to("Admin", admin_root_path) if (current_user.admin? or current_user.editor?)
+      - else
+        %li= link_to "Register", new_user_registration_path
+        %li= link_to "Log in", new_user_session_path
