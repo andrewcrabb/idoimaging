@@ -10,11 +10,29 @@ $idi-bg-1: #5b92a2;
 
 .navbar {
   background-color: $idi-bg-1;
+  margin-bottom: 0;
   a {
     color: white;
     text-shadow: none;
+    text-align: bottom;
     &:hover {
       background: rgba(0, 80, 80, 0.4);
+    }
+  }
+  li {
+    list-style: none;
+    text-transform: uppercase;
+    padding: 0 1rem 0 1rem;
+  }
+  .godown {
+    position: relative;
+    top: 2rem;
+    // padding: 10px;
+  }
+  #navbarContent {
+
+    .navbar-nav {
+
     }
   }
 }
