@@ -2,65 +2,87 @@
 // Global defaults
 // ------------------------------------------------------------
 
-$idi-bg-1: #5b92a2;
+$idi-bg-0: #5b92a2;
+$idi-bg-1: #007e84;
 
+body {
+  font-family: 'Open Sans', sans-serif;
+}
 // ------------------------------------------------------------
-// Navbar
+// Navbar and site title
 // ------------------------------------------------------------
 
 .navbar {
   background-color: $idi-bg-1;
   margin-bottom: 0;
+  height: 30px;
   a {
     color: white;
     text-shadow: none;
     text-align: bottom;
     &:hover {
       background: rgba(0, 80, 80, 0.4);
+      text-decoration: none;
     }
   }
   li {
     list-style: none;
     text-transform: uppercase;
-    padding: 0 1rem 0 1rem;
-  }
-  .godown {
-    position: relative;
-    top: 2rem;
-    // padding: 10px;
-  }
-  #navbarContent {
-
-    .navbar-nav {
-
+    a {
+      padding: 0.3rem 1rem 0.3rem 1rem;
     }
   }
 }
 
-.navbar-brand {
+.navbar-nav > li > a, .navbar-brand {
+    padding-top:5px !important; padding-bottom:5 !important;
+    height: 30px;
+}
+.navbar {min-height:30px !important;}
+
+.site_title {
+  background-color: $idi-bg-1;
   text-shadow: none;
-  .brand {
+  .main_title {
+    text-align: center;
     font-family: 'Fjalla One', sans-serif;
     font-size: 3.6rem;
     color: #fff;
     text-transform: uppercase;
+    a {
+      margin: 0;
+    }
     a:hover {
       color: #fff;
+      text-decoration: none;
     }
     a:visited {
       color: #fff;
     }
   }
-  .subbrand {
+  .sub_title {
+    text-align: center;
     font-family: 'Fjalla One', sans-serif;
     color: #eee;
     font-size: 1.4rem;
     padding-left: 2px;
-    float: left;
+    // float: left;
     text-transform: uppercase;
     position: relative;
-    top: 6px;
+    top: -8px;
   }
+}
+
+// ------------------------------------------------------------
+// Devise forms
+// ------------------------------------------------------------
+
+.devise-bs {
+  margin: 1rem 0 1rem 0;
+}
+
+.users-shared-links {
+  text-align: center;
 }
 
 // ------------------------------------------------------------
@@ -85,16 +107,29 @@ td {
   padding: 10px;
 }
 
+.prog-title {
+  h1,h4 {
+    text-align: center;
+    margin: 5px 0 0px 0;
+  }
+}
+
 .prog-sidebar {
   float: right;
-  background-color: #D3DFE8;
-  background-color: #f9f9e5;
+  // background-color: #FFE5FF;
+  // background-color: #FFECE5;
+  // background-color: #D3DFE8;
+  // background-color: #f9f9e5;
   border: 1px solid gray;
   border-radius: 8px;
   padding: 8px;
   .heading {
     text-decoration: underline;
   } 
+  h4 {
+    text-align: center;
+    margin-top: 0;
+  }
 }
 
 

@@ -2,13 +2,13 @@
 - provide(:title, @program.name)
 / Row 0: Title
 .row.prog-show
-  .medium-12.medium-centered.columns
-    .row
+  .col-md-12
+    .row.prog-title
       %h1= @program.name
-    .row
+    .row.prog-title
       %h4= @program.summary
 .row.prog-show
-  .col-sm-12.col-md-8
+  .col-sm-12.col-md-7
     .row
       .col-sm-12
         = simple_format(@program.description)
@@ -24,7 +24,10 @@
     = program_resource_str(@program, @resources)
     = idi_rating_str(@program)
     = user_rating_str(@program)
-  .col-sm-12.col-md-4.columns.prog-sidebar
+  .col-sm-12.col-md-5.columns.prog-sidebar
+    .row
+      .col-sm-12
+        %h4 Technical Details
     = program_features_list(@program, Feature::PLATFORM     , true)
     = program_features_list(@program, Feature::FUNCTION     , true)
     = program_features_list(@program, Feature::INTERFACE     , true)

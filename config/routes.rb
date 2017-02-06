@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   #   resources :users
   # end
 
-  devise_for :users, controllers: {sessions: 'users/sessions', registrations: 'users/registrations', passwords: 'users/passwords'}
+  devise_for :users, controllers: {sessions: 'users/sessions', registrations: 'users/registrations', passwords: 'users/passwords', confirmations: 'users/confirmations'}
   # devise_for :users      , ActiveAdmin::Devise.config
   # devise_for :admin_users, ActiveAdmin::Devise.config
   # This causes author.rb errors on 'db:create'

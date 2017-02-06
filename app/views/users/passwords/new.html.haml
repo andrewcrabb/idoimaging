@@ -1,14 +1,13 @@
-.medium-6.medium-centered.large-4.large-centered.columns
-  .row.column.log-in-form
-    %h3.text-center Reset password
-    = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
-      = devise_error_messages!
-      .field
-        = f.label :email
-        = f.email_field :email, autofocus: true
-
-      .actions
-        = f.submit("Send me reset password instructions", class: 'button expanded')
-
-      .text-center
-        = render "users/shared/links"
+.row
+  .col-sm-6.col-sm-offset-3
+    = bootstrap_devise_error_messages!
+    .panel.panel-default.devise-bs
+      .panel-heading
+        %h4= t('.forgot_your_password', default: 'Forgot your password?')
+      .panel-body
+        = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, role: "form" }) do |f|
+          .form-group
+            = f.label :email
+            = f.email_field :email, autofocus: true, class: 'form-control'
+          = f.submit t('.send_me_reset_password_instructions', default: 'Send me reset password instructions'), class: 'btn btn-primary'
+    = render 'users/shared/links'

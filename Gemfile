@@ -73,6 +73,8 @@ gem 'thread_safe'
 gem 'tether-rails'
 gem 'record_tag_helper'
 gem 'json'
+gem 'devise-bootstrap-views'
+
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
