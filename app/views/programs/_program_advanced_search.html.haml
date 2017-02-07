@@ -1,54 +1,51 @@
 = search_form_for @q do |f|
   .row#form-text-search
-    .medium-2.columns
-      = f.label :name_cont
-      = f.search_field :name_cont
-    .medium-2.columns
-      = f.label :summary_cont
-      = f.search_field :summary_cont
-    .medium-2.columns
-      = f.label :description_cont
-      = f.search_field :description_cont
-    .medium-2.columns
-      = f.label :read_format
-      = f.select :read_format, ImageFormat.selector_values, prompt: '  -  '
-    .medium-2.columns
-      = f.label :write_format
-      = f.select :write_format, ImageFormat.selector_values, prompt: '  -  '
-  .row
-    .medium-2.columns
+    .col-md-2
       = f.label :function
       = f.select :function, Feature.selector_values(Feature::FUNCTION), prompt: '  -  '
-    .medium-2.columns
+    .col-md-2
+      = f.label :read_format
+      = f.select :read_format, ImageFormat.selector_values, prompt: '  -  '
+    .col-md-2
+      = f.label :write_format
+      = f.select :write_format, ImageFormat.selector_values, prompt: '  -  '
+    .col-md-2
       = f.label :platform
       = f.select :platform, Feature.selector_values(Feature::PLATFORM), prompt: '  -  '
-    .medium-2.columns
+    .col-md-2
+      = f.label :name_cont
+      = f.search_field :name_cont
+    .col-md-2
+      = f.label :summary_cont
+      = f.search_field :summary_cont
+  .row
+    .col-md-2
       = f.label :interface
       = f.select :interface, Feature.selector_values(Feature::INTERFACE), prompt: '  -  '
-    .medium-2.columns
+    .col-md-2
       = f.label :speciality
       = f.select :speciality, Feature.selector_values(Feature::SPECIALITY), prompt: '  -  '
-    .medium-2.columns
+    .col-md-2
+      = f.label "Audience"
+      = f.select :for_audience, Feature.selector_values(Feature::AUDIENCE), prompt: '  -  '
+    .col-md-2
       = f.label "Source code"
       = f.select :language, Feature.selector_values(Feature::LANGUAGE), prompt: '  -  '
   .row
-    .medium-2.columns
-      = f.label :other_function
-      = f.select :other_function, Feature.selector_values(Feature::OTHER), prompt: '  -  '
-    .medium-2.columns
-      = f.label :conversion_function
-      = f.select :conversion_function, Feature.selector_values(Feature::CONVERSION), prompt: '  -  '
-    .medium-2.columns
-      = f.label :display_function
+    .col-md-2
+      = f.label "Display"
       = f.select :display_function, Feature.selector_values(Feature::DISPLAY), prompt: '  -  '
-    .medium-2.columns
-      = f.label :header_function
+    .col-md-2
+      = f.label "Header"
       = f.select :header_function, Feature.selector_values(Feature::HEADER), prompt: '  -  '
-    .medium-2.columns
-      = f.label :network_function
+    .col-md-2
+      = f.label "Network"
       = f.select :network_function, Feature.selector_values(Feature::NETWORK), prompt: '  -  '
-    .medium-2.columns
-      = f.label :programming_function
+    .col-md-2
+      = f.label "Other"
+      = f.select :other_function, Feature.selector_values(Feature::OTHER), prompt: '  -  '
+    .col-md-2
+      = f.label "Programming"
       = f.select :programming_function, Feature.selector_values(Feature::PROGRAMMING), prompt: '  -  '
   .row
     = f.submit 'Search',:class => "button"

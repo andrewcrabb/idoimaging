@@ -1,3 +1,5 @@
+// Search form in program index
+
 function showSearchText() {
   $("#show_search_text").click(function(){
     showSearchForm(true);

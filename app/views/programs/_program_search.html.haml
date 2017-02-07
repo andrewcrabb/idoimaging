@@ -1,16 +1,19 @@
-/ -icon = content_tag(:i, '', class: ["fa", "fa-angle-double-down", "fa-lg"])
-/ =content_tag(:span, "Modify search", {id: "show_search_text"})
-
 #search_form
-  .row
-    #tabs
-      %ul
-        %li 
-          %a{href: "#tabs-1"} Basic search
-        %li 
-          %a{href: "#tabs-2"} Advanced search
-      #tabs-1
-        =render 'program_basic_search'
-      #tabs-2
-        =render 'program_advanced_search'
-
+  .panel-group#accordion
+    .panel.panel-default
+      .panel-heading
+        %span.panel-title
+          %h4
+            %a{:"data-toggle" => "collapse", :"data-parent" => "#accordion", :href => "#collapse1"}
+              Basic Search
+          %span
+            (fewer options)
+      .panel-collapse.collapse.in#collapse1
+        .panel-body=render 'program_basic_search'
+    .panel.panel-default
+      .panel-heading
+        %h4.panel-title
+          %a{:"data-toggle" => "collapse", :"data-parent" => "#accordion", :href => "#collapse2"}
+            Advanced Search
+      .panel-collapse.collapse#collapse2
+        .panel-body=render 'program_advanced_search'
