@@ -4,8 +4,8 @@ module ApplicationHelper
   require 'nokogiri'
   require 'date'
 
-  	BLOG_URL = "http://blog.idoimaging.com"
-    XML_URL = "#{BLOG_URL}/feed.xml"
+  BLOG_URL = "http://blog.idoimaging.com"
+  XML_URL = "#{BLOG_URL}/feed.xml"
 
   def url_helper(url)
     url
@@ -20,7 +20,7 @@ module ApplicationHelper
         feed = RSS::Parser.parse(rss)
         items = feed.items
         items [0..2].each do |item|
-        	# logger.debug item.inspect
+          # logger.debug item.inspect
           content = item.content.content
           html_doc = Nokogiri::Slop(content)
           rawdate = item.updated.content
@@ -43,5 +43,22 @@ module ApplicationHelper
     end
     summaries
   end
+
+  # https://gist.github.com/suryart/7418454
+
+  def bootstrap_class_for flash_type
+    { success: "alert-success", error: "alert-danger", alert: "alert-warning", notice: "alert-info" }[flash_type] || flash_type.to_s
+  end
+
+  def flash_messages(opts = {})
+    flash.each do |msg_type, message|
+      concat(content_tag(:div, message, class: "alert #{bootstrap_class_for(msg_type)} fade in") do
+               concat content_tag(:button, 'x', class: "close", data: { dismiss: 'alert' })
+               concat message
+      end)
+    end
+    nil
+  end
+
 
 end

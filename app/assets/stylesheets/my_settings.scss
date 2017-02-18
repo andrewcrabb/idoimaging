@@ -8,6 +8,14 @@ $idi-bg-1: #007e84;
 body {
   font-family: 'Open Sans', sans-serif;
 }
+
+.program_search {
+  label {
+    display: block;
+  }
+}
+
+
 // ------------------------------------------------------------
 // Navbar and site title
 // ------------------------------------------------------------
@@ -231,15 +239,30 @@ $verylightgrey: #f8f8f8;
 }
 
 // -------------------------------------------------------
+// Flash messages
+// -------------------------------------------------------
+
+.recaptcha_error {
+  background-color: #faa;
+}
+
+.alert.notice {
+  // background-color: #dbf0ff;
+  // background-color: #d1ffd6;
+  background-color: #e8ffea;
+}
+
+// -------------------------------------------------------
 // Footer
 // -------------------------------------------------------
 
 $footer-fg: #ffffff;
 
 .footer {
+  margin-top: 1rem;
   background-color: $idi-bg-1;
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.75rem;
   padding: 0rem 4rem 0rem 4rem;
   p {
     &.copywrite {

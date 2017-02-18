@@ -74,6 +74,7 @@ gem 'tether-rails'
 gem 'record_tag_helper'
 gem 'json'
 gem 'devise-bootstrap-views'
+gem "recaptcha", require: "recaptcha/rails"
 
 
 # Use Capistrano for deployment
