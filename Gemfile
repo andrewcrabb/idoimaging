@@ -75,7 +75,7 @@ gem 'record_tag_helper'
 gem 'json'
 gem 'devise-bootstrap-views'
 gem "recaptcha", require: "recaptcha/rails"
-
+gem "figaro"
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
@@ -97,6 +97,7 @@ group :development do
   gem 'capistrano-rails'
   gem 'capistrano-passenger'
   gem 'mysql2'  # ActiveAdmin dependency.  NO WAY AM I INSTALLING THIS IN PRODUCTON.
+  gem "better_errors"
 
 end
 
