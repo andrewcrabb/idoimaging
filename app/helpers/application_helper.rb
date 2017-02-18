@@ -38,7 +38,8 @@ module ApplicationHelper
         end
       end
     rescue => e
-      logger.debug("Could not connect to #{url}: #{e}")
+      # logger.debug("Could not connect to #{url}: #{e}")
+      logger.debug("Can not connect to blog url")
     end
     summaries
   end

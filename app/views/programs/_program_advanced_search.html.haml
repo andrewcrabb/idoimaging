@@ -7,9 +7,6 @@
       = f.label :read_format
       = f.select :read_format, ImageFormat.selector_values, prompt: '  -  '
     .col-md-2
-      = f.label :write_format
-      = f.select :write_format, ImageFormat.selector_values, prompt: '  -  '
-    .col-md-2
       = f.label :platform
       = f.select :platform, Feature.selector_values(Feature::PLATFORM), prompt: '  -  '
     .col-md-2
@@ -25,6 +22,9 @@
     .col-md-2
       = f.label :speciality
       = f.select :speciality, Feature.selector_values(Feature::SPECIALITY), prompt: '  -  '
+    .col-md-2
+      = f.label :write_format
+      = f.select :write_format, ImageFormat.selector_values, prompt: '  -  '
     .col-md-2
       = f.label "Audience"
       = f.select :for_audience, Feature.selector_values(Feature::AUDIENCE), prompt: '  -  '
@@ -48,5 +48,6 @@
       = f.label "Programming"
       = f.select :programming_function, Feature.selector_values(Feature::PROGRAMMING), prompt: '  -  '
   .row
-    = f.submit 'Search',:class => "button"
-    = f.submit "Clear", :type => "reset", class: 'button'
+    .col-md-4.submit-buttons
+      = f.submit 'Search',:class => "button"
+      = f.submit "Clear", :type => "reset", class: 'button'

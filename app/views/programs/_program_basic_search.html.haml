@@ -1,19 +1,20 @@
 = search_form_for @q do |f|
-  =f.hidden_field(:for_audience, value: Feature.has_value(Feature::AUDIENCE_GENERAL_USER))
-  =f.hidden_field(Feature::SEARCH_LEVEL, value: Feature::SEARCH_LEVEL_BASIC)
+  / =f.hidden_field(:for_audience, value: Feature.has_value(Feature::AUDIENCE_GENERAL_USER))
+  / =f.hidden_field(Feature::SEARCH_LEVEL, value: Feature::SEARCH_LEVEL_BASIC)
   .row#form-text-search
     .col-md-2
       = f.label "Function"
-      = f.select :function, Feature.basic.selector_values(Feature::FUNCTION), prompt: '  -  '
+      = f.select :function, Feature.basic.selector_values(Feature::FUNCTION), prompt: ' - Any - '
     .col-md-2
       = f.label :read_format, "File format"
-      = f.select :read_format, ImageFormat.basic.selector_values, prompt: '  -  '
+      = f.select :read_format, ImageFormat.basic.selector_values, prompt: ' - Any - '
     .col-md-2
       = f.label :platform, "Platform"
-      = f.select :platform, Feature.basic.selector_values(Feature::PLATFORM), prompt: '  -  '
+      = f.select :platform, Feature.basic.selector_values(Feature::PLATFORM), prompt: ' - Any - '
     .col-md-2
       = f.label :name_cont, "Name contains"
       = f.search_field :name_cont
   .row
-    = f.submit 'Search',:class => "button"
-    = f.submit "Clear", :type => "reset", class: 'button'
+    .col-md-4.submit-buttons
+      = f.submit 'Search',:class => "button"
+      = f.submit "Clear", :type => "reset", class: 'button'

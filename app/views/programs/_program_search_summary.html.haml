@@ -1,14 +1,17 @@
 - if @search_params
-  %span{class: 'search_params'}
-    %table
-      - nterm = @search_params.count
-      - caption = (nterm > 0) ? "You searched for #{nterm} #{'term'.pluralize(nterm)}" : "You did not enter any search terms"
-      -# %caption #{caption}
-      %thead
-        %tr
-          %th{colspan: 2} #{caption}
-      %tbody
-        - @search_params.each do |param|
+  .search_params
+    - nterm = @search_params.count
+    - if nterm > 0
+      %table.search_summary_table
+        - caption = "You searched for #{nterm} #{'term'.pluralize(nterm)}"
+        %thead
           %tr
-            %td= param[0]
-            %td= param[1]
+            %th{colspan: 2} #{caption}
+        %tbody
+          - @search_params.each do |param|
+            %tr
+              %td= param[0]
+              %td= param[1]
+    - else
+      .search_summary_table
+        You did not enter any search terms

@@ -1,19 +1,20 @@
-#search_form
+.container#search_form
   .panel-group#accordion
     .panel.panel-default
       .panel-heading
-        %span.panel-title
+        .panel-title
           %h4
             %a{:"data-toggle" => "collapse", :"data-parent" => "#accordion", :href => "#collapse1"}
               Basic Search
-          %span
             (fewer options)
       .panel-collapse.collapse.in#collapse1
         .panel-body=render 'program_basic_search'
     .panel.panel-default
       .panel-heading
-        %h4.panel-title
-          %a{:"data-toggle" => "collapse", :"data-parent" => "#accordion", :href => "#collapse2"}
-            Advanced Search
+        .panel-title
+          %h4
+            %a{:"data-toggle" => "collapse", :"data-parent" => "#accordion", :href => "#collapse2"}
+              Advanced Search
+            (all options)
       .panel-collapse.collapse#collapse2
         .panel-body=render 'program_advanced_search'

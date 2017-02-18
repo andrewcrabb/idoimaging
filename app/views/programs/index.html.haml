@@ -5,14 +5,15 @@
   .row
     .col-sm-6
       =render 'program_search_summary'
-      %span{class: 'search_params_modify'}
+      .search_params_modify
         %button#show_search_text Modify search
 .row
-  = render 'program_search'
-- if @programs
+  .col-sm-12
+    = render 'program_search'
+- if @programs and @programs.count > 0
   .row
     .col-sm-12.programs-table
-      %table.hover
+      %table.table.table-hover
         %thead
           %tr
             %th= sort_link(@q, :name )
@@ -27,6 +28,9 @@
               %td= program_rating_str(program)
               %td.tight= platforms_str(program, false)
               %td.tight= source_str(program)
-    .col-sm-6.text-right
-      = page_entries_info @programs
-      = paginate @programs
+  .row
+    .col-sm-6.col-sm-offset-3.pagin
+      .pagin-info
+        = page_entries_info @programs
+      .pagin-list
+        = paginate @programs
