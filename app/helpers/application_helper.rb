@@ -47,7 +47,17 @@ module ApplicationHelper
   # https://gist.github.com/suryart/7418454
 
   def bootstrap_class_for flash_type
-    { success: "alert-success", error: "alert-danger", alert: "alert-warning", notice: "alert-info" }[flash_type] || flash_type.to_s
+    # { success: "alert-success", error: "alert-danger", alert: "alert-warning", notice: "alert-info" }[flash_type] || flash_type.to_s
+    error_types = {
+      "success" => "alert-success",
+      "error" => "alert-danger",
+      "alert" => "alert-warning",
+      "notice" => "alert-info",
+      "recaptcha_error" => "alert-danger",
+    }
+    result = error_types[flash_type] || flash_type.to_s
+    logger.debug("flash_type is #{flash_type} and it is a #{flash_type.class}, returning #{result}")
+    return result
   end
 
   def flash_messages(opts = {})
