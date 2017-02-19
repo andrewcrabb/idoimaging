@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+
+  # Program controller is for backward compatibility with old site 
+  # get 'program/index'
+  # get 'program/show'
+  resources :program, only: [:index, :show]
+
   # devise_for :users
   # devise_for :admin_users, ActiveAdmin::Devise.config
 
