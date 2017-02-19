@@ -12,10 +12,10 @@
     .row
       .col-sm-12
         = simple_format(@program.description)
+    = social_handle_str(@program, @resources, ResourceType::HOME_URL)
     = program_version_str(@program)
     = program_authors_str(@program)
     / = program_link_str(@program)
-    = social_handle_str(@program, @resources, ResourceType::HOME_URL)
     = program_source_str(@program)
     = social_handle_str(@program, @resources, ResourceType::TWITTER)
     = social_handle_str(@program, @resources, ResourceType::GITHUB)
