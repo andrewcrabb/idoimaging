@@ -39,9 +39,9 @@ Rails.application.routes.draw do
   root "pages#home"
 
   # Program controller is for backward compatibility with old site 
-  get 'program/index'
-  get 'program/show'
-  # resources :program, only: [:index, :show]
+  # get 'program/index'
+  # get 'program/show'
+  resources :program, only: [:index, :show]
 
   # get 'pages/home' => 'high_voltage/pages#home', id: 'home'
   # root "pages/home", page: "home"
