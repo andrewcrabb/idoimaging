@@ -18,7 +18,9 @@
         %li.nav-item
           =link_to("Wiki"    , "http://idoimaging.com/wiki", target: 'new', class: 'nav-link')
         %li.nav-item
-          =link_to("Blog"    , "http://blog.idoimaging.com", target: 'new', class: 'nav-link')
+          / =link_to("Blog"    , "http://blog.idoimaging.com", target: 'new', class: 'nav-link')
+          / =link_to("Blog"    , "http://blog.idoimaging.com.s3-website-us-east-1.amazonaws.com", target: 'new', class: 'nav-link')
+          =link_to("Blog"    , "https://d3h0zniuj3xanb.cloudfront.net", target: 'new', class: 'nav-link')
         %li.nav-item
           =link_to("About", about_path, class: 'nav-link')
       %ul.navbar-nav.navbar-right

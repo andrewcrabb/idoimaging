@@ -4,7 +4,8 @@ module ApplicationHelper
   require 'nokogiri'
   require 'date'
 
-  BLOG_URL = "http://blog.idoimaging.com"
+  # BLOG_URL = "http://blog.idoimaging.com"
+  BLOG_URL = "http://blog.idoimaging.com.s3-website-us-east-1.amazonaws.com"
   XML_URL = "#{BLOG_URL}/feed.xml"
 
   def url_helper(url)
@@ -13,7 +14,6 @@ module ApplicationHelper
   end
 
   def get_blog_summary
-    # url = 'http://localhost:4000/feed.xml'
     summaries = []
     begin
       open(XML_URL) do |rss|
@@ -39,7 +39,7 @@ module ApplicationHelper
       end
     rescue => e
       # logger.debug("Could not connect to #{url}: #{e}")
-      logger.debug("Can not connect to blog url")
+      logger.debug("Can not connect to blog url: #{XML_URL}, #{e}")
     end
     summaries
   end
