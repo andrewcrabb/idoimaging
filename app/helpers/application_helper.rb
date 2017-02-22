@@ -4,7 +4,7 @@ module ApplicationHelper
   require 'nokogiri'
   require 'date'
 
-  BLOG_URL = "http://blog.idoimaging.com"
+  BLOG_URL = "https://blog.idoimaging.com"
   # BLOG_URL = "http://blog.idoimaging.com.s3-website-us-east-1.amazonaws.com"
   # BLOG_URL = "https://d3h0zniuj3xanb.cloudfront.net"
   XML_URL = "#{BLOG_URL}/feed.xml"
