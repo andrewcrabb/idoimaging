@@ -5,9 +5,7 @@
     .newly-added
       %h2 Newly-added programs
       =render partial: 'programs/short_summary_table', locals: {programs: @programs}
-  .col-md-4.col-sm-12.front-sidebar
+  -# .col-md-4.col-sm-12.front-sidebar
     - if (entries = get_blog_summary).count > 0
       =render partial: 'pages/blog_summary', locals: {entries: entries}
-    .home_twitter
-      =render partial: 'pages/twitter'
      

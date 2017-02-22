@@ -19,6 +19,15 @@ module Idoimaging
     # ahc
     config.assets.paths << Rails.root.join('vendor', 'assets', 'components')
 
+    # ahc 2/22/17 enable gzip of css and js
+    # http://bit.ly/2m9btAM
+      config.middleware.insert_before(Rack::Sendfile, Rack::Deflater)
+
+  # Compress JavaScripts and CSS.
+  config.assets.compress = true
+  config.assets.js_compressor = Uglifier.new(mangle: false)
+
+
     # ahc 2/22/17 Handle CORS now I have assets coming from cdn.idoimaging.com
     # http://bit.ly/2lvSKfw
 
