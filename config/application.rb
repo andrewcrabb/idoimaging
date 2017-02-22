@@ -10,6 +10,17 @@ ENV['RANSACK_FORM_BUILDER'] = '::SimpleForm::FormBuilder'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# ahc 2/22/17 Handle CORS now I have assets coming from cdn.idoimaging.com
+# http://bit.ly/2lvSKfw
+
+config.middleware.insert_before 0, Rack::Cors do
+  allow do
+    origins '*'
+    resource '*', :headers => :any, :methods => [:get, :post, :options]
+  end
+end
+
+
 module Idoimaging
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
