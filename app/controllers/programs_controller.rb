@@ -74,15 +74,17 @@ class ProgramsController < ApplicationController
     # eager-loaded resources without incurring a db query for each one.
     # So I pull them all out here and put them in a hash.
     @resources = Hash.new{ |h,k| h[k] = [] }
-    pr = @program.resources.includes(:resource_type)
-    # logger.debug("------------ program #{@program.id} has #{pr.count} resources")
-    pr.each { |r|
-      unless r
-        logger.error("nil resource for program #{@program.id} with #{pr.count} resources")
-        next
-      end
-      @resources[r.resource_type.name] << r if r.resource_type
-    }
+    if @program
+      pr = @program.resources.includes(:resource_type)
+      # logger.debug("------------ program #{@program.id} has #{pr.count} resources")
+      pr.each { |r|
+        unless r
+          logger.error("nil resource for program #{@program.id} with #{pr.count} resources")
+          next
+        end
+        @resources[r.resource_type.name] << r if r.resource_type
+      }
+    end
     # logger.debug("resources #{@resources}")
   end
 
