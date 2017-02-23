@@ -13,7 +13,7 @@ function doStarRating() {
   user           = dataset.userid
   program        = dataset.programid;
   old_rating     = dataset.rating;
-  console.log("doStarRating, user = " + user + ", old_rating = " + old_rating);
+  console.log("doStarRating: user = " + user + ", old_rating = " + old_rating);
 
   $("#my-rating").starRating({
     initialRating: old_rating,
