@@ -8,7 +8,7 @@
 // compiled file. JavaScript code in this file should be added after the last require_* statement.
 //
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
-// about supported directives. foo.
+// about supported directives. foo. bar.
 // require_tree dot
 //
 //= require jquery
