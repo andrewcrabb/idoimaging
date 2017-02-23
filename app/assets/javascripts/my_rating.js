@@ -20,7 +20,7 @@ function doStarRating() {
     starSize: 20,
     callback: function(currentRating, $el){
       $('#my-rating').starRating('setReadOnly', false);
-      console.log("callback: program " + program + ", user " + user + ", rating " + currentRating);
+      // console.log("callback: program " + program + ", user " + user + ", rating " + currentRating);
       $.ajax({
         type: "PUT",
         url: "/programs/" + program +  "/rating",
