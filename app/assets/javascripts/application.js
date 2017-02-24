@@ -20,6 +20,7 @@
 //= require bootstrap
 
 //= require my_rating
+//= require my_slick
 //= require my_google_analytics
 //= require my_searchform
 //= require fontawesome

@@ -209,20 +209,13 @@ module ProgramsHelper
   end
 
   def program_image_slider(program)
-    # divs = program.images.map do |i|
-    #   content_tag(:div) do
-    #     img = image_tag( i.image.px350.url, alt: "Program #{program.id} image")
-    #     link_to(img, i.image.url)
-    #   end
-    # end
-    # content_tag(:div, raw(divs.join), class: 'slick-slider')
     divs = program.images.map do |i|
-      content_tag(:li, class: 'orbit-slide') do
-        img = image_tag( i.image.px350.url, class: 'orbit-image',  alt: "Program #{program.id} image")
+      content_tag(:div) do
+        img = image_tag( i.image.px350.url, alt: "Program #{program.id} image")
         link_to(img, i.image.url)
       end
     end
-    render partial: 'image_orbit', locals: { content: raw(divs.join) }
+    content_tag(:div, raw(divs.join), class: 'slick-slider')
   end
 
   def external_link_icon(content = '')

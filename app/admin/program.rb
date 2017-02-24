@@ -116,11 +116,11 @@ ActiveAdmin.register Program do
           row :remove_date
           row('Reads formats')  do program.read_image_formats.order(:name).map  { |f| f.name }.join(', ') end
           row('Writes formats') do program.write_image_formats.order(:name).map { |f| f.name }.join(', ') end
-        Program::RELATIONSHIPS.each do |relationship, text|
-          if program.send("#{relationship}_programs").count > 0
-            row(text) do raw program.send("#{relationship}_programs").map{ |p| link_to(p.name, admin_program_path(p)) }.join(", ") end
+          Program::RELATIONSHIPS.each do |relationship, text|
+            if program.send("#{relationship}_programs").count > 0
+              row(text) do raw program.send("#{relationship}_programs").map{ |p| link_to(p.name, admin_program_path(p)) }.join(", ") end
+            end
           end
-        end
         end
       end
 
@@ -295,12 +295,20 @@ ActiveAdmin.register Program do
 
         end
         column do
+          # if f.object.images.count > 0
           f.has_many :images, allow_destroy: true, heading: 'Images' do |i|
             # uploader = ImageUploader.new
-            i.input :image, as: :file, :hint => image_tag(i.object.image.thumb.url)
+            logger.debug("i.object.image.thumb.url is #{i.object.image.thumb.url.class}")
+            if i.object.image.thumb.url
+              i.input :image, as: :file, :hint => image_tag(i.object.image.thumb.url)
+            else
+              i.input :image, as: :file
+            end
+
             # i.input :image_type, as: :select, collection: Image::IMAGE_TYPES
             # uploader.store!(:image)
           end
+          # end
         end
       end
     end

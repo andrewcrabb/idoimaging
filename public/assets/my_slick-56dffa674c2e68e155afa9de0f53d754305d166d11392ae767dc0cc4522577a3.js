@@ -1,0 +1,1 @@
+function slick_init(){console.log("slick_init 0"),$(".slick-slider").length&&(console.log("slick_init 1"),$(".slick-slider").not(".slick-initialized").slick({infinite:!0,slidesToShow:2,slidesToScroll:1,dots:!0,arrows:!0,accessibility:!0}))}$(".slick-slider").on("click",function(){$(this).focus()}),$(document).on("turbolinks:load",slick_init());
