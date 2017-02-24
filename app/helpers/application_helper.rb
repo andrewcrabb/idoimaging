@@ -20,6 +20,7 @@ module ApplicationHelper
       open(XML_URL) do |rss|
         feed = RSS::Parser.parse(rss)
         items = feed.items
+        logger.debug("#{items.count} items in blog")
         items [0..2].each do |item|
           # logger.debug item.inspect
           content = item.content.content
