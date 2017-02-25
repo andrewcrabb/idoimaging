@@ -35,9 +35,15 @@ class ApplicationController < ActionController::Base
     redirect_to root_url, :alert => exception.message
   end
 
-def raise_not_found!
+  def raise_not_found!
     raise ActionController::RoutingError.new("No route matches #{params[:unmatched_route]}")
-end
+  end
 
+  rescue_from ActiveRecord::RecordNotFound, :with => :render_404
+  rescue_from ActionController::RoutingError, :with => :render_404
+
+  def render_404
+    render :template => "errors/404", :status => 404
+  end
 
 end
