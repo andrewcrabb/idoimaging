@@ -1,6 +1,8 @@
 module ProgramsHelper
 
   SOCIAL_ICONS = %w(fa fa-lg fa-fw social-icon)
+  IMAGE_HOST_S3  = 'idoimaging-images.s3.amazonaws.com'
+  IMAGE_HOST_CDN = 'images.idoimaging.com'
 
   def program_version_str(program)
     versions = program.versions.order("date DESC")
@@ -211,11 +213,19 @@ module ProgramsHelper
   def program_image_slider(program)
     divs = program.images.map do |i|
       content_tag(:div) do
-        img = image_tag( i.image.px350.url, alt: "Program #{program.id} image")
-        link_to(img, i.image.url)
+        img = image_tag( image_url(i, true), alt: "Program #{program.id} image")
+        link_to(img, image_url(i, false))
       end
     end
     content_tag(:div, raw(divs.join), class: 'slick-slider')
+  end
+
+  # Url for this image
+  # AWS S3 bucket url (provided by CarrierWave) translated to CloudFront url
+
+  def image_url(i, thumb = false)
+    native_url = thumb ? i.image.px350.url : i.image.url
+    native_url.gsub(IMAGE_HOST_S3, IMAGE_HOST_CDN)
   end
 
   def external_link_icon(content = '')
