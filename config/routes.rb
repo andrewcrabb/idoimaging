@@ -43,6 +43,8 @@ Rails.application.routes.draw do
   # get 'program/show'
   resources :program, only: [:index, :show]
 
+get '*unmatched_route', :to => 'application#raise_not_found!'
+
   # get 'pages/home' => 'high_voltage/pages#home', id: 'home'
   # root "pages/home", page: "home"
   # get "/pages/:page" => "pages#show"
