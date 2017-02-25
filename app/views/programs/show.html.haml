@@ -64,16 +64,3 @@
     / = ratings_table(@program)
     / .button.expanded
     = link_to("Edit this program", admin_program_path(@program))
-
-:javascript
-  $(document).ready(function(){
-      $("#show_history").click(function(){
-          $("#versions_div").toggle(250);
-          $("i", this).toggleClass("fa-angle-double-down fa-angle-double-up");
-      });
-      $("#show_programs").click(function(){
-          $("#programs_div").toggle(250);
-          $("i", this).toggleClass("fa-angle-double-down fa-angle-double-up");
-      });
-
-  });

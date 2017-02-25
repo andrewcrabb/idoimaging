@@ -27,6 +27,17 @@ body {
     color: #5b92a2;
 }
 
+// In programs/show, initially do not show the version history or other programs divs.
+
+#versions_div,#programs_div {
+      display: none;
+}
+
+#show_history,#show_programs {
+  padding-left: 10px;
+  padding-right: 5px;
+}
+
 // ------------------------------------------------------------
 // Navbar and site title
 // ------------------------------------------------------------

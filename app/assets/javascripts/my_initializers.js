@@ -21,9 +21,22 @@ $('.slick-slider').on('click', function(){
   $(this).focus();
 });
 
+
+function toggler_init() {
+  $("#show_history").click(function(){
+      $("#versions_div").toggle(250);
+      $("i", this).toggleClass("fa-angle-double-down fa-angle-double-up");
+  });
+  $("#show_programs").click(function(){
+      $("#programs_div").toggle(250);
+      $("i", this).toggleClass("fa-angle-double-down fa-angle-double-up");
+  });
+};
+
 // $(document).on('turbolinks:load', slick_init());
 
 $(document).on('turbolinks:load', function() {
-  console.log("-------- my_slick::ready() -----------")
+  console.log("-------- my_initializers::ready() -----------")
   slick_init();
+  toggler_init();
 })

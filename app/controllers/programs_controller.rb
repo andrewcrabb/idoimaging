@@ -5,7 +5,6 @@ class ProgramsController < ApplicationController
 
   def index
     qparams = params[:q]
-    logger.error("qparams: #{qparams.to_s}")
     if qparams
       @q = Program.active.imaging.ransack(qparams)
       @q.sorts = 'rating desc' if @q.sorts.empty?
