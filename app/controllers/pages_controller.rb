@@ -2,8 +2,7 @@ class PagesController < ApplicationController
 
   def home
     @programs_new_releases = Program.latest_added
-    @latest_versions = Version.latest_programs
-    logger.debug("latest_versions #{@latest_versions.pluck(:date)} ")
+    @programs_latest_versions = Version.latest_programs
     render "home"
   end
 

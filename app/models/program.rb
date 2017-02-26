@@ -14,7 +14,8 @@ class Program < ActiveRecord::Base
   has_many :users, through: :ratings
   # has_many :versions
   has_many :versions       , -> { order('date DESC') }
-  has_many :latest_versions, ->(n = 3) { latest(n) }, class_name: 'Version'
+  # has_many :latest_versions, ->(n = 3) { latest(n) }, class_name: 'Version'
+  has_many :latest_versions, -> { latest(3) }, class_name: 'Version'
   has_one  :latest_version, -> { latest(1) }, class_name: 'Version'
 
   # Functions (Feature category = 'function')
@@ -160,7 +161,6 @@ class Program < ActiveRecord::Base
 
   scope :for_audience        , ->(id) { includes(:features).where(features: {category: 'Audience', id: id}) }
   scope :latest_added        , ->(n = 10) { active.imaging.where.not(add_date: nil).order(add_date: :desc).limit(n) }
-  scope :latest_versions     , ->(n = 10) { where id: Version.where.not(date: nil).order('date DESC').first(n).pluck(:program_id) }
 
   validates :name, presence: true
 
