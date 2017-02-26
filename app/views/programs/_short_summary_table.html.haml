@@ -3,13 +3,13 @@
     %tr
       %th Name
       %th Summary
-      %th Rating
-      %th{colspan: 2}  Features
+      / %th Rating
+      %th{colspan: 2}
   %tbody
     - programs.each do |program|
       %tr
         %td= link_to(program.name, program_path(program))
         %td= program.summary
-        %td= program_rating_str(program)
-        %td.tight= platforms_str(program, false)
-        %td.tight= source_str(program)
+        / %td= program_rating_str(program)
+        / %td.tight= platforms_str(program, false)
+        / %td.tight= source_str(program)

@@ -1,0 +1,15 @@
+%table.table
+  %thead
+    %tr
+      %th Name
+      %th Summary
+      %th Version
+      %th Released
+  %tbody
+    - versions.each do |version|
+      - program = version.program
+      %tr
+        %td= link_to(program.name, program_path(program))
+        %td= program.summary
+        %td= version.version
+        %td= version.date
