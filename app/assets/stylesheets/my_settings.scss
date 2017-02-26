@@ -124,13 +124,26 @@ body {
   float: right;
 }
 
-td {
   .nowrap {
     white-space:nowrap;
   }
+
+
+  .pad10 {
+    padding-right: 10px;
+
+  }
+  .pad10:not(:first-child) {
+    padding-left: 10px;    
+  }
+
+td {
   .tight {
     padding: 8px 2px;
     border-collapse: collapse;
+  }
+  .white-space-pre {
+    white-space: pre;
   }
 }
 

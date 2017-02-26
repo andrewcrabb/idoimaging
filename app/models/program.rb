@@ -225,4 +225,12 @@ class Program < ActiveRecord::Base
     # "XXXX  latest_version_string XXXX"
   end
 
+  # Program records from the old DB have add_date; newer records have created_at
+  #
+  # @return [Date]
+
+  def added_date
+    (add_date or created_at.to_date)
+  end
+
 end

@@ -3,13 +3,18 @@
     %tr
       %th Name
       %th Summary
-      / %th Rating
-      %th{colspan: 2}
+      %th Added
+      / %th{colspan: 2}
   %tbody
     - programs.each do |program|
       %tr
         %td= link_to(program.name, program_path(program))
-        %td= program.summary
+        %td
+          = program.summary
+          %br
+          %span{class: 'pad10'}= platforms_str(program, false)
+          %span{class: 'pad10'}= program_rating_str(program)
+        %td.nowrap= program.added_date
         / %td= program_rating_str(program)
         / %td.tight= platforms_str(program, false)
         / %td.tight= source_str(program)
