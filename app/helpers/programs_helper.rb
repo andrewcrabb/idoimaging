@@ -76,7 +76,7 @@ module ProgramsHelper
       content += handle_of_social_url(resource)
     end
     url = (resource.url.match(/^http/)) ? resource.url : "http://#{resource.url}"
-    link_to(content, url, {target: 'new'})
+    link_to(content, url, {target: 'new', 'data-toggle' => "tooltip", 'data-placement' => "top", 'title' => resource.resource_type.description})
   end
 
   def handle_of_social_url(resource)
@@ -229,7 +229,7 @@ module ProgramsHelper
   end
 
   def external_link_icon(content = '')
-    raw(content_tag(:i, content, class: ["fa", "fa-external-link", "fa-lg"]))
+    raw(content_tag(:i, content, class: ["fa", "fa-external-link", "fa-lg"] ))
   end
 
   def link_to_str(url)
@@ -238,7 +238,7 @@ module ProgramsHelper
 
   def languages_str(source_url, languages)
     str = values_str(languages)
-    link_to(external_link_icon, source_url) + "(#{values_str(languages)})"
+    link_to(external_link_icon, source_url) + "  (#{values_str(languages)})"
   end
 
   def ratings_table(program)

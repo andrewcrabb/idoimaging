@@ -33,10 +33,15 @@ function toggler_init() {
   });
 };
 
+function tooltip_init() {
+  $('[data-toggle="tooltip"]').tooltip()
+}
+
 // $(document).on('turbolinks:load', slick_init());
 
 $(document).on('turbolinks:load', function() {
   console.log("-------- my_initializers::ready() -----------")
   slick_init();
   toggler_init();
+  tooltip_init();
 })

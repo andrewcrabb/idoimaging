@@ -14,6 +14,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require slick.min
+//= require tether.min
 //= require jquery.star-rating-svg
 //= require tether
 //= require turbolinks
