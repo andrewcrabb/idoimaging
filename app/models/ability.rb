@@ -42,7 +42,7 @@ class Ability
   end
 
   def admin?
-    user.role.to_s.eql? User::ADMIN
+    user.role.to_s.upcase.eql? User::ADMIN.upcase
   end
 
   # def initialize(user)

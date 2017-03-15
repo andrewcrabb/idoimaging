@@ -11,7 +11,7 @@ class UsersController < ApplicationController
       flash[:alert] = "You are not authorized to access this resource!"
       redirect_to root_path
     end
-    @foo = "bar"
+    @ratings = @user.ratings
   end
 
   private
