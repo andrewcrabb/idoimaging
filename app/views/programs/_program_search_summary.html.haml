@@ -3,10 +3,12 @@
     - nterm = @search_params.count
     - if nterm > 0
       %table.search_summary_table
-        - caption = "You searched for #{nterm} #{'term'.pluralize(nterm)}"
+        - caption = "You searched for #{nterm} #{'term'.pluralize(nterm)}  "
         %thead
           %tr
-            %th{colspan: 2} #{caption}
+            %th{colspan: 2} 
+              #{caption}
+              %button.btn.btn-primary.btn-sm#show_search_text Modify search
         %tbody
           - @search_params.each do |param|
             %tr

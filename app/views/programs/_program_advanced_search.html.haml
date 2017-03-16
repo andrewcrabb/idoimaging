@@ -49,5 +49,6 @@
       = f.select :programming_function, Feature.selector_values(Feature::PROGRAMMING), prompt: '  -  '
   .row
     .col-md-4.submit-buttons
-      = f.submit 'Search',:class => "button"
-      = f.submit "Clear", :type => "reset", class: 'button'
+      %button.btn.btn-primary{type: :submit}
+        Search
+      = f.submit "Clear", :type => "reset", class: 'button btn btn-secondary'

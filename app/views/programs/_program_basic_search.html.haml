@@ -1,20 +1,25 @@
 = search_form_for @q do |f|
   / =f.hidden_field(:for_audience, value: Feature.has_value(Feature::AUDIENCE_GENERAL_USER))
   / =f.hidden_field(Feature::SEARCH_LEVEL, value: Feature::SEARCH_LEVEL_BASIC)
+  / .row
+  /   .col-md-12
+  /     Select one or more conditions to search by, then click 'Submit'
   .row#form-text-search
     .col-md-2
-      = f.label "Function"
+      = f.label "I want to..."
       = f.select :function, Feature.basic.selector_values(Feature::FUNCTION), prompt: ' - Any - '
     .col-md-2
-      = f.label :read_format, "File format"
+      = f.label :read_format, "Using file format..."
       = f.select :read_format, ImageFormat.basic.selector_values, prompt: ' - Any - '
     .col-md-2
-      = f.label :platform, "Platform"
+      = f.label :platform, "On platform..."
       = f.select :platform, Feature.basic.selector_values(Feature::PLATFORM), prompt: ' - Any - '
     .col-md-2
       = f.label :name_cont, "Name contains"
       = f.search_field :name_cont
   .row
     .col-md-4.submit-buttons
-      = f.submit 'Search',:class => "button"
-      = f.submit "Clear", :type => "reset", class: 'button'
+      %button.btn.btn-primary{type: :submit}
+        / %span.glyphicon.glyphicon-search
+        Search
+      = f.submit "Clear", :type => "reset", class: 'button btn btn-secondary'
