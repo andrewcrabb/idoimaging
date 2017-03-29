@@ -36,6 +36,7 @@ Rails.application.routes.draw do
   get 'about' => "pages#about"
   get 'home'  => "pages#home"
   get 'search' => "programs#search"
+  get 'turku_2017' => "pages#turku_2017"
   root "pages#home"
 
   # Program controller is for backward compatibility with old site 

@@ -9,4 +9,9 @@ class PagesController < ApplicationController
   def about
     render "about"
   end
+
+  def turku_2017
+    render "pages/turku_2017/turku_2017"
+  end
+
 end

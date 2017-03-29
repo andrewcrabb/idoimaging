@@ -3,7 +3,7 @@
     - nterm = @search_params.count
     - if nterm > 0
       %table.search_summary_table
-        - caption = "You searched for #{nterm} #{'term'.pluralize(nterm)}  "
+        - caption = "You searched for #{nterm} #{'term'.pluralize(nterm)}"
         %thead
           %tr
             %th{colspan: 2} 
