@@ -6,6 +6,7 @@ class Resource < ActiveRecord::Base
   belongs_to :resource_type
   has_many   :redirects
   validates  :url, presence: true
+  validates  :resource_type, presence: true
 
   scope :blogs           , -> { includes(:resource_type).where(resource_types: {name: ResourceType::BLOG_URL}) }
   scope :count_urls      , -> { includes(:resource_type).where(resource_types: {name: ResourceType::COUNT_URL}) }
