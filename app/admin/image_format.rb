@@ -25,8 +25,10 @@ ActiveAdmin.register ImageFormat do
       row :search_level
 
       table_for image_format.resources do
-        resource_type_name = r.resource_type ? r.resource_type.name : 'Resource name missing'
-        column("Resource")         { |r| link_to(resource_type_name, r.full_url, {target: 'new'}) }
+        column("Resource")         do |r|
+          resource_type_name = r.resource_type ? r.resource_type.name : 'Resource name missing'
+          link_to(resource_type_name, r.full_url, {target: 'new'})
+        end
         column("Value", {span: 2}) { |r| r.full_url }
       end
     end
