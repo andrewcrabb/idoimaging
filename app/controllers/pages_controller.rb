@@ -10,8 +10,8 @@ class PagesController < ApplicationController
     render "about"
   end
 
-  def turku_2017
-    render "pages/turku_2017/turku_2017"
+  def turku2017
+    render "pages/turku2017/turku2017"
   end
 
 end

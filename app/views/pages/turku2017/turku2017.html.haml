@@ -1,0 +1,29 @@
+- provide(:title, "Turku 2017")
+.row
+  .col-md-12
+    %h2.text-center XIV Turku PET Symposium, 2017
+.row
+  .col-md-12.panel.panel-default
+    %h2.text-center Talks
+.row
+  .col-md-6
+    =raw render partial: 'pages/turku2017/talk_error'
+    %a.btn.btn-default{ href: "#talk_error", :"data-toggle" => "collapse"}
+      Show more
+    #talk_error.collapse
+      =raw render partial: 'pages/turku2017/talk_error_full'
+
+  .col-md-6
+    =raw render partial: 'pages/turku2017/talk_recent'
+    %a.btn.btn-default{ href: "#talk_recent", :"data-toggle" => "collapse"}
+      Show more
+    #talk_recent.collapse
+      =raw render partial: 'pages/turku2017/talk_recent_full'
+.row
+  .col-md-12.panel.panel-default
+    %h2.text-center Hands-on Imaging Workshop
+.row
+  .col-md-8
+    =raw render partial: 'pages/turku2017/workshop'
+  .col-md-4
+    Pictures of the workshop go here...

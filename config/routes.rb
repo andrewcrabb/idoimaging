@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   ActiveAdmin.routes(self)
 
   resources :authors, only: [:show] {}
-  # Come back to ImageFormat.  
+  # Come back to ImageFormat.
   #   index: Is this relevant?  Could redirect to a wiki page.
   #   show:  Redirect to a wiki page
   resources :image_formats, only: [:index, :show]
@@ -36,15 +36,16 @@ Rails.application.routes.draw do
   get 'about' => "pages#about"
   get 'home'  => "pages#home"
   get 'search' => "programs#search"
-  get 'turku_2017' => "pages#turku_2017"
+  get 'turku2017' => "pages#turku2017"
+
   root "pages#home"
 
-  # Program controller is for backward compatibility with old site 
+  # Program controller is for backward compatibility with old site
   # get 'program/index'
   # get 'program/show'
   resources :program, only: [:index, :show]
 
-get '*unmatched_route', :to => 'application#raise_not_found!'
+  get '*unmatched_route', :to => 'application#raise_not_found!'
 
   # get 'pages/home' => 'high_voltage/pages#home', id: 'home'
   # root "pages/home", page: "home"
