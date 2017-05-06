@@ -1,0 +1,1 @@
+json.array! @image_formats, partial: 'image_formats/image_format', as: :image_format

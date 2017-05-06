@@ -36,7 +36,7 @@ class Ability
 
   def standard_rights
     # can :read, [Program, Author, Resource]
-    can :read, [Program]
+    can :read, [Program, ImageFormat]
     can :show, [Author, Resource]
     can :search, :all
   end

@@ -271,7 +271,7 @@ module ProgramsHelper
     raw(
       if formats.count
         formats.map do |format|
-          link_to(format.name, image_formats_path(format.id))
+          link_to(format.name, image_format_path(format.id))
         end.join(", ")
       else
         "Nil"

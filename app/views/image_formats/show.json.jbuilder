@@ -1,0 +1,1 @@
+json.partial! "image_formats/image_format", image_format: @image_format

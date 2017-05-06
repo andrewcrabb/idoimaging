@@ -1,6 +1,7 @@
 class FeaturesController < ApplicationController
   load_and_authorize_resource
 
+
   def index
     @features = Feature.order(:name, :value)
   end

@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+<% provide(:title, "Image Formats") %>
+
+<h1>Image Formats</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @image_formats.each do |image_format| %>
+      <tr>
+        <td><%= image_format.name %></td>
+        <td><%= image_format.description %></td>
+        <td><%= link_to 'Show', image_format %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

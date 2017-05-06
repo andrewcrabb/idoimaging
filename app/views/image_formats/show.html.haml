@@ -1,0 +1,16 @@
+#notice= notice
+- provide(:title, @image_format.name)
+.row.prog-title
+  %h1= @image_format.name
+.row
+  = @image_format.description
+.row
+  .col-sm-12.col-md-6
+    %h2 Programs
+    = link_to("Programs using #{@image_format.name}", programs_path(q: {read_format: @image_format.id}))
+  - if @image_format.resources.count > 0
+    .col-sm-12.col-md-6
+      %h2 Resources
+      %ul
+      - @image_format.resources.each do |resource|
+        %li= link_to(resource.description, resource.url)
