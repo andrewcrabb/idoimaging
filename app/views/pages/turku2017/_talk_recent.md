@@ -1,3 +1,3 @@
 ## Recent developments in free medical imaging software
 
-This is the content for _Recent developments in free medical imaging software_
+In this talk we'll discuss the evolution of free and open source software applied to medical imaging, particularly PET and research applications.  Cloud computing and web services are becoming more common in server-based applications, while there is an ever-increasing number of desktop applications for local computing.  The DICOM standard is rapidly developing its DICOMweb REST API, which has quickly been adopted by several major imaging projects.  Programming languages and software distribution techniques also reflect the way in which we develop and use software in 2017.
