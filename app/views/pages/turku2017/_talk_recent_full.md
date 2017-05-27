@@ -1,11 +1,25 @@
+### Slides
+* [SlideShare](https://www.slideshare.net/AndrewCrabb4/turku2017-recentdevelopments)
+
 ### Software mentioned in the talk
 
+* [dcm4che3](https://dcm4che.atlassian.net/wiki/display/lib/) - DICOM library and utilities
+* [gdcm](https://sourceforge.net/projects/gdcm/) - DICOM library
+* [dcmtk](http://dicom.offis.de/dcmtk.php.en) - DICOM toolkit
+* [OsiriX](http://www.osirix-viewer.com) - Mac imaging workstation
+* [Horos](https://www.horosproject.org) - Clone of OsiriX
+* [89 DICOM viewers for Windows](https://idoimaging.com/programs?utf8=✓&q%5Bfunction%5D=15&q%5Bread_format%5D=3&q%5Bplatform%5D=7&q%5Bname_cont%5D=) - Knock yourself out
+* [VINCI](http://www.nf.mpg.de/vinci3/) - Advanced workstation
+* [Slicer3D](https://www.slicer.org) - Image analysis and visualisation
 * [occiput.io](http://occiput.mgh.harvard.edu) - GPU-based 2D-4D PET/SPECT reconstruction
 * [NiftyRec](http://niftyrec.scienceontheweb.net/wordpress/) - Tomography toolbox for GPU computing
+* [DCM4CHEE Archive Light](https://github.com/dcm4che/dcm4chee-arc-light/wiki) - Modern PACS server
 * [Orthanc](http://www.orthanc-server.com/static.php?page=about) - Lightweight DICOM server
 * [DWV](https://github.com/ivmartel/dwv/wiki) - Dicom Web Viewer
 * [Papaya, Daikon, Mango](http://rii.uthscsa.edu/mango/index.html) - Univ. Texas Health Science Center
 * Papaya: [Home](http://rii.uthscsa.edu/mango/papaya.html), [GitHub](http://rii-mango.github.io/Papaya/) - Univ. Texas Health Science Center
+* [Stone of Orthanc](http://www.orthanc-server.com/static.php?page=stone) - CPU-based rendering
+* [Weasis](https://dcm4che.atlassian.net/wiki/display/WEA/Home) - Java DICOM viewer
 
 ### Live demonstrations
 
@@ -18,6 +32,8 @@
 * [Osimis Web Viewer](http://osimisviewer.osimis.io/) - Embedded in Orthanc Explorer
 * [Osimis Web Viewer](http://osimisviewer.osimis.io/osimis-viewer/app/index.html?study=1b4c72ad-5aba2557-9fc396b3-323e190c-07d36585) - Standalone
 * [Papaya Research Imaging Viewer](http://rii.uthscsa.edu/mango/papaya/) - Univ. Texas Health Science Center
+* [DicomParser](https://rawgit.com/chafey/dicomParser/master/examples/index.html) - Chris Hafey
+* [Cornerstone](https://rawgit.com/chafey/cornerstone/master/example/index.html) - Chris Hafey
 
 ### Sample data for use with demos
 
