@@ -1,12 +1,17 @@
 - provide(:title, "Home")
 .row
-  .col-md-3.col-sm-12.front-sidebar
+  /.col-md-3.col-sm-12.front-sidebar
+  .col-sm-3.front-sidebar
     - if (entries = get_blog_summary).count > 0
       =render partial: 'pages/blog_summary', locals: {entries: entries}
-  .col-md-6.col-sm-12
+  / .col-md-6.col-sm-12
+  .col-sm-6
     / Render .md page directly
     =raw render partial: 'pages/welcome'
-  .col-md-3.col-sm-12
+    %a.btn.btn-secondary.info-button.centered{ href: "/programs" }
+      Search for Programs
+  / .col-md-3.col-sm-12
+  .col-sm-3
     =render partial: 'adsense'
 .row
   .col-sm-6

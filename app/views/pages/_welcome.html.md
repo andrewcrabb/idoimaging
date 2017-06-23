@@ -5,4 +5,3 @@ I Do Imaging is the place to find free and open source medical imaging software.
 Select [Programs](https://idoimaging.com/programs) from the menu above to search for software.
 
 This is version 2 of the site.  After 15 years, the old site has been completely rewritten in Rails (read about the rewrite in the [blog post](https://blog.idoimaging.com/2017/01/18/the-i-do-imaging-technology-stack-2017.html)).  Not all functionality and features are yet present, but all new content is added to this site, which is also much faster than before.
-

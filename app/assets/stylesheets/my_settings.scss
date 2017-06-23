@@ -172,10 +172,6 @@ td {
 
 .prog-sidebar {
   float: right;
-  // background-color: #FFE5FF;
-  // background-color: #FFECE5;
-  // background-color: #D3DFE8;
-  // background-color: #f9f9e5;
   border: 1px solid gray;
   border-radius: 8px;
   padding: 8px;
@@ -186,6 +182,12 @@ td {
     text-align: center;
     margin-top: 0;
   }
+}
+
+.info-button {
+  background-color: $idi-bg-1;
+  color: #fff;
+  text-transform: uppercase;
 }
 
 // ------------------------------------------------------------
