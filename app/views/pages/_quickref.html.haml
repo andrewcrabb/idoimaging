@@ -1,0 +1,22 @@
+.foo
+  .h3 Quick Links
+  Select one of these pre-configured searches for quick access to matching programs.
+  %table.table
+    %thead
+    %tbody
+      %tr
+        %td View DICOM images
+        %td= link_to("Windows", programs_path({q: {platform: 6, read_format: 3}}))
+        %td Mac
+        %td Linux
+      %tr
+        %td Convert DICOM images
+        %td Windows
+        %td Mac
+        %td Linux
+      %tr
+        %td Anonymize DICOM images
+        %td Windows
+        %td Mac
+        %td Linux
+

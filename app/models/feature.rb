@@ -23,6 +23,7 @@ class Feature < ActiveRecord::Base
   OTHER        ||= 'Other'
   PLATFORM     ||= 'Platform'
   SPECIALITY   ||= 'Speciality'
+  ANALYSIS     ||= 'Analysis'
 
   AUDIENCE_ADVANCED_USER ||= 'Advanced user'
   AUDIENCE_GENERAL_USER  ||= 'General user'
@@ -47,14 +48,15 @@ class Feature < ActiveRecord::Base
   scope :network_functions     , -> { where(category: NETWORK    ).order(:value)}
   scope :programming_functions , -> { where(category: PROGRAMMING).order(:value)}
 
-  scope :audience_features    , -> { where(category: AUDIENCE         ).order(:value)}
-  scope :distributions        , -> { where(category: DISTRIBUTION     ).order(:value)}
-  scope :interfaces           , -> { where(category: INTERFACE        ).order(:value)}
-  scope :languages            , -> { where(category: LANGUAGE         ).order(:value)}
-  scope :other_features       , -> { where(category: OTHER            ).order(:value)}
-  scope :platforms            , -> { where(category: PLATFORM         ).order(:value)}
-  scope :specialities         , -> { where(category: SPECIALITY       ).order(:value)}
-  scope :audiences            , -> { where(category: AUDIENCE         ).order(:value)}
+  scope :audience_features    , -> { where(category: AUDIENCE    ).order(:value)}
+  scope :distributions        , -> { where(category: DISTRIBUTION).order(:value)}
+  scope :interfaces           , -> { where(category: INTERFACE   ).order(:value)}
+  scope :languages            , -> { where(category: LANGUAGE    ).order(:value)}
+  scope :other_features       , -> { where(category: OTHER       ).order(:value)}
+  scope :platforms            , -> { where(category: PLATFORM    ).order(:value)}
+  scope :specialities         , -> { where(category: SPECIALITY  ).order(:value)}
+  scope :audiences            , -> { where(category: AUDIENCE    ).order(:value)}
+  scope :analyses             , -> { where(category: ANALYSIS    ).order(:value)}
 
   scope :platform, ->(id) { where(id: id)}
   scope :interface, ->(id) { where(id: id)}

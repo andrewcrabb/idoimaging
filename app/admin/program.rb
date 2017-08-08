@@ -69,6 +69,7 @@ ActiveAdmin.register Program do
   filter :interfaces           , collection: Feature.selector_values(Feature::INTERFACE)
   filter :distributions        , collection: Feature.selector_values(Feature::DISTRIBUTION)
   filter :other_functions      , collection: Feature.selector_values(Feature::OTHER)
+  filter :analysis_functions   , collection: Feature.selector_values(Feature::ANALYSIS)
   # This was not working without 'as: :select'  http://bit.ly/2houM2j
   filter :appearance_rating_rating, as: :select, collection: (0..5), label: 'Appearance rating'
   filter :breadth_rating_rating   , as: :select, collection: (0..5), label: 'Breadth rating'
@@ -224,14 +225,14 @@ ActiveAdmin.register Program do
           feature_selector(f, Feature::DISPLAY)
           feature_selector(f, Feature::HEADER)
           feature_selector(f, Feature::NETWORK)
-          feature_selector(f, Feature::OTHER)
           feature_selector(f, Feature::PROGRAMMING)
-
+          feature_selector(f, Feature::ANALYSIS)
         end
         column do
           feature_selector(f, Feature::DISTRIBUTION)
           feature_selector(f, Feature::SPECIALITY)
           feature_selector(f, Feature::AUDIENCE)
+          feature_selector(f, Feature::OTHER)
         end
         column do
           image_formats = ImageFormat.order(:name).map { |i| [i.name, i.id] }
