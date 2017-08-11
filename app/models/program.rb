@@ -1,4 +1,25 @@
 class Program < ActiveRecord::Base
+  include PgSearch
+  pg_search_scope :search_for,
+    against: {name: 'A', summary: 'B', description: 'C'},
+  using: {
+    tsearch: {
+      dictionary: "english",
+                            highlight: {
+                        StartSel: '<start>',
+                        StopSel: '<stop>',
+                        MaxWords: 123,
+                        MinWords: 456,
+                        ShortWord: 4,
+                        HighlightAll: true,
+                        MaxFragments: 3,
+                        FragmentDelimiter: '&hellip;'
+                      },
+
+    }
+  }
+
+
   require_relative './feature'
 
   has_many :author_programs, dependent: :destroy

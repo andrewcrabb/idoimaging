@@ -44,7 +44,9 @@ gem 'sprockets'
 gem 'devise'
 gem 'cancancan', '~> 1.10'
 gem 'kaminari'
+# ---------------------------  Temp due to error messages after upgrade  --------------------------------------
 gem 'activeadmin', github: 'activeadmin'
+# ---------------------------  Temp  --------------------------------------
 gem 'country_select'
 gem 'letter_opener', :group => :development
 gem 'carrierwave', '>= 1.0.0.rc', '< 2.0'
@@ -55,7 +57,11 @@ gem 'compass-rails'
 gem 'simple_form'
 # Won't install.
 # gem 'quiet_assets', group: :development
+
+
 gem 'haml'
+
+
 gem 'haml-rails'
 gem 'select2-rails'
   # Gives infinite loop
@@ -77,6 +83,7 @@ gem 'devise-bootstrap-views'
 gem "recaptcha", require: "recaptcha/rails"
 gem "figaro"
 gem 'rack-cors', :require => 'rack/cors'
+gem 'pg_search'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

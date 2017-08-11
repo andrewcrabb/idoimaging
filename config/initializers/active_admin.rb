@@ -203,7 +203,8 @@ ActiveAdmin.setup do |config|
   #   config.register_javascript 'my_javascript.js'
   # ahc
   # This does work, but I'm not currently using javascript in activeadmin.
-  config.register_javascript 'ahc_admin.js'
+# 8/11/17 this was causing a problem.  Is it deprecated?
+#  config.register_javascript 'ahc_admin.js'
 
   # == CSV options
   #
