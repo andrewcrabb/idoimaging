@@ -1,9 +1,6 @@
 - provide(:title, "Home")
 .row
-  .col-sm-3.front-sidebar
-    - if (entries = get_blog_summary).count > 0
-      =render partial: 'pages/blog_summary', locals: {entries: entries}
-  .col-sm-6
+  .col-sm-9
     / Render .md page directly
     =raw render partial: 'pages/welcome'
     %a.btn.btn-secondary.info-button.centered{ href: "/programs" }
@@ -20,3 +17,7 @@
     .new-program-versions
       %h2 New version releases
       =render partial: 'programs/short_version_summary', locals: {versions: @programs_latest_versions}
+.row
+  .col-sm-6.front-sidebar
+    - if (entries = get_blog_summary).count > 0
+      =render partial: 'pages/blog_summary', locals: {entries: entries}

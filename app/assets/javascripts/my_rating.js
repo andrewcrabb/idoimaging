@@ -32,6 +32,6 @@ function doStarRating() {
 };
 
 $(document).on('turbolinks:load', function() {
-  console.log("-------- my_rating::ready() -----------")
+  // console.log("-------- my_rating::ready() -----------")
   doStarRating();
 });

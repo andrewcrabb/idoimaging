@@ -16,6 +16,7 @@
 //= require slick.min
 //= require tether.min
 //= require jquery.star-rating-svg
+//= require simpler-navbar-search
 //= require tether
 //= require turbolinks
 //= require bootstrap

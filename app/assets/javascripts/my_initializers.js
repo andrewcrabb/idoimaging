@@ -2,9 +2,9 @@
 
 // $(document).ready(function(){
 function slick_init() {
-  console.log("slick_init 0")
+  // console.log("slick_init 0")
   // if ($('.slick-slider').length ) {
-    console.log("slick_init 1")
+    // console.log("slick_init 1")
     // $('.slick-slider').not('.slick-initialized').slick({
     $('.slick-slider').slick({
       infinite: true,
@@ -40,7 +40,7 @@ function tooltip_init() {
 // $(document).on('turbolinks:load', slick_init());
 
 $(document).on('turbolinks:load', function() {
-  console.log("-------- my_initializers::ready() -----------")
+  // console.log("-------- my_initializers::ready() -----------")
   slick_init();
   toggler_init();
   tooltip_init();
