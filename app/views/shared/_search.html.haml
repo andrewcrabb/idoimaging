@@ -1,0 +1,7 @@
+.navbar-form{ role: "search", action: "/programs" }
+  =form_for(:program, url: programs_path, method: :get) do |f|
+    .input-group
+      =f.text_field(id: "searchtext", class: "form-control", placeholder: "Search me...")
+      %span.input-group-btn
+        %button.btn.btn-default{type: "submit"}
+          %span.fa.fa-search.fa-lg

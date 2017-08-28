@@ -23,7 +23,8 @@
           =link_to("About", about_path, class: 'nav-link')
       %ul.navbar-nav.navbar-right
         %li
-          = render 'shared/navbar_search'
+          / = render 'shared/navbar_search'
+          = render 'shared/search'
         %li
         - if signed_in?
           %li= link_to current_user.email.gsub(/@.+/, ''), current_user

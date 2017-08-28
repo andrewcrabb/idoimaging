@@ -161,6 +161,7 @@ class ProgramsController < ApplicationController
 
   def program_params
     # logger.debug("program params: #{params['program']}")
+    logger.debug("program params: #{params}")
     params.require(:program).permit(:id, :name, :summary, :description, :kind, :add_date, :remove_date, read_format_ids: [], write_format_ids: [], overall_rating_ids: [])
   end
 
