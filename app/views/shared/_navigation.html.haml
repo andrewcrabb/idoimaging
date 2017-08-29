@@ -24,7 +24,7 @@
       %ul.navbar-nav.navbar-right
         %li
           / = render 'shared/navbar_search'
-          = render 'shared/search'
+          = render 'shared/search' if Rails.env.eql?("development")
         %li
         - if signed_in?
           %li= link_to current_user.email.gsub(/@.+/, ''), current_user

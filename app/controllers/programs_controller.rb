@@ -139,7 +139,7 @@ class ProgramsController < ApplicationController
   def fulltext
     search_param = params['Program'][:fulltext]
     logger.error("******************************** fulltext #{search_param}")
-    @programs = Program.search_for(search_param)
+    @programs = Program.search_for(search_param).page(params[:page]).per(10)
   end
 
   def rating

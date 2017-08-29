@@ -18,3 +18,9 @@
               %td= program_rating_str(program)
               %td.tight= platforms_str(program, false)
               %td.tight= source_str(program)
+  .row
+    .col-sm-6.col-sm-offset-3.pagin
+      .pagin-info
+        = page_entries_info @programs
+      .pagin-list
+        = paginate @programs
