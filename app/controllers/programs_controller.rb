@@ -137,9 +137,13 @@ class ProgramsController < ApplicationController
   end
 
   def fulltext
-    search_param = params['Program'][:fulltext]
-    logger.error("******************************** fulltext #{search_param}")
-    @programs = Program.search_for(search_param).page(params[:page]).per(10)
+    @search_param = params['Program'][:fulltext]
+    redirect_to :back unless @search_param.length > 0
+      # render :nothing => true
+
+    @programs = Program.search_for(@search_param).page(params[:page]).per(10)
+    # .with_pg_search_highlight
+    # 
   end
 
   def rating

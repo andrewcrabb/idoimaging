@@ -4,18 +4,17 @@ class Program < ActiveRecord::Base
     against: {name: 'A', summary: 'B', description: 'C'},
   using: {
     tsearch: {
+      highlight: {
+        StartSel: '<span class="fulltext_highlight">',
+        StopSel: '</span>',
+        MaxWords: 15,
+        MinWords: 4,
+        ShortWord: 3,
+        HighlightAll: false,
+        MaxFragments: 3,
+        FragmentDelimiter: '&nbsp;&hellip;&nbsp;'
+      },
       dictionary: "english",
-                            highlight: {
-                        # StartSel: '<start>',
-                        # StopSel: '<stop>',
-                        MaxWords: 20,
-                        MinWords: 4,
-                        ShortWord: 3,
-                        HighlightAll: true,
-                        MaxFragments: 3,
-                        FragmentDelimiter: '&hellip;'
-                      },
-
     }
   }
 

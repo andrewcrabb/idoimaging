@@ -233,13 +233,26 @@ td {
   margin-top: 10px;
 }
 
+// Default Bootstrap pagination padding is 6px 12px - too big.
+
+.pagination li > a {
+  padding: 4px 8px;
+}
+
 // .pagin-list {
 //   ul > li.current {
 //   background-color: #aaf;
 //   }
 // }
 
+// -------------------------------------------------------
+// PGsearch
+// -------------------------------------------------------
 
+.fulltext_highlight {
+  background-color: #f7fa2f;
+  border-radius: 3px;
+}
 
 // ------------------------------------------------------------
 // Blog summary in page/home
