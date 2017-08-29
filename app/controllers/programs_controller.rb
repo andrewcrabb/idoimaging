@@ -136,6 +136,12 @@ class ProgramsController < ApplicationController
     @q = Program.ransack(params[:q])
   end
 
+  def fulltext
+    search_param = params['Program'][:fulltext]
+    logger.error("******************************** fulltext #{search_param}")
+    @programs = Program.search_for(search_param)
+  end
+
   def rating
     logger.debug("#{params}")
     rating = @program.ratings.find_by(user_id: params["user"])
@@ -162,7 +168,7 @@ class ProgramsController < ApplicationController
   def program_params
     # logger.debug("program params: #{params['program']}")
     logger.debug("program params: #{params}")
-    params.require(:program).permit(:id, :name, :summary, :description, :kind, :add_date, :remove_date, read_format_ids: [], write_format_ids: [], overall_rating_ids: [])
+    params.require(:program).permit(:id, :name, :summary, :description, :kind, :add_date, :remove_date, :fulltext, read_format_ids: [], write_format_ids: [], overall_rating_ids: [])
   end
 
 end

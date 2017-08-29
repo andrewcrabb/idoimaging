@@ -21,7 +21,6 @@ class UsersController < ApplicationController
     @user = users.first if users.count > 0
   end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
   def user_params
     params.require(:user).permit([:email, :role])
   end

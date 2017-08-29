@@ -6,11 +6,11 @@ class Program < ActiveRecord::Base
     tsearch: {
       dictionary: "english",
                             highlight: {
-                        StartSel: '<start>',
-                        StopSel: '<stop>',
-                        MaxWords: 123,
-                        MinWords: 456,
-                        ShortWord: 4,
+                        # StartSel: '<start>',
+                        # StopSel: '<stop>',
+                        MaxWords: 20,
+                        MinWords: 4,
+                        ShortWord: 3,
                         HighlightAll: true,
                         MaxFragments: 3,
                         FragmentDelimiter: '&hellip;'

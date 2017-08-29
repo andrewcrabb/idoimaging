@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   resources :programs, only: [:index, :show] do
     collection do
       get "search"
+      get "fulltext"
     end
   end
   put 'programs/:id/rating' => 'programs#rating', as: :rating

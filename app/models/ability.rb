@@ -39,6 +39,7 @@ class Ability
     can :read, [Program, ImageFormat]
     can :show, [Author, Resource]
     can :search, :all
+    can :fulltext, :all
   end
 
   def admin?
