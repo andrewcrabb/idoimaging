@@ -307,6 +307,11 @@ module ProgramsHelper
     )
   end
 
+  def programs_search_link(platform, format, function)
+    query = {platform: platform.id, read_format: format, function: function}
+    return link_to(platform.value, programs_path({q: query}))
+  end
+
   def features_string(program)
     raw (platforms_str(program.platforms, false) + source_str(program))
   end

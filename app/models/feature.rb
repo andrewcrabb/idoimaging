@@ -5,7 +5,7 @@ class Feature < ActiveRecord::Base
 
   # Categories of Feature instances
 
-  FUNCTION            ||= 'Function'
+  FUNCTION    ||= 'Function'
   CONVERSION  ||= 'Conversion'
   DISPLAY     ||= 'Display'
   HEADER      ||= 'Header'
@@ -25,16 +25,22 @@ class Feature < ActiveRecord::Base
   SPECIALITY   ||= 'Speciality'
   ANALYSIS     ||= 'Analysis'
 
+  # Database key values
+
   AUDIENCE_ADVANCED_USER ||= 'Advanced user'
   AUDIENCE_GENERAL_USER  ||= 'General user'
   AUDIENCE_PROGRAMMER    ||= 'Programmer'
+
+  PLATFORM_WINDOWS       ||= 'Windows'
+  PLATFORM_LINUX         ||= 'Linux'
+  PLATFORM_MAC           ||= 'Mac'
 
   # Search levels: Which Features to include at Basic or Advanced search levels
   FOR_AUDIENCE          ||= 'for_audience'
   SEARCH_LEVEL          ||= 'search_level'
   SEARCH_LEVEL_BASIC    ||= 'basic'
   SEARCH_LEVEL_ADVANCED ||= 'advanced'
-  SEARCH_LEVELS ||= [SEARCH_LEVEL_BASIC, SEARCH_LEVEL_ADVANCED]
+  SEARCH_LEVELS         ||= [SEARCH_LEVEL_BASIC, SEARCH_LEVEL_ADVANCED]
 
   scope :basic   , -> { where search_level: SEARCH_LEVEL_BASIC }
   scope :advanced, -> { where search_level: SEARCH_LEVEL_ADVANCED }
@@ -58,8 +64,8 @@ class Feature < ActiveRecord::Base
   scope :audiences            , -> { where(category: AUDIENCE    ).order(:value)}
   scope :analyses             , -> { where(category: ANALYSIS    ).order(:value)}
 
-  scope :platform, ->(id) { where(id: id)}
-  scope :interface, ->(id) { where(id: id)}
+  scope :platform             , ->(id) { where(id: id)}
+  scope :interface            , ->(id) { where(id: id)}
 
   def self.categories
     pluck(:category).uniq.sort

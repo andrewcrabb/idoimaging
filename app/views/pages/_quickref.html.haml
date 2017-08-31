@@ -1,22 +1,27 @@
-.foo
-  .h3 Quick Links
-  Select one of these pre-configured searches for quick access to matching programs.
-  %table.table
-    %thead
-    %tbody
-      %tr
-        %td View DICOM images
-        %td= link_to("Windows", programs_path({q: {platform: 6, read_format: 3}}))
-        %td Mac
-        %td Linux
-      %tr
-        %td Convert DICOM images
-        %td Windows
-        %td Mac
-        %td Linux
-      %tr
-        %td Anonymize DICOM images
-        %td Windows
-        %td Mac
-        %td Linux
+Select one of these pre-configured searches for quick access to matching programs.
+- plat_win = feature_query(Feature::PLATFORM, Feature::PLATFORM_WINDOWS, true)
+- plat_lin = feature_query(Feature::PLATFORM, Feature::PLATFORM_LINUX, true)
+- plat_mac = feature_query(Feature::PLATFORM, Feature::PLATFORM_MAC, true)
+- form_dic = ImageFormat.where(name: 'DICOM').first.id
+- func_dis = Feature.functions.where(value: 'Display').first.id
+- func_con = Feature.functions.where(value: 'Convert').first.id
+- func_ano = Feature.header_functions.where(value: 'Anonymize').first.id
+%table.table
+  %thead
+  %tbody
+    %tr
+      %td View DICOM images
+      %td= programs_search_link(plat_win, form_dic, func_dis)
+      %td= programs_search_link(plat_mac, form_dic, func_dis)
+      %td= programs_search_link(plat_lin, form_dic, func_dis)
+    %tr
+      %td Convert DICOM images
+      %td= programs_search_link(plat_win, form_dic, func_con)
+      %td= programs_search_link(plat_mac, form_dic, func_con)
+      %td= programs_search_link(plat_lin, form_dic, func_con)
+    %tr
+      %td Anonymize DICOM images
+      %td= programs_search_link(plat_win, form_dic, func_ano)
+      %td= programs_search_link(plat_mac, form_dic, func_ano)
+      %td= programs_search_link(plat_lin, form_dic, func_ano)
 
