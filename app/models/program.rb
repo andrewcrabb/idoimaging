@@ -32,11 +32,9 @@ class Program < ActiveRecord::Base
   has_many :images, as: :imageable, dependent: :destroy
   has_many :ratings, dependent: :destroy
   has_many :users, through: :ratings
-  # has_many :versions
   has_many :versions       , -> { order('date DESC') }
-  # has_many :latest_versions, ->(n = 3) { latest(n) }, class_name: 'Version'
   has_many :latest_versions, -> { latest(3) }, class_name: 'Version'
-  has_one  :latest_version, -> { latest(1) }, class_name: 'Version'
+  has_one  :latest_version , -> { latest(1) }, class_name: 'Version'
 
   # Functions (Feature category = 'function')
   has_many :other_functions      , -> { other_functions       }, through: :program_features, source: :feature

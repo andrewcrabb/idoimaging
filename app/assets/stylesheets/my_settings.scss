@@ -71,6 +71,12 @@ body {
       padding: 0.3rem 1rem 0.3rem 1rem;
     }
   }
+
+
+}
+
+.navbar-nav {
+  padding-left: 20px;
 }
 
 .navbar-nav > li > a, .navbar-brand {
@@ -83,7 +89,14 @@ body {
   background-color: $idi-bg-1;
   text-shadow: none;
   .main_title {
+   // position: absolute;
+   // top: 15px;
+   // text-align: center;
+   // width: 100%;
+    position: relative;
     text-align: center;
+    // margin-right: auto;
+    // margin-left: auto;
     font-family: 'Fjalla One', sans-serif;
     font-size: 3.6rem;
     color: #fff;
@@ -111,7 +124,19 @@ body {
     position: relative;
     top: -8px;
   }
+.main_search {
+  position: absolute;
+  right: 20px;
 }
+
+}
+
+#my-search-box {
+  background-color: red;
+  width: 100px;
+  float: right;
+}
+
 
 // ------------------------------------------------------------
 // Devise forms
@@ -250,8 +275,14 @@ td {
 // -------------------------------------------------------
 
 .fulltext_highlight {
-  background-color: #f7fa2f;
+  background-color: #e9f0f0;
+  // color: #006c72;
   border-radius: 3px;
+  padding: 2px;
+}
+
+.fulltext_progname {
+  font-weight: bold;
 }
 
 // ------------------------------------------------------------

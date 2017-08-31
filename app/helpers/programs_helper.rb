@@ -228,6 +228,34 @@ module ProgramsHelper
     native_url.gsub(IMAGE_HOST_S3, IMAGE_HOST_CDN)
   end
 
+  # Handle fulltext search for image format
+
+  def fulltext_image_format(search_str)
+    image_formats = ImageFormat.where("lower(name) = ?", search_str.downcase)
+    ret = ''
+    if image_formats.count == 1
+      image_format = image_formats.first
+      ret  = ", which is an image format.<br />\n"
+      ret += "You'll get better results by searching by the input file format: "
+      ret += link_to("Search for #{image_format.name}", programs_path(q: {read_format: image_format.id}))
+    end
+    return raw ret
+  end
+
+  # Handle fulltext search for feature
+
+  def fulltext_feature(search_str)
+    features = Feature.where("lower(value) = ?", search_str.downcase)
+    ret = ''
+    if features.count == 1
+      feature = features.first
+      ret  = ", which is a feature.<br />\n"
+      ret += "You'll get better results by searching by the features: "
+      ret += link_to("Search for #{feature.value}", programs_path(q: {read_format: 6}))
+    end
+    return raw ret
+  end
+
   def external_link_icon(content = '')
     raw(content_tag(:i, content, class: ["fa", "fa-external-link", "fa-lg"] ))
   end

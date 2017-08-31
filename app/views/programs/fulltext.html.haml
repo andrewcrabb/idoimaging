@@ -1,43 +1,29 @@
 .notice= notice
 - provide(:title, "Full Text Search")
 - if @programs and @programs.count > 0
-  - image_formats = ImageFormat.where("lower(name) = ?", @search_param.downcase)
   .row
     .col-sm-12
       You searched for the string
       %span.fulltext_highlight #{@search_param}
+      = fulltext_image_format(@search_param)
+      = fulltext_feature(@search_param)
 
-      - if image_formats.count == 1
-        - image_format = image_formats.first
-        , which is an image format.<br />You'll get better results by searching by input file format: 
-        = link_to("Search for #{image_format.name}", programs_path(q: {read_format: image_format.id}))
   .row
     .col-sm-12.programs-table
       %table.table.table-hover
         %thead
-          %tr
-            %th Search String
-            / %th Name
-            / %th Summary
-            / %th Rating
-            / %th{colspan: 2}  Features
         %tbody
           - @programs.with_pg_search_highlight.each do |program|
             %tr
               %td
-                =link_to(program.name, program_path(program))
+                %span.fulltext_progname=link_to(program.name, program_path(program))
                 = program.pg_search_highlight.html_safe
-              / %td= link_to(program.name, program_path(program))
-              / %td= program.summary
-              / %td= program_rating_str(program)
-              / %td.tight= platforms_str(program, false)
-              / %td.tight= source_str(program)
-  / .row
-  /   .col-sm-6.col-sm-offset-3.pagin
-  /     .pagin-info
-  /       = page_entries_info @programs
-  /     .pagin-list
-  /       = paginate @programs
+  .row
+    .col-sm-6.col-sm-offset-3.pagin
+      .pagin-info
+        = page_entries_info @programs
+      .pagin-list
+        = paginate @programs
 - else
   Nothing matches: 
   %span.fulltext_highlight #{@search_param}

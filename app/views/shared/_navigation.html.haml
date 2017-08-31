@@ -1,4 +1,6 @@
 .site_title
+  .main_search
+    = render 'shared/search' if Rails.env.eql?("development")
   .main_title
     = link_to("I Do Imaging", root_path)
   .sub_title
@@ -22,9 +24,13 @@
         %li.nav-item
           =link_to("About", about_path, class: 'nav-link')
       %ul.navbar-nav.navbar-right
-        %li
-          / = render 'shared/navbar_search'
-          = render 'shared/search' if Rails.env.eql?("development")
+        / %li
+        /   -# =render 'shared/search'
+        /   .input-group
+        /     %input.form-control#my-search-box{type: "text", placeholder: "Search for..."}
+        /     %span.input-group-btn
+        /       %button.btn.btn-default{type: "button"}
+        /         Go!
         %li
         - if signed_in?
           %li= link_to current_user.email.gsub(/@.+/, ''), current_user
