@@ -106,6 +106,7 @@ group :development do
   gem 'capistrano-passenger'
   gem 'mysql2'  # ActiveAdmin dependency.  NO WAY AM I INSTALLING THIS IN PRODUCTON.
   gem "better_errors"
+  gem 'passenger'
 
 end
 
