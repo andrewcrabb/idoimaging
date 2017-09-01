@@ -8,6 +8,7 @@ just-for-testing {
 
 $idi-bg-0: #5b92a2;
 $idi-bg-1: #007e84;
+$fulltext_highlight: #e9f0f0;
 
 body {
   font-family: 'Open Sans', sans-serif;
@@ -124,10 +125,16 @@ body {
     position: relative;
     top: -8px;
   }
-.main_search {
-  position: absolute;
-  right: 20px;
-}
+
+  .navbar-form {
+    position: relative;
+    bottom: 15px;
+  }
+
+  #searchtext {
+        background-color: $fulltext_highlight;
+      }
+
 
 }
 
@@ -276,7 +283,7 @@ td {
 // -------------------------------------------------------
 
 .fulltext_highlight {
-  background-color: #e9f0f0;
+  background-color: $fulltext_highlight;
   // color: #006c72;
   border-radius: 3px;
   padding: 2px;
