@@ -3,6 +3,8 @@
   .content
     .col-sm-8
       =raw render partial: "pages/about_main"
+      - if (entries = get_blog_summary).count > 0
+        =render partial: 'pages/blog_summary', locals: {entries: entries}
     .col-sm-4
       =render partial: "pages/about_sidebar"
       .home_twitter
