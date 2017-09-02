@@ -52,12 +52,19 @@ body {
 // Navbar and site title
 // ------------------------------------------------------------
 
+#imred {
+  background-color: red;
+}
+
+
 .navbar {
+  border-radius: 0px;
+  border: 0px !important;
   background-color: $idi-bg-1;
   margin-bottom: 0;
-  height: 30px;
+  min-height: 34px !important;
   a {
-    color: white;
+    color: white !important;
     text-shadow: none;
     text-align: bottom;
     &:hover {
@@ -70,21 +77,27 @@ body {
     text-transform: uppercase;
     a {
       padding: 0.3rem 1rem 0.3rem 1rem;
+      color: red;
     }
   }
+}
 
-
+.navbar-form {
+  margin: 0px;
 }
 
 .navbar-nav {
-  padding-left: 20px;
+  padding-left: 0px;
+  // background-color: blue;
+  // height: 30px;
 }
 
 .navbar-nav > li > a, .navbar-brand {
-  padding-top:5px !important; padding-bottom:5 !important;
-  height: 30px;
+  padding-top:5px !important; 
+  padding-bottom:5 !important;
+  // height: 30px;
 }
-.navbar {min-height:30px !important;}
+// .navbar {min-height:30px !important;}
 
 .site_title {
   background-color: $idi-bg-1;
@@ -130,13 +143,16 @@ body {
     position: relative;
     bottom: 15px;
   }
+}
 
   #searchtext {
   background-color: $fulltext_highlight;
+// background-color: yellow;
+  padding: 3px 8px 3px 8px;
+  margin-bottom: 4px;
+  // position: relative;
+  // top: -10px;
       }
-
-
-}
 
 #my-search-box {
   background-color: red;
