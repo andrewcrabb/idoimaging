@@ -308,8 +308,15 @@ module ProgramsHelper
   end
 
   def programs_search_link(platform, format, function)
-    query = {platform: platform.id, read_format: format, function: function}
-    return link_to(platform.value, programs_path({q: query}))
+    ret = 'XXX'
+    logger.error("No platform") unless platform
+    logger.error("No format") unless format
+    logger.error("No function") unless function
+    if (platform and format and function)
+      query = {platform: platform.id, read_format: format, function: function}
+      ret = link_to(platform.value, programs_path({q: query}))
+    end
+    return ret
   end
 
   def features_string(program)

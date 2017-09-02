@@ -2,10 +2,10 @@ Select one of these pre-configured searches for quick access to matching program
 - plat_win = feature_query(Feature::PLATFORM, Feature::PLATFORM_WINDOWS, true)
 - plat_lin = feature_query(Feature::PLATFORM, Feature::PLATFORM_LINUX, true)
 - plat_mac = feature_query(Feature::PLATFORM, Feature::PLATFORM_MAC, true)
-- form_dic = ImageFormat.where(name: 'DICOM').first.id
-- func_dis = Feature.functions.where(value: 'Display').first.id
-- func_con = Feature.functions.where(value: 'Convert').first.id
-- func_ano = Feature.header_functions.where(value: 'Anonymize').first.id
+- form_dic = image_format_query(Feature::IMAGEFORMAT_DICOM)
+- func_dis = feature_query(Feature::FUNCTION, Feature::FUNCTION_DISPLAY, true)
+- func_con = feature_query(Feature::FUNCTION, Feature::FUNCTION_CONVERT, true)
+- func_ano = feature_query(Feature::FUNCTION, Feature::FUNCTION_ANONYMIZE, true)
 %table.table
   %thead
   %tbody

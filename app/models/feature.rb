@@ -35,6 +35,12 @@ class Feature < ActiveRecord::Base
   PLATFORM_LINUX         ||= 'Linux'
   PLATFORM_MAC           ||= 'Mac'
 
+  FUNCTION_DISPLAY       ||= 'Display'
+  FUNCTION_CONVERT       ||= 'Convert'
+  FUNCTION_ANONYMIZE     ||= 'Anonymize'
+
+  IMAGEFORMAT_DICOM      ||= 'DICOM'
+
   # Search levels: Which Features to include at Basic or Advanced search levels
   FOR_AUDIENCE          ||= 'for_audience'
   SEARCH_LEVEL          ||= 'search_level'
@@ -46,7 +52,7 @@ class Feature < ActiveRecord::Base
   scope :advanced, -> { where search_level: SEARCH_LEVEL_ADVANCED }
 
   # scope :functions             , -> { where("category like '_%'").order(:category)}
-  scope :functions             , -> { where(category: FUNCTION           ).order(:category)}
+  scope :functions             , -> { where(category: FUNCTION   ).order(:category)}
   scope :other_functions       , -> { where(category: OTHER      ).order(:value)}
   scope :conversion_functions  , -> { where(category: CONVERSION ).order(:value)}
   scope :display_functions     , -> { where(category: DISPLAY    ).order(:value)}
