@@ -2,11 +2,19 @@
 - provide(:title, "Full Text Search")
 - if @programs and @programs.count > 0
   .row
-    .col-sm-12
-      You searched for the string
-      %span.fulltext_highlight #{@search_param}
-      = fulltext_image_format(@search_param)
-      = fulltext_feature(@search_param)
+    .col-sm-6
+      - fulltext_results = (fulltext_image_format(@search_param) or fulltext_feature(@search_param))
+      %table.search_summary_table
+        %thead
+          %tr
+            %td
+              You searched for the string:
+              %span#fulltext_highlight #{@search_param}
+              - if fulltext_results
+                = fulltext_results[0]
+                %tr
+                  %td
+                    = raw fulltext_results[1]
 
   .row
     .col-sm-12.programs-table
@@ -17,6 +25,7 @@
             %tr
               %td
                 %span.fulltext_progname=link_to(program.name, program_path(program))
+              %td
                 = program.pg_search_highlight.html_safe
   .row
     .col-sm-6.col-sm-offset-3.pagin

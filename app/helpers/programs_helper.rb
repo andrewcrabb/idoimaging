@@ -232,28 +232,30 @@ module ProgramsHelper
 
   def fulltext_image_format(search_str)
     image_formats = ImageFormat.where("lower(name) = ?", search_str.downcase)
-    ret = ''
+    ret = nil
     if image_formats.count == 1
       image_format = image_formats.first
-      ret  = ", which is an image format.<br />\n"
-      ret += "You'll get better results by searching by the input file format: "
-      ret += link_to("Search for #{image_format.name}", programs_path(q: {read_format: image_format.id}))
+      ret = []
+      ret[0] = ", which is an image format."
+      ret[1] = "You'll get better results by searching by the input file format:<br />"
+      ret[1] += raw link_to("Search for #{image_format.name}", programs_path(q: {read_format: image_format.id}))
     end
-    return raw ret
+    return ret
   end
 
   # Handle fulltext search for feature
 
   def fulltext_feature(search_str)
     features = Feature.where("lower(value) = ?", search_str.downcase)
-    ret = ''
+    ret = nil
     if features.count == 1
       feature = features.first
-      ret  = ", which is a feature.<br />\n"
-      ret += "You'll get better results by searching by the features: "
-      ret += link_to("Search for #{feature.value}", programs_path(q: {read_format: 6}))
+      ret = []
+      ret[0] = ", which is a feature."
+      ret[1] = "You'll get better results by searching by the features:<br />"
+      ret[1] += raw link_to("Search for #{feature.value}", programs_path(q: {function: feature.id}))
     end
-    return raw ret
+    return ret
   end
 
   def external_link_icon(content = '')
