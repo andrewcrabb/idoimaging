@@ -5,7 +5,7 @@ require 'Mysql2'
 require_relative '../app/models/resource'
 require_relative '../app/models/image'
 
-# exit unless Rails.env.eql?("development")
+exit unless Rails.env.eql?("development")
 
 Version.delete_all
 $c = Mysql2::Client.new(default_file: '~/.my.cnf', default_group: 'idoimaging', database: 'imaging')

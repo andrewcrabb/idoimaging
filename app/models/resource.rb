@@ -1,5 +1,7 @@
 class Resource < ActiveRecord::Base
 
+  GITHUB_PATTERN = %r{\Ahttps://github.com/[[:alnum:]]+/[[:alnum:]]+\z}
+
   # 'identifier' field stores identifying text for testing the url.
 
   belongs_to :resourceful, polymorphic: true
@@ -7,6 +9,13 @@ class Resource < ActiveRecord::Base
   has_many   :redirects
   validates  :url, presence: true
   validates  :resource_type, presence: true
+
+  validates :url, format: { with: GITHUB_PATTERN, message: "Must be regex #{GITHUB_PATTERN}" }, if: :is_github?  
+
+  def is_github?
+    puts "resource_type_id is #{resource_type_id}"
+    resource_type_id.eql? 9
+  end
 
   scope :blogs           , -> { includes(:resource_type).where(resource_types: {name: ResourceType::BLOG_URL}) }
   scope :count_urls      , -> { includes(:resource_type).where(resource_types: {name: ResourceType::COUNT_URL}) }
