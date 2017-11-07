@@ -47,4 +47,9 @@ class ResourceType < ActiveRecord::Base
   def self.selector_values
     all.order(:name).pluck(:name, :id)
   end
+
+  def self.id_of(name)
+    recs = where(name: name)
+    return recs.count.eql?(1) ? recs.first.id : nil
+  end
 end

@@ -5,16 +5,26 @@ require 'pp'
 
 exit unless Rails.env.eql?("development")
 
-revurl = ResourceType.find_by(name: ResourceType::REV_URL)
-revurl_id = revurl.id
+client = Octokit::Client.new
 
-prog = Program.find_by(name: 'pydicom')
-puts "Prog: #{prog.id}"
-prog_revs = prog.resources
-last_version_rec = prog.versions.order(:date).first
-last_version = last_version_rec.version
+# Test release date of each program that has a github resource
 
-puts "last_version #{last_version}"
+resources = Resource.of_programs.githubs
+resources.each do |resource|
+  prog_id = resource.resourceful_id
+  latest_release = client.latest_release(resource.url)
+end
 
-user = Octokit.user 'pydicom'
-puts "user: #{user.first}"
+# revurl = ResourceType.find_by(name: ResourceType::REV_URL)
+# revurl_id = revurl.id
+
+# prog = Program.find_by(name: 'pydicom')
+# puts "Prog: #{prog.id}"
+# prog_revs = prog.resources
+# last_version_rec = prog.versions.order(:date).first
+# last_version = last_version_rec.version
+
+# puts "last_version #{last_version}"
+
+# user = Octokit.user 'pydicom'
+# puts "user: #{user.first}"

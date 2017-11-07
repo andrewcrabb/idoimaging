@@ -1,16 +1,28 @@
 class Resource < ActiveRecord::Base
 
-  GITHUB_PATTERN = %r{\Ahttps://github.com/[[:alnum:]]+/[[:alnum:]]+\z}
+  GITHUB_PATTERN = %r{\Ahttps://github.com/(?<user>[[:alnum:]]+)/(?<repo>[[:alnum:]]+)\z}
 
   # 'identifier' field stores identifying text for testing the url.
 
   belongs_to :resourceful, polymorphic: true
   belongs_to :resource_type
   has_many   :redirects
-  validates  :url, presence: true
   validates  :resource_type, presence: true
 
-  validates :url, format: { with: GITHUB_PATTERN, message: "Must be regex #{GITHUB_PATTERN}" }, if: :is_github?  
+  validate :url_must_be_valid
+
+  def url_must_be_valid
+    if url.nil?
+      errors.add(:url, "can't be nil")
+    else
+      github_id = ResourceType.id_of(ResourceType::GITHUB)
+      # github_id = ResourceType.find_by(name: ResourceType::GITHUB).id
+      if resource_type_id.eql? github_id and not GITHUB_PATTERN.match url
+        errors.add(:url, "must match https://github.com/foo/bar for resource type github")
+      end
+    end
+
+  end
 
   def is_github?
     puts "resource_type_id is #{resource_type_id}"
@@ -31,10 +43,11 @@ class Resource < ActiveRecord::Base
   scope :twitters        , -> { includes(:resource_type).where(resource_types: {name: ResourceType::TWITTER}) }
   scope :video_urls      , -> { includes(:resource_type).where(resource_types: {name: ResourceType::VIDEO_URL}) }
   scope :web_demos       , -> { includes(:resource_type).where(resource_types: {name: ResourceType::WEB_DEMO}) }
+  scope :of_programs     , -> { where(resourceful_type: "Program") }
 
-  scope :of_program, ->(prog_id) { where(resourceful_type: Program, resourceful_id: prog_id) }
-  scope :of_author , ->(auth_id) { where(resourceful_type: Author , resourceful_id: auth_id) }
-  scope :of_image_format , ->(format_id) { where(resourceful_type: ImageFormat , resourceful_id: format_id) }
+  scope :of_program      , ->(prog_id)   { where(resourceful_type: "Program", resourceful_id: prog_id) }
+  scope :of_author       , ->(auth_id)   { where(resourceful_type: "Author" , resourceful_id: auth_id) }
+  scope :of_image_format , ->(format_id) { where(resourceful_type: "ImageFormat" , resourceful_id: format_id) }
 
   def icon
     resource_type.icon
@@ -47,6 +60,13 @@ class Resource < ActiveRecord::Base
   def short_url
     url = full_url.gsub(%r'http[s]*://', '')
     (url.length > 28) ? url[0..13] + '...' + url[-14..-1] : url
+  end
+
+  # If a GitHub resource and url is valid, return MatchData with fields :user, :repo
+  # Else return nil
+
+  def github_details
+    return url ? url.match(GITHUB_PATTERN) : nil
   end
 
 end
