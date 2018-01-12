@@ -56,6 +56,7 @@ gem 'ransack', github: 'activerecord-hackery/ransack'
 gem 'compass-rails'
 gem 'simple_form'
 gem 'octokit'
+gem 'rb-readline'
 # Won't install.
 # gem 'quiet_assets', group: :development
 
