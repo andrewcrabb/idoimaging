@@ -64,7 +64,7 @@
     / = ratings_table(@program)
     / .button.expanded
     = link_to("Edit this program", admin_program_path(@program))
-- if current_user.editor?
+- if current_user and current_user.editor?
   .admin_functions
     = content_tag(:div, "Hello Editor", class: 'heading')
     = link_to("Edit this program", admin_program_path(@program))
