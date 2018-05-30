@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
   end
 
   def editor?
-  	role and [ADMIN, EDITOR].include?(role)
+  	role and [ADMIN, EDITOR].map{ |r| r.downcase }.include?(role.downcase)
   end
 
   private

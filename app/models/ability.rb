@@ -22,10 +22,10 @@ class Ability
     else
       # All registered users
       # can {registered user-y permissions}
-      case user.role
-      when 'admin'
+      case user.role.downcase
+      when User::ADMIN
         can :manage, :all
-      when 'editor'
+      when User::EDITOR
         can :manage, [Program, Author, Resource]
       else
         standard_rights
@@ -43,7 +43,7 @@ class Ability
   end
 
   def admin?
-    user.role.to_s.upcase.eql? User::ADMIN.upcase
+    user.role.to_s.downcase.eql? User::ADMIN
   end
 
   # def initialize(user)

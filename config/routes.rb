@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   # This causes author.rb errors on 'db:create'
   ActiveAdmin.routes(self)
 
-  resources :authors, only: [:show] {}
+  resources :authors, only: [:show]
   # Come back to ImageFormat.
   #   index: Is this relevant?  Could redirect to a wiki page.
   #   show:  Redirect to a wiki page
