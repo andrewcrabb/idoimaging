@@ -86,6 +86,7 @@ gem "recaptcha", require: "recaptcha/rails"
 gem "figaro"
 gem 'rack-cors', :require => 'rack/cors'
 gem 'pg_search'
+gem 'audited'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
