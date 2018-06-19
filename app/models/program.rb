@@ -1,4 +1,5 @@
 class Program < ActiveRecord::Base
+  audited
   include PgSearch
   pg_search_scope :search_for,
     against: {name: 'A', summary: 'B', description: 'C'},

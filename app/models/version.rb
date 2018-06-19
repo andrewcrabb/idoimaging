@@ -1,4 +1,5 @@
 class Version < ActiveRecord::Base
+  audited
   belongs_to :program
 
   # scope :latest3, -> { order("date desc").limit(3) }

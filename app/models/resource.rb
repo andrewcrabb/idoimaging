@@ -1,4 +1,5 @@
 class Resource < ActiveRecord::Base
+  audited
 
   GITHUB_PATTERN = %r{\Ahttps://github.com/(?<user>[[:alnum:]]+)/(?<repo>[[:alnum:]]+)\z}
 

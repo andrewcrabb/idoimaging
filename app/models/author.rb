@@ -1,4 +1,5 @@
 class Author < ActiveRecord::Base
+  audited
   has_many :author_programs, :dependent => :destroy
   has_many :programs, through: :author_programs
   has_many :resources, as: :resourceful

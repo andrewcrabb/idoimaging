@@ -4,7 +4,7 @@
 lock '>=3.6.0' 
 
 set :application, 'idoimaging'
-set :repo_url, 'https://git-codecommit.us-east-1.amazonaws.com/v1/repos/idoimaging'
+set :repo_url, 'ssh://git-codecommit.us-east-1.amazonaws.com/v1/repos/idoimaging'
 # 'git@gitlab.com:andrew.crabb/idoimaging.git'
 
 # Default branch is :master
