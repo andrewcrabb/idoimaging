@@ -228,7 +228,9 @@ ActiveRecord::Schema.define(version: 20180605222522) do
     t.integer  "program_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "published"
     t.index ["program_id"], name: "index_versions_on_program_id", using: :btree
+    t.index ["published"], name: "index_versions_on_published", using: :btree
   end
 
   create_table "write_program_image_formats", force: :cascade do |t|
