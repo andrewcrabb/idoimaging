@@ -10,8 +10,13 @@
 // Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
 // about supported directives. foo. bar.
 // require_tree dot
+// ahc 10/15/18
+// https://github.com/twbs/bootstrap-rubygem#a-ruby-on-rails
 //
-//= require jquery
+//  require jquery
+//= require jquery3
+//= require popper
+//= require bootstrap-sockets
 //= require jquery_ujs
 //= require slick.min
 //= require tether.min
@@ -19,7 +24,7 @@
 //= require simpler-navbar-search
 //= require tether
 //= require turbolinks
-//= require bootstrap
+// require bootstrap
 
 //= require my_rating
 //= require my_initializers
