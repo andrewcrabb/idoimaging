@@ -17,13 +17,15 @@ class ProgramsController < ApplicationController
   end
 
   def make_search_params(qparams)
-    if qparams and qparams.count > 0
+    if qparams and qparams.to_h.count > 0
+      # params no longer subclassed from Hash in Rails 5  http://bit.ly/2RXRUs2
+      qqparams = qparams.to_h
       exclude_keys = []
-      if (search_level = qparams[Feature::SEARCH_LEVEL])
+      if (search_level = qqparams[Feature::SEARCH_LEVEL])
         # logger.debug("XXX search_level #{search_level}")
         exclude_keys = [Feature::FOR_AUDIENCE, Feature::SEARCH_LEVEL] if search_level.eql? Feature::SEARCH_LEVEL_BASIC
       end
-      @search_params = qparams.select{ |k, v|
+      @search_params = qqparams.select{ |k, v|
         # key 's' is used by Kaminari for search order on column
         logger.debug("k = #{k}, exclude_keys = #{exclude_keys}")
         v.length > 0 and k.length > 1 and not exclude_keys.include? k.to_s

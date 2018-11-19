@@ -16,7 +16,7 @@
 //  require jquery
 //= require jquery3
 //= require popper
-//= require bootstrap-sockets
+//           require bootstrap-sockets
 //= require jquery_ujs
 //= require slick.min
 //= require tether.min
@@ -24,7 +24,7 @@
 //= require simpler-navbar-search
 //= require tether
 //= require turbolinks
-// require bootstrap
+//= require bootstrap
 
 //= require my_rating
 //= require my_initializers

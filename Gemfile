@@ -54,10 +54,14 @@ gem 'high_voltage'
 # https://github.com/rails/sass-rails/issues/381
 # gem 'sprockets', '3.6.3'
 gem 'sprockets'
-gem 'devise'
+# ahc 10/15/18 https://github.com/plataformatec/devise/issues/4511
+gem 'devise', git: 'https://github.com/plataformatec/devise.git', branch: 'master'
+# gem 'devise'
 gem 'kaminari'
 # ---------------------------  Temp due to error messages after upgrade  --------------------------------------
-gem 'activeadmin', github: 'activeadmin'
+# gem 'activeadmin', github: 'activeadmin'
+# Everyone likes their own brand.
+gem 'activeadmin', github: 'idoimaging/activeadmin'
 # gem 'activeadmin'
 # ---------------------------  Temp  --------------------------------------
 gem 'country_select'
@@ -68,7 +72,7 @@ gem 'mini_magick'
 gem 'carrierwave-aws'
 gem 'ransack', github: 'activerecord-hackery/ransack'
 # gem 'compass-rails', github: 'Compass/compass-rails'
-gem 'compass-rails', '~> 3.0.2'
+# gem 'compass-rails', '~> 3.1.0'
 gem 'simple_form'
 gem 'octokit'
 gem 'rb-readline'
@@ -87,7 +91,8 @@ gem 'rdiscount'
 gem 'twitter'
 gem 'jquery-ui-rails'
 gem 'lograge'
-gem 'unscoped_associations'
+# ahc 10/15/18 u_a used only once, in aa, and was causing dependency problem.
+# gem 'unscoped_associations'
 # gem "just-datetime-picker"
 # gem 'rails-assets-tether'
 gem 'concurrent-ruby'
@@ -96,6 +101,7 @@ gem 'thread_safe'
 gem 'tether-rails'
 gem 'record_tag_helper'
 gem 'json'
+# I had to disable this in application.scss
 gem 'devise-bootstrap-views'
 gem "recaptcha", require: "recaptcha/rails"
 gem "figaro"
