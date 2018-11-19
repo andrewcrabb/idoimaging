@@ -15,15 +15,15 @@
  * ahc 12/13/16 https://github.com/jquery-ui-rails/jquery-ui-rails
  * = require jquery-ui
  * = require_self
-
+ * ahc 11/18/18 these were still being imported with // delimiter.
+ * @ import "bootstrap.min";
+ * @ import "devise_bootstrap_views";
  */
 
 @import "slick";
 @import "slick-theme";
 @import "star-rating-svg";
 @import "jquery-ui";
-// @import "bootstrap.min";
 @import "bootstrap";
 @import "my_settings";
-// @import "devise_bootstrap_views";
 @import "simpler-navbar-search";
