@@ -40,7 +40,9 @@ set :repo_url, 'ssh://git-codecommit.us-east-1.amazonaws.com/v1/repos/idoimaging
 
 # ahc
 # https://github.com/capistrano/rails
-set :passenger_restart_with_touch, true
+# set :passenger_restart_with_touch, true
+# Now the recommended way 11/18.  capistrano-passenger install notes.
+set :passenger_restart_with_touch, false
 
 # Defaults to false
 # Skip migration if files in db/migrate were not modified
