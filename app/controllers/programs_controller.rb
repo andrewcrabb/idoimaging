@@ -6,7 +6,7 @@ class ProgramsController < ApplicationController
   def index
     basic_params = %i(function read_format platform name_cont)
     advanced_params = %i(summary_cont interface speciality write_format for_audience language display_function header_function network_function programming_function other_function)
-    qparams = params[:q].permit(basic_params + advanced_params)
+    qparams = params[:q] ? params[:q].permit(basic_params + advanced_params) : nil
     if qparams
       @q = Program.active.imaging.ransack(qparams)
       @q.sorts = 'rating desc' if @q.sorts.empty?
