@@ -1,20 +1,17 @@
-.container#search_form
-  .panel-group#accordion
-    .panel.panel-default
-      .panel-heading
-        .panel-title
-          %h4
-            %a{:"data-toggle" => "collapse", :"data-parent" => "#accordion", :href => "#collapse1"}
-              Basic Search
-            (fewer options)
-      .panel-collapse.collapse.in#collapse1
-        .panel-body=render 'program_basic_search'
-    .panel.panel-default
-      .panel-heading
-        .panel-title
-          %h4
-            %a{:"data-toggle" => "collapse", :"data-parent" => "#accordion", :href => "#collapse2"}
-              Advanced Search
-            (all options)
-      .panel-collapse.collapse#collapse2
-        .panel-body=render 'program_advanced_search'
+.accordion#search_form
+  .card
+    .card-header
+      %h4
+        %a.btn{:"data-toggle" => "collapse", :"data-target" => "#collapse1"}
+          Basic Search
+          (fewer options)
+    .collapse.show#collapse1{:"data-parent" => "#search_form"}
+      .card-body=render 'program_basic_search'
+  .card
+    .card-header
+      %h4
+        %a.btn.collapsed{:"data-toggle" => "collapse", :"data-target" => "#collapse2"}
+          Advanced Search
+          (all options)
+    .collapse#collapse2{:"data-parent" => "#search_form"}
+      .card-body=render 'program_advanced_search'
