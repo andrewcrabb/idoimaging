@@ -13,6 +13,7 @@ resources = Resource.of_programs.githubs
 resources.each do |resource|
   prog_id = resource.resourceful_id
   latest_release = client.latest_release(resource.url)
+  pp latest_release
 end
 
 # revurl = ResourceType.find_by(name: ResourceType::REV_URL)

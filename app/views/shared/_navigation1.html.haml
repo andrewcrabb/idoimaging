@@ -1,10 +1,9 @@
-%nav.navbar.navbar-toggleable-md.navbar-light.bg-faded
-  %button.navbar-toggler.navbar-toggler-right{:type => "button", :"data-toggle" => "collapse", :"data-target" => "#navbarSupportedContent"}
-  %span.navbar-toggler-icon
-
-  .collapse.navbar-collapse#navbarSupportedContent
+%nav.navbar.navbar-expand-md.bg-faded
+  %button.navbar-toggler.collapsed{:type => "button", :"data-toggle" => "collapse",  :"data-target" => "#navbar"}
+    %span.navbar-toggler-icon
+  .collapse.navbar-collapse#navbar
     %ul.navbar-nav.mr-auto
-      %li.nav-item.active
+      %li.nav-item
         =link_to("Home"    , home_path, class: 'nav-link')
       %li.nav-item
         =link_to("Programs", programs_path, class: 'nav-link')
@@ -18,14 +17,14 @@
         =link_to("Blog"    , "http://blog.idoimaging.com", target: 'new', class: 'nav-link')
       %li.nav-item
         =link_to("About", about_path, class: 'nav-link')
-    %ul.navbar-nav.navbar-right
+    %ul.navbar-nav.navbar-right.nav
       %li.nav-item
         .navbar-form{ role: "search", action: "/programs" }
           =form_for('Program', url: fulltext_programs_path, method: "get") do |f|
             .form-group.has-feedback
               -# https://goo.gl/MQM5vp
-              =f.text_field(:fulltext, {id: "searchtext", class: "form-control input-sm"})
-              %i.fa.fa-search.form-control-feedback
+              =f.text_field(:fulltext, {id: "searchtext", class: "form-control input-sm", placeholder: "Search"})
+              / %i.fa.fa-search.form-control-feedback
       %li
       - if signed_in?
         %li= link_to current_user.email.gsub(/@.+/, ''), current_user
