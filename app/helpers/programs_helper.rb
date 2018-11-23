@@ -1,6 +1,6 @@
 module ProgramsHelper
 
-  SOCIAL_ICONS = %w(fa fa-lg fa-fw social-icon)
+  SOCIAL_ICONS = %w(fas fa-lg fa-fw social-icon)
   IMAGE_HOST_S3  = 'idoimaging-images.s3.amazonaws.com'
   IMAGE_HOST_CDN = 'images.idoimaging.com'
 
@@ -91,7 +91,7 @@ module ProgramsHelper
 
   def program_blog_str(program)
     if blog = program.resources.blogs.first
-      content = content_tag(:i, '', class: SOCIAL_ICONS + ["fa-pencil-square-o"])
+      content = content_tag(:i, '', class: SOCIAL_ICONS + ["fa-edit"])
       content += "  #{blog.description}" if blog.description
       render_program_row("Blog", link_to(content, blog.url))
     end
@@ -259,7 +259,7 @@ module ProgramsHelper
   end
 
   def external_link_icon(content = '')
-    raw(content_tag(:i, content, class: ["fa", "fa-external-link", "fa-lg"] ))
+    raw(content_tag(:i, content, class: ["fa", "fa-external-link-alt", "fa-lg"] ))
   end
 
   def link_to_str(url)

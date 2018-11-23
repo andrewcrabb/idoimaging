@@ -6,6 +6,7 @@ module VersionsHelper
   # @return [String]
 
   def latest_version_string(versions)
+    versions = versions.select { |v| v && (v.date || v.version) }
     str = version_string(versions.first)
     icon = content_tag(:i, '', class: ["fa", "fa-angle-double-down", "fa-lg"])
     str += content_tag(:span, icon, {id: "show_history"}) if versions.count > 1
@@ -19,7 +20,7 @@ module VersionsHelper
   # @return [String]
 
   def version_string(ver)
-    if ver
+    if ver && (ver.date || ver.version)
       date_str = ver.date ? ver.date.strftime("%B %Y") : nil
       ver_str = ver.version ? ver.version : nil
       outstr = (date_str && ver_str) ? "#{ver_str} (#{date_str})" : (date_str || ver_str)

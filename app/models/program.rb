@@ -178,6 +178,8 @@ class Program < ActiveRecord::Base
   scope :read_format         , ->(id) { where id: ImageFormat.find(id).read_programs.pluck(:id) }
   scope :write_format        , ->(id) { where id: ImageFormat.find(id).write_programs.pluck(:id) }
 
+  scope :for_platform        , ->(id) { (:features).where(features: {category: 'Platform', id: id}) }
+
   scope :for_audience        , ->(id) { includes(:features).where(features: {category: 'Audience', id: id}) }
   scope :latest_added        , ->(n = 10) { active.imaging.where.not(add_date: nil).order(add_date: :desc).limit(n) }
 
