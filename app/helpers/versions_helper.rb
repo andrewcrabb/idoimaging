@@ -8,7 +8,7 @@ module VersionsHelper
   def latest_version_string(versions)
     versions = versions.select { |v| v && (v.date || v.version) }
     str = version_string(versions.first)
-    icon = content_tag(:i, '', class: ["fa", "fa-angle-double-down", "fa-lg"])
+    icon = content_tag(:i, '', class: ["fa", "fa-angle-double-down"])
     str += content_tag(:span, icon, {id: "show_history"}) if versions.count > 1
     return str
   end

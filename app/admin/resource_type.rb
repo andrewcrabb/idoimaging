@@ -14,7 +14,7 @@ ActiveAdmin.register ResourceType do
 # end
 
   permit_params do
-    permitted = [:name, :description, :icon]
+    permitted = [:name, :description, :icon, :icon_prefix]
   end
 
   config.sort_order = 'name_asc'
@@ -23,6 +23,7 @@ ActiveAdmin.register ResourceType do
     selectable_column
     column :name, sortable: :name
     column :description
+    column :icon_prefix
     column :icon
     actions
   end

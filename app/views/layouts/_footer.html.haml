@@ -2,8 +2,8 @@
   .row
     .col-sm-12
       %p.links
-        =link_to( content_tag(:i, '', class: %w(fa fa-twitter fa-lg social)) + content_tag(:span, 'idoimaging', class: 'social-handle'), "https://twitter.com/idoimaging", {target: 'new'})
-        =link_to( content_tag(:i, '', class: %w(fa fa-facebook fa-lg social)) + content_tag(:span, 'idoimaging', class: 'social-handle'), "https://facebook.com/idoimaging", {target: 'new'})
-        =link_to( content_tag(:i, '', class: %w(fa fa-github fa-lg social)) + content_tag(:span, 'idoimaging', class: 'social-handle'), "https://github.com/idoimaging", {target: 'new'})
-        =content_tag(:i, '', class: %w(fa fa-envelope-o)) + content_tag(:span, 'andrew', class: 'social-handle') + content_tag(:span, '@', class: 'social-part') + content_tag(:span, 'idoimaging.com', class: 'social-part')
+        =link_to( content_tag(:i, '', class: %w(fab fa-twitter)) + content_tag(:span, 'idoimaging', class: 'social-handle'), "https://twitter.com/idoimaging", {target: 'new'})
+        =link_to( content_tag(:i, '', class: %w(fab fa-facebook)) + content_tag(:span, 'idoimaging', class: 'social-handle'), "https://facebook.com/idoimaging", {target: 'new'})
+        =link_to( content_tag(:i, '', class: %w(fab fa-github)) + content_tag(:span, 'idoimaging', class: 'social-handle'), "https://github.com/idoimaging", {target: 'new'})
+        =content_tag(:i, '', class: %w(fa fa-envelope)) + content_tag(:span, 'andrew', class: 'social-handle') + content_tag(:span, '@', class: 'social-part') + content_tag(:span, 'idoimaging.com', class: 'social-part')
         =content_tag(:span, "  ©  Copyright 2002-#{Time.now.year}", class: 'social-handle copyright')

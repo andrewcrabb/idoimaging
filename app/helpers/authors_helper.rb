@@ -16,7 +16,7 @@ module AuthorsHelper
   end
 
   def author_show_dropdown(programs)
-    double_down = content_tag(:i, "", class: ["fa", "fa-angle-double-down", "fa-lg"])
+    double_down = content_tag(:i, "", class: ["fas", "fa-angle-double-down"])
     content = raw(content_tag(:span, double_down, {id: "show_programs"}))
     content += content_tag(:span, "(#{programs.count} other #{'program'.pluralize(programs)})", {id: "show_programs_text"})
     return content

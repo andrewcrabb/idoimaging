@@ -1,6 +1,6 @@
 module ProgramsHelper
 
-  SOCIAL_ICONS = %w(fas fa-lg fa-fw social-icon)
+  SOCIAL_ICONS = %w(fa-fw social-icon)
   IMAGE_HOST_S3  = 'idoimaging-images.s3.amazonaws.com'
   IMAGE_HOST_CDN = 'images.idoimaging.com'
 
@@ -19,7 +19,7 @@ module ProgramsHelper
     platform_features = program.features.platforms
     plat_str = platform_features.map { |p| p.value }.join(", ")
     icons = platform_features.map do |platform|
-      render(partial: "shared/show_icon", locals: {icon: platform.icon, large: large})
+      render(partial: "shared/show_icon", locals: {icon_prefix: platform.icon_prefix, icon: platform.icon, large: large})
     end.join
     title = "#{'Platform'.pluralize(platform_features.count)}: #{plat_str}"
     outstr = content_tag(:span, raw(icons), class: "has-tip", title: title)
@@ -35,7 +35,7 @@ module ProgramsHelper
       languages = program.languages.map { |l| l.value }.join(', ')
       raw(
         content_tag(:span, class: "has-tip", title: "Source code: #{languages}") do
-          tag(:i, class: ["fa", "fa-code"])
+          tag(:i, class: ["fas", "fa-code"])
         end
       )
     end
@@ -69,7 +69,7 @@ module ProgramsHelper
   end
 
   def make_handle_str(resource, network)
-    content = content_tag(:i, '', class: SOCIAL_ICONS + ["fa-#{resource.icon}"])
+    content = content_tag(:i, '', class: SOCIAL_ICONS + [resource.icon_prefix, "fa-#{resource.icon}"])
     if resource.description and resource.description.length > 0
       content += "  #{resource.description}"
     else
@@ -91,7 +91,7 @@ module ProgramsHelper
 
   def program_blog_str(program)
     if blog = program.resources.blogs.first
-      content = content_tag(:i, '', class: SOCIAL_ICONS + ["fa-edit"])
+      content = content_tag(:i, '', class: SOCIAL_ICONS + ["fas", "fa-edit"])
       content += "  #{blog.description}" if blog.description
       render_program_row("Blog", link_to(content, blog.url))
     end
@@ -109,11 +109,6 @@ module ProgramsHelper
     if content.count > 0
       render_program_row("Resources", content.join(' '))
     end
-  end
-
-  def resource_str(resource, icon_class)
-    content = content_tag(:i, '', class: SOCIAL_ICONS + [icon_class])
-    link_to(content, resource.url)
   end
 
   def user_rating_str(program)
@@ -142,8 +137,8 @@ module ProgramsHelper
     half_stars = program.rating ? (program.rating * 2.199).floor : 0
     full_stars = half_stars / 2
     # logger.debug("program #{program.id} rating #{program.rating} full #{full_stars} half #{half_stars}")
-    outstr = raw(content_tag(:i, '', class: ["fa", "fa-star"]) * full_stars)
-    outstr += raw(content_tag(:i, '', class: ["fa", "fa-star-half"])) if half_stars.odd?
+    outstr  = raw(content_tag(:i, '', class: ["fas", "fa-star"]) * full_stars)
+    outstr += raw(content_tag(:i, '', class: ["fas", "fa-star-half"])) if half_stars.odd?
     return outstr
   end
 
@@ -259,7 +254,7 @@ module ProgramsHelper
   end
 
   def external_link_icon(content = '')
-    raw(content_tag(:i, content, class: ["fa", "fa-external-link-alt", "fa-lg"] ))
+    raw(content_tag(:i, content, class: ["fas", "fa-external-link-alt"] ))
   end
 
   def link_to_str(url)

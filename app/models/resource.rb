@@ -54,6 +54,10 @@ class Resource < ActiveRecord::Base
     resource_type.icon
   end
 
+  def icon_prefix
+    resource_type.icon_prefix
+  end
+
   def full_url
     url.match(%r{^http}) ? url : "http://#{url}"
   end

@@ -16,7 +16,7 @@ ActiveAdmin.register Feature do
   # end
 
   permit_params do
-    permitted = [:category, :value, :description, :icon, :tooltip, :search_level]
+    permitted = [:category, :value, :description, :icon_prefix, :icon, :tooltip, :search_level]
   end
 
   config.sort_order = 'category_asc'
@@ -49,6 +49,7 @@ ActiveAdmin.register Feature do
     column :description
     column :search_level
     column :icon
+    column :icon_prefix
     column :tooltip
     actions
   end
@@ -65,6 +66,8 @@ ActiveAdmin.register Feature do
           input :description, :input_html => { :size => 40 }
           br
           input :search_level , as: :select, collection: Feature::SEARCH_LEVELS, include_blank: true
+          br
+          input :icon_prefix, :input_html => { :size => 20 }
           br
           input :icon, :input_html => { :size => 20 }
           br
