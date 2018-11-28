@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_24_205319) do
+ActiveRecord::Schema.define(version: 2018_11_27_051447) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -198,6 +198,7 @@ ActiveRecord::Schema.define(version: 2018_11_24_205319) do
     t.integer "resource_type_id"
     t.index ["resource_type_id"], name: "index_resources_on_resource_type_id"
     t.index ["resourceful_type", "resourceful_id"], name: "index_resources_on_resourceful_type_and_resourceful_id"
+    t.index ["url"], name: "index_resources_on_url"
   end
 
   create_table "users", id: :serial, force: :cascade do |t|

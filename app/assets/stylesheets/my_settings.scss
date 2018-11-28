@@ -352,12 +352,13 @@ $verylightgrey: #f8f8f8;
 // Font Awesome
 // ------------------------------------------------------------
 
-.fa {
-  color: #8ae;
+.fas,.fab {
+  // color: #8ae;
+  color: #99b3ff;
 }
 
 .newly-added-programs {
-  .fa {
+  .fas {
       font-size: 12px !important;
     }
 }

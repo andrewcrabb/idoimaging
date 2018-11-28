@@ -1,7 +1,7 @@
 class Resource < ActiveRecord::Base
   audited
 
-  GITHUB_PATTERN = %r{\Ahttps://github.com/(?<user>[[:alnum:]]+)/(?<repo>[[:alnum:]]+)\z}
+  GITHUB_PATTERN = %r{github.com/(?<user>[\w\.\-]+)/(?<repo>[\w\.\-]+)}
 
   # 'identifier' field stores identifying text for testing the url.
 
@@ -45,6 +45,7 @@ class Resource < ActiveRecord::Base
   scope :video_urls      , -> { includes(:resource_type).where(resource_types: {name: ResourceType::VIDEO_URL}) }
   scope :web_demos       , -> { includes(:resource_type).where(resource_types: {name: ResourceType::WEB_DEMO}) }
   scope :of_programs     , -> { where(resourceful_type: "Program") }
+  scope :github          , -> { where("url like '%github%'") }
 
   scope :of_program      , ->(prog_id)   { where(resourceful_type: "Program", resourceful_id: prog_id) }
   scope :of_author       , ->(auth_id)   { where(resourceful_type: "Author" , resourceful_id: auth_id) }
