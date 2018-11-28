@@ -1,40 +1,35 @@
-%nav.navbar.navbar-expand-md.bg-faded
-  .container-fluid#navbar-container
-    .navbar-header
-      %button.navbar-toggle.collapsed{:type => "button", :"data-toggle" => "collapse",  :"data-target" => "#navbar", :"aria-expanded" => "false", :"aria-controls" => "navbar"}
-        %span.sr-only Toggle navigation
-        %span.icon-bar.top-bar
-        %span.icon-bar.middle-bar
-        %span.icon-bar.bottom-bar
-    .collapse.navbar-collapse#navbar
-      %ul.navbar-nav.nav
-        %li.nav-item
-          =link_to("Home"    , home_path, class: 'nav-link')
-        %li.nav-item
-          =link_to("Programs", programs_path, class: 'nav-link')
-        %li.nav-item
-          =link_to("Demo"    , "https://wiki.idoimaging.com/index.php?title=Software_Demonstrations", target: 'new', class: 'nav-link')
-        %li.nav-item
-          =link_to("Data"    , "https://wiki.idoimaging.com/index.php?title=Sample_Data", target: 'new', class: 'nav-link')
-        %li.nav-item
-          =link_to("Wiki"    , "http://wiki.idoimaging.com", target: 'new', class: 'nav-link')
-        %li.nav-item
-          =link_to("Blog"    , "http://blog.idoimaging.com", target: 'new', class: 'nav-link')
-        %li.nav-item
-          =link_to("About", about_path, class: 'nav-link')
-      %ul.navbar-nav.navbar-right.nav
-        %li.nav-item
-          .navbar-form{ role: "search", action: "/programs" }
-            =form_for('Program', url: fulltext_programs_path, method: "get") do |f|
-              .form-group.has-feedback
-                -# https://goo.gl/MQM5vp
-                =f.text_field(:fulltext, {id: "searchtext", class: "form-control input-sm"})
-                %i.fa.fa-search.form-control-feedback
-        %li
-        - if signed_in?
-          %li= link_to current_user.email.gsub(/@.+/, ''), current_user
-          %li= link_to("Log out", destroy_user_session_path, method: :delete)
-          %li= link_to("Admin", admin_root_path) if (current_user.admin? or current_user.editor?)
-        - else
-          %li= link_to "Register", new_user_registration_path
-          %li= link_to "Log in", new_user_session_path
+%nav.navbar.navbar-expand-md.navbar-dark.bg-faded
+  %button.navbar-toggler{:type => "button", :"data-toggle" => "collapse",  :"data-target" => "#navbar"}
+    %span.navbar-toggler-icon
+  .collapse.navbar-collapse#navbar
+    %ul.navbar-nav.mr-auto
+      %li.nav-item
+        =link_to("Home"    , home_path, class: 'nav-link')
+      %li.nav-item
+        =link_to("Programs", programs_path, class: 'nav-link')
+      %li.nav-item
+        =link_to("Demo"    , "https://wiki.idoimaging.com/index.php?title=Software_Demonstrations", target: 'new', class: 'nav-link')
+      %li.nav-item
+        =link_to("Data"    , "https://wiki.idoimaging.com/index.php?title=Sample_Data", target: 'new', class: 'nav-link')
+      %li.nav-item
+        =link_to("Wiki"    , "http://wiki.idoimaging.com", target: 'new', class: 'nav-link')
+      %li.nav-item
+        =link_to("Blog"    , "http://blog.idoimaging.com", target: 'new', class: 'nav-link')
+      %li.nav-item
+        =link_to("About", about_path, class: 'nav-link')
+    %ul.navbar-nav.navbar-right.nav
+      %li.nav-item
+        .navbar-form{ role: "search", action: "/programs" }
+          =form_for('Program', url: fulltext_programs_path, method: "get") do |f|
+            .form-group.has-feedback
+              -# https://goo.gl/MQM5vp
+              =f.text_field(:fulltext, {id: "searchtext", class: "form-control input-sm", placeholder: "Search"})
+              / %i.fa.fa-search.form-control-feedback
+      %li
+      - if signed_in?
+        %li= link_to current_user.email.gsub(/@.+/, ''), current_user
+        %li= link_to("Log out", destroy_user_session_path, method: :delete)
+        %li= link_to("Admin", admin_root_path) if (current_user.admin? or current_user.editor?)
+      - else
+        %li= link_to "Register", new_user_registration_path
+        %li= link_to "Log in", new_user_session_path
