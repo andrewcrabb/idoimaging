@@ -18,6 +18,15 @@ class ApplicationController < ActionController::Base
   #   params[resource] &&= send(method) if respond_to?(method, true)
   # end
 
+  # Rack Mini Profiler
+
+  before_action do
+    if current_user && current_user.is_admin?
+      Rack::MiniProfiler.authorize_request
+    end
+  end
+
+
   # ActiveAdmin
 
   def authenticate_active_admin_user!

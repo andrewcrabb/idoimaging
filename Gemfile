@@ -78,11 +78,7 @@ gem 'octokit'
 gem 'rb-readline'
 # Won't install.
 # gem 'quiet_assets', group: :development
-
-
 gem 'haml'
-
-
 gem 'haml-rails'
 gem 'select2-rails'
   # Gives infinite loop
@@ -108,6 +104,11 @@ gem "figaro"
 gem 'rack-cors', :require => 'rack/cors'
 gem 'pg_search'
 gem 'audited'
+
+gem 'rack-mini-profiler', require: false
+gem 'memory_profiler'
+gem 'flamegraph'
+gem 'stackprof'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
