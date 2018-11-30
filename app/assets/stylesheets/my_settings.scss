@@ -56,7 +56,6 @@ body {
   background-color: red;
 }
 
-
 .navbar {
   border-radius: 0px;
   border: 0px !important;
@@ -92,11 +91,11 @@ body {
   // height: 30px;
 }
 
-.navbar-nav > li > a, .navbar-brand {
-  padding-top:5px !important; 
-  padding-bottom:5 !important;
-  // height: 30px;
-}
+// .navbar-nav > li > a, .navbar-brand {
+//   padding-top:5px !important; 
+//   padding-bottom:5 !important;
+//   // height: 30px;
+// }
 // .navbar {min-height:30px !important;}
 
 .site_title {
@@ -136,12 +135,16 @@ body {
     // float: left;
     text-transform: uppercase;
     position: relative;
-    top: -8px;
+    top: -14px;
   }
 
   .navbar-form {
     position: relative;
     bottom: 15px;
+  }
+
+  .navbar-right {
+    bottom: 12px;
   }
 }
 
@@ -445,11 +448,11 @@ $footer-fg: #ffffff;
   }
   .social-handle {
     padding-left: 0.7rem;
-    font-size: 75%;
+    font-size: 65%;
     color: $footer-fg;
   }
   .social-part {
-    font-size: 75%;
+    font-size: 65%;
     color: $footer-fg;
   }
   .copyright {
