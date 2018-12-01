@@ -325,13 +325,19 @@ module ProgramsHelper
   # Selectors for Program#index
 
   def feature_selector(feature, basic = false)
+    start = Time.now
     features = basic ? Feature.basic : Feature.all
-    return features.selector_values(feature)
+    selectors = features.selector_values(feature)
+    logger.info("feature_selector(#{feature}) Elapsed: #{(Time.now - start) * 1000.0} ms")
+    return selectors
   end
 
   def imageformat_selector(basic = false)
+    start = Time.now
     imageformats = basic ? ImageFormat.basic : ImageFormat.all
-    return imageformats.selector_values
+    selectors = imageformats.selector_values
+    logger.info("imageformat_selector Elapsed: #{(Time.now - start) * 1000.0} ms")
+    return selectors
   end
 
     #   @selectors = {
