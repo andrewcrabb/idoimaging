@@ -104,6 +104,7 @@ gem "figaro"
 gem 'rack-cors', :require => 'rack/cors'
 gem 'pg_search'
 gem 'audited'
+gem 'binding_of_caller'
 
 gem 'rack-mini-profiler', require: false
 gem 'memory_profiler'

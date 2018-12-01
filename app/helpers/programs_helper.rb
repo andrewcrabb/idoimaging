@@ -320,4 +320,23 @@ module ProgramsHelper
     raw (platforms_str(program.platforms, false) + source_str(program))
   end
 
+  # Selectors for Program#index
+
+  def feature_selector(feature, basic = false)
+    features = basic ? Feature.basic : Feature.all
+    return features.selector_values(feature)
+  end
+
+  def imageformat_selector(basic = false)
+    imageformats = basic ? ImageFormat.basic : ImageFormat.all
+    return imageformats.selector_values
+  end
+
+    #   @selectors = {
+    #   basic_function:    Feature.basic.selector_values(Feature::FUNCTION),
+    #   basic_imageformat: ImageFormat.basic.selector_values,
+    #   basic_platform:    Feature.basic.selector_values(Feature::PLATFORM)
+    # }
+
+
 end

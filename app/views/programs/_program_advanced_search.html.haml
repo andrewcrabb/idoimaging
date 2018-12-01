@@ -2,13 +2,13 @@
   .row#form-text-search
     .col-md-2
       = f.label :function
-      = f.select :function, Feature.selector_values(Feature::FUNCTION), prompt: '  -  '
+      = f.select :function, feature_selector(Feature::FUNCTION), prompt: '  -  '
     .col-md-2
       = f.label :read_format
-      = f.select :read_format, ImageFormat.selector_values, prompt: '  -  '
+      = f.select :read_format, imageformat_selector, prompt: '  -  '
     .col-md-2
       = f.label :platform
-      = f.select :platform, Feature.selector_values(Feature::PLATFORM), prompt: '  -  '
+      = f.select :platform, feature_selector(Feature::PLATFORM), prompt: '  -  '
     .col-md-2
       = f.label :name_cont
       = f.search_field :name_cont
@@ -18,35 +18,35 @@
   .row
     .col-md-2
       = f.label :interface
-      = f.select :interface, Feature.selector_values(Feature::INTERFACE), prompt: '  -  '
+      = f.select :interface, feature_selector(Feature::INTERFACE), prompt: '  -  '
     .col-md-2
       = f.label :speciality
-      = f.select :speciality, Feature.selector_values(Feature::SPECIALITY), prompt: '  -  '
+      = f.select :speciality, feature_selector(Feature::SPECIALITY), prompt: '  -  '
     .col-md-2
       = f.label :write_format
-      = f.select :write_format, ImageFormat.selector_values, prompt: '  -  '
+      = f.select :write_format, imageformat_selector, prompt: '  -  '
     .col-md-2
       = f.label "Audience"
-      = f.select :for_audience, Feature.selector_values(Feature::AUDIENCE), prompt: '  -  '
+      = f.select :for_audience, feature_selector(Feature::AUDIENCE), prompt: '  -  '
     .col-md-2
       = f.label "Source code"
-      = f.select :language, Feature.selector_values(Feature::LANGUAGE), prompt: '  -  '
+      = f.select :language, feature_selector(Feature::LANGUAGE), prompt: '  -  '
   .row
     .col-md-2
       = f.label "Display"
-      = f.select :display_function, Feature.selector_values(Feature::DISPLAY), prompt: '  -  '
+      = f.select :display_function, feature_selector(Feature::DISPLAY), prompt: '  -  '
     .col-md-2
       = f.label "Header"
-      = f.select :header_function, Feature.selector_values(Feature::HEADER), prompt: '  -  '
+      = f.select :header_function, feature_selector(Feature::HEADER), prompt: '  -  '
     .col-md-2
       = f.label "Network"
-      = f.select :network_function, Feature.selector_values(Feature::NETWORK), prompt: '  -  '
+      = f.select :network_function, feature_selector(Feature::NETWORK), prompt: '  -  '
     .col-md-2
       = f.label "Other"
-      = f.select :other_function, Feature.selector_values(Feature::OTHER), prompt: '  -  '
+      = f.select :other_function, feature_selector(Feature::OTHER), prompt: '  -  '
     .col-md-2
       = f.label "Programming"
-      = f.select :programming_function, Feature.selector_values(Feature::PROGRAMMING), prompt: '  -  '
+      = f.select :programming_function, feature_selector(Feature::PROGRAMMING), prompt: '  -  '
   .row
     .col-md-4.submit-buttons
       %button.btn.btn-primary{type: :submit}

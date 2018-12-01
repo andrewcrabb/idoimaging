@@ -1,19 +1,14 @@
 = search_form_for @q do |f|
-  / =f.hidden_field(:for_audience, value: Feature.has_value(Feature::AUDIENCE_GENERAL_USER))
-  / =f.hidden_field(Feature::SEARCH_LEVEL, value: Feature::SEARCH_LEVEL_BASIC)
-  / .row
-  /   .col-md-12
-  /     Select one or more conditions to search by, then click 'Submit'
   .row#form-text-search
     .col-md-2
       = f.label "I want to..."
-      = f.select :function, Feature.basic.selector_values(Feature::FUNCTION), prompt: ' - Any - '
+      = f.select :function, feature_selector(Feature::FUNCTION, true), prompt: ' - Any - '
     .col-md-2
       = f.label :read_format, "Using file format..."
-      = f.select :read_format, ImageFormat.basic.selector_values, prompt: ' - Any - '
+      = f.select :read_format, imageformat_selector(true), prompt: ' - Any - '
     .col-md-2
       = f.label :platform, "On platform..."
-      = f.select :platform, Feature.basic.selector_values(Feature::PLATFORM), prompt: ' - Any - '
+      = f.select :platform, feature_selector(Feature::PLATFORM, true), prompt: ' - Any - '
     .col-md-2
       = f.label :name_cont, "Name contains"
       = f.search_field :name_cont
