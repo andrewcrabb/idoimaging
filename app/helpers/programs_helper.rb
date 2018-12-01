@@ -201,7 +201,9 @@ module ProgramsHelper
   def program_related_list(program, relationship, title)
     related = program.send("#{relationship}_programs")
     logger.debug("---------- program #{program.name} relationship #{relationship} related #{related.count} ----------")
-    program_list = related.map { |related| link_to(related.name, program_path(related)) }.join(", ")
+    program_list = related.map do |related|
+      (related.program_kind.eql? Program::program_kinds[:prerequisite]) ? related.name : link_to(related.name, program_path(related))
+    end.join(", ")
     render_program_row(title, program_list) if related.count > 0
   end
 
