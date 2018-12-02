@@ -107,10 +107,12 @@ gem 'audited'
 gem 'binding_of_caller'
 gem 'listen'
 
-gem 'rack-mini-profiler', require: false
-gem 'memory_profiler'
-gem 'flamegraph'
-gem 'stackprof'
+group :production do
+  gem 'rack-mini-profiler'
+  gem 'memory_profiler'
+  gem 'flamegraph'
+  gem 'stackprof'
+end
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
@@ -141,6 +143,11 @@ group :development do
     gem 'capistrano-rails',   require: false
     gem 'capistrano-bundler', require: false
     gem 'capistrano3-puma',   require: false
+
+  gem 'rack-mini-profiler', require: false
+  gem 'memory_profiler'
+  gem 'flamegraph'
+  gem 'stackprof'
 
 end
 
