@@ -242,7 +242,7 @@ class Program < ActiveRecord::Base
   end
 
   def latest_version_string
-    versions.latest.last.ver_str if versions.latest.count > 0
+    versions.published.latest.last.ver_str if versions.latest.count > 0
     # "XXXX  latest_version_string XXXX"
   end
 

@@ -43,7 +43,7 @@ module VersionsHelper
   end
 
   def recent_versions(n = 30)
-    Version.where("date > ?", Date.today - n.days)
+    Version.published.where("date > ?", Date.today - n.days)
   end
 
 end

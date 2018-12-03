@@ -5,7 +5,7 @@ module ProgramsHelper
   IMAGE_HOST_CDN = 'images.idoimaging.com'
 
   def program_version_str(program)
-    versions = program.versions.order("date DESC")
+    versions = program.versions.published.order("date DESC")
     content = latest_version_string(versions).to_s + versions_string(versions).to_s
     render_program_row('Latest version', content) if versions.count > 0
   end

@@ -20,6 +20,7 @@ ActiveAdmin.register_page "Dashboard" do
             li "Authors: #{Author.count}"
             li "Features: #{Feature.count} in #{Feature.select(:category).distinct.count} categories"
             li "Images: #{Image.count / 3}"
+            li "Versions: #{Version.count}"
             # Post.recent(5).map do |post|
             # li link_to(post.title, admin_post_path(post))
             # end

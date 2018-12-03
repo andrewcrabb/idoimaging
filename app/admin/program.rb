@@ -88,7 +88,7 @@ ActiveAdmin.register Program do
           end
           # row :versions do
           div do
-            nver = program.versions.count
+            nver = program.versions.published.count
             "#{nver} versions, latest #{program.latest_version_string}"
           end
         end
