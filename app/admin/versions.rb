@@ -1,6 +1,6 @@
 ActiveAdmin.register Version do
 
-  belongs_to :program
+  # belongs_to :program
 
   # See permitted parameters documentation:
   # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
@@ -15,14 +15,23 @@ ActiveAdmin.register Version do
   #   permitted
   # end
 
+
+  batch_action :publish do |ids|
+    batch_action_collection.find(ids).each do |version|
+      version.publish
+    end
+    redirect_to collection_path, alert: "#{ids.count} versions published."
+  end
+
+
+
   permit_params do
     permitted = [:version, :date, :note, :rev_str, :program_id, :published_on]
   end
 
   config.sort_order = 'updated_at_desc'
 
-  filter :version
-  filter :program_id
+  filter :date
 
   scope :all, default: true
   scope :unpublished
@@ -30,12 +39,19 @@ ActiveAdmin.register Version do
   index do
 
     selectable_column
+    column  :program_id do |ver|
+      prog = Program.find(ver.program_id)
+      link_to prog.name, admin_program_path(prog)
+    end
     column :version
     column  :date
-    column  :note
+    column :prev do |ver|
+      prog = Program.find(ver.program_id)
+      latest = prog.latest_version
+      "#{latest.version}\n#{latest.date}"
+    end
     column  :rev_str
-    column  :program_id
-    column  :published_on
+    column :updated_at
     actions
   end
 

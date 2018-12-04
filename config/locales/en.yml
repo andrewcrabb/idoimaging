@@ -21,3 +21,11 @@
 
 en:
   hello: "Hello world"
+  date:
+    formats:
+      admin: "%m/%d/%y"
+  time:
+    formats:
+      admin: "%m/%d/%y %H:%M:%S"
+
+# ActiveAdmin https://stackoverflow.com/questions/15501696/change-default-date-formatter-in-active-admin
