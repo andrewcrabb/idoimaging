@@ -78,7 +78,8 @@ gem 'octokit'
 gem 'rb-readline'
 # Won't install.
 # gem 'quiet_assets', group: :development
-gem 'haml'
+# gem 'haml'
+gem 'hamlit'
 gem 'haml-rails'
 gem 'select2-rails'
   # Gives infinite loop
