@@ -134,10 +134,10 @@ group :development do
   # ahc
   gem 'capistrano'
   gem 'capistrano-rails'
-  gem 'capistrano-passenger'
+  # gem 'capistrano-passenger'
   gem 'mysql2'  # ActiveAdmin dependency.  NO WAY AM I INSTALLING THIS IN PRODUCTON.
   gem "better_errors"
-  gem 'passenger'
+  # gem 'passenger'
 
 
     gem 'capistrano-rbenv',     require: false

@@ -3,7 +3,7 @@
 require 'octokit'
 require 'pp'
 
-exit unless Rails.env.eql?("development")
+# exit unless Rails.env.eql?("development")
 
 GITHUB_TOKEN = '19f0011ba073a242cea016a04fb318ab55eddae9'
 client = Octokit::Client.new(access_token: GITHUB_TOKEN)
