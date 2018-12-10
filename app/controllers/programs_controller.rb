@@ -87,6 +87,9 @@ class ProgramsController < ApplicationController
         end
         @resources[r.resource_type.name] << r if r.resource_type
       }
+    else
+      logger.error("ProgramsController::show: NilClass error, redirecting")
+      redirect_to root_url, :alert => "No program found"
     end
     # logger.debug("resources #{@resources}")
   end
