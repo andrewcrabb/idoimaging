@@ -108,12 +108,12 @@ gem 'audited'
 gem 'binding_of_caller'
 gem 'listen'
 
-group :production do
-  gem 'rack-mini-profiler'
-  gem 'memory_profiler'
-  gem 'flamegraph'
-  gem 'stackprof'
-end
+# group :production do
+#   gem 'rack-mini-profiler'
+#   gem 'memory_profiler'
+#   gem 'flamegraph'
+#   gem 'stackprof'
+# end
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
