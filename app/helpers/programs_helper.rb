@@ -16,12 +16,13 @@ module ProgramsHelper
   end
 
   def platforms_str(program, large = true)
-    platform_features = program.features.platforms
+    platform_features = program.platforms
     plat_str = platform_features.map { |p| p.value }.join(", ")
     icons = platform_features.map do |platform|
       render(partial: "shared/show_icon", locals: {icon_prefix: platform.icon_prefix, icon: platform.icon, large: large})
     end.join
-    title = "#{'Platform'.pluralize(platform_features.count)}: #{plat_str}"
+    title = "#{'Platform'.pluralize(plat_str.length.zero? ? 1 : 2)}: #{plat_str}"
+    # title="foo"
     outstr = content_tag(:span, raw(icons), class: "has-tip", title: title)
     raw(outstr)
   end
@@ -31,10 +32,11 @@ module ProgramsHelper
   # <span data-tooltip class="has-tip" title="Source code">
 
   def source_str(program)
-    if program.source_urls.count > 0
-      languages = program.languages.map { |l| l.value }.join(', ')
+    languages = program.languages
+    language_str = languages.map { |l| l.value }.join(', ')
+    if language_str.length.nonzero?
       raw(
-        content_tag(:span, class: "has-tip", title: "Source code: #{languages}") do
+        content_tag(:span, class: "has-tip", title: "Source code: #{language_str}") do
           tag(:i, class: ["fas", "fa-code"])
         end
       )
@@ -325,18 +327,18 @@ module ProgramsHelper
   # Selectors for Program#index
 
   def feature_selector(feature, basic = false)
-    start = Time.now
+    # start = Time.now
     features = basic ? Feature.basic : Feature.all
     selectors = features.selector_values(feature)
-    logger.info("feature_selector(#{feature}) Elapsed: #{(Time.now - start) * 1000.0} ms")
+    # logger.info("feature_selector(#{feature}) Elapsed: #{(Time.now - start) * 1000.0} ms")
     return selectors
   end
 
   def imageformat_selector(basic = false)
-    start = Time.now
+    # start = Time.now
     imageformats = basic ? ImageFormat.basic : ImageFormat.all
     selectors = imageformats.selector_values
-    logger.info("imageformat_selector Elapsed: #{(Time.now - start) * 1000.0} ms")
+    # logger.info("imageformat_selector Elapsed: #{(Time.now - start) * 1000.0} ms")
     return selectors
   end
 

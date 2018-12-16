@@ -1,19 +1,19 @@
 %table.table
-  %thead
-    %tr
-      %th Name
-      %th Summary
-      %th Added
-      / %th{colspan: 2}
+  / %thead
+  /   %tr
+  /     %th Name
+  /     %th Summary
+  /     %th Added
+  /     / %th{colspan: 2}
   %tbody
     - programs.each do |program|
       %tr
-        %td= link_to(program.name, program_path(program))
+        %td.program_summary_name= link_to(program.name, program_path(program))
         %td
           = program.summary
           %br
-          %span{class: 'pad10'}= platforms_str(program, false)
-          %span{class: 'pad10'}= program_rating_str(program)
+          %span.pad10= platforms_str(program, false)
+          %span.pad10= program_rating_str(program)
         %td.nowrap= program.added_date
         / %td= program_rating_str(program)
         / %td.tight= platforms_str(program, false)

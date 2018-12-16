@@ -101,7 +101,7 @@ end
 
 # Test release date of each program that has a github resource
 
-source_urls = Resource.source_urls.github.last(22)
+source_urls = Resource.source_urls.github
 puts "#{source_urls.count} source_urls"
 source_urls.each do |resource|
   prog_id = resource.resourceful_id

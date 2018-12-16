@@ -3,10 +3,9 @@ class Resource < ActiveRecord::Base
 
   GITHUB_PATTERN = %r{github.com/(?<user>[\w\.\-]+)/(?<repo>[\w\.\-]+)}
 
-  # 'identifier' field stores identifying text for testing the url.
-
   belongs_to :resourceful, polymorphic: true
   belongs_to :resource_type
+
   has_many   :redirects
   validates  :resource_type, presence: true
 
@@ -46,6 +45,7 @@ class Resource < ActiveRecord::Base
   scope :web_demos       , -> { includes(:resource_type).where(resource_types: {name: ResourceType::WEB_DEMO}) }
   scope :of_programs     , -> { where(resourceful_type: "Program") }
   scope :github          , -> { where("url like '%github%'") }
+  scope :not_github      , -> { where.not("url like '%github%'") }
 
   scope :of_program      , ->(prog_id)   { where(resourceful_type: "Program", resourceful_id: prog_id) }
   scope :of_author       , ->(auth_id)   { where(resourceful_type: "Author" , resourceful_id: auth_id) }
@@ -73,6 +73,10 @@ class Resource < ActiveRecord::Base
 
   def github_details
     return url ? url.match(GITHUB_PATTERN) : nil
+  end
+
+  def github?
+    url.include? 'github'
   end
 
 end

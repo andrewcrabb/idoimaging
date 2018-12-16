@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
   before_action do
     # Including this causes a login redirection loop. 
     # if current_user && current_user.is_admin?
-      Rack::MiniProfiler.authorize_request
+      # Rack::MiniProfiler.authorize_request
     # end
   end
 

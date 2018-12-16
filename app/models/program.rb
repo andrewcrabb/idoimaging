@@ -18,8 +18,6 @@ class Program < ActiveRecord::Base
       dictionary: "english",
     }
   }
-
-
   require_relative './feature'
 
   has_many :author_programs, dependent: :destroy
@@ -33,11 +31,12 @@ class Program < ActiveRecord::Base
   has_many :images, as: :imageable, dependent: :destroy
   has_many :ratings, dependent: :destroy
   has_many :users, through: :ratings
-  has_many :versions       , -> { order('date DESC') }
+  has_many :versions       , -> { order('date DESC') }, dependent: :destroy
   has_many :latest_versions, -> { latest(3) }, class_name: 'Version'
   has_one  :latest_version , -> { latest(1) }, class_name: 'Version'
 
   # Functions (Feature category = 'function')
+  # The lambda on the association is called on the linked class (Feature).  I got it from http://bit.ly/2UOkAFm and http://bit.ly/2PDJAep
   has_many :other_functions      , -> { other_functions       }, through: :program_features, source: :feature
   has_many :conversion_functions , -> { conversion_functions  }, through: :program_features, source: :feature
   has_many :display_functions    , -> { display_functions     }, through: :program_features, source: :feature
@@ -45,7 +44,13 @@ class Program < ActiveRecord::Base
   has_many :network_functions    , -> { network_functions     }, through: :program_features, source: :feature
   has_many :programming_functions, -> { programming_functions }, through: :program_features, source: :feature
 
-  has_many :platforms            , -> { platforms             }, through: :program_features, source: :feature
+  # has_many :platforms            , -> { where(category: "Platform") },through: :program_features, source: :feature
+  # has_many :platforms            , ->(id = nil) { platforms(id) },through: :program_features, source: :feature
+  has_many :platforms            , -> { platforms },through: :program_features, source: :feature
+  has_many :functions            , -> { functions },through: :program_features, source: :feature
+  # has_many :functions            , -> { where(category: "Function") },through: :program_features, source: :feature
+  # has_many :functions            , ->(id = nil) { functions(id) },through: :program_features, source: :feature
+
   has_many :languages            , -> { languages             }, through: :program_features, source: :feature
   has_many :specialities         , -> { specialities          }, through: :program_features, source: :feature
   has_many :network_features     , -> { network_features      }, through: :program_features, source: :feature
@@ -54,8 +59,6 @@ class Program < ActiveRecord::Base
   has_many :interfaces           , -> { interfaces            }, through: :program_features, source: :feature
   has_many :distributions        , -> { distributions         }, through: :program_features, source: :feature
   has_many :audiences            , -> { audiences             }, through: :program_features, source: :feature
-  # This is the 'old' functions.  Might replace it.
-  has_many :functions            , -> { functions }            , through: :program_features, source: :feature
 
   has_many :resources                      , as: :resourceful, dependent: :destroy
   has_many :source_urls, -> { source_urls }, as: :resourceful, class_name: 'Resource'
@@ -138,14 +141,14 @@ class Program < ActiveRecord::Base
   accepts_nested_attributes_for :website_rating
   accepts_nested_attributes_for :appearance_rating
 
-  enum program_kinds: {imaging: 0, prerequisite: 1, software_group: 2}
+  enum program_kinds: {k_imaging: 0, k_prerequisite: 1, k_software_group: 2}
 
-  scope :active          , -> { where(remove_date: nil) }
+  scope :active          , ->(yes = true) { yes ? where(remove_date: nil) : where.not(remove_date: nil) }
   scope :inactive        , -> { where.not(remove_date: nil) }
-  scope :imaging         , -> { where(program_kind: program_kinds[:imaging]) }
-  scope :prerequisite    , -> { where(program_kind: program_kinds[:prerequisite]) }
-  scope :software_group  , -> { where(program_kind: program_kinds[:software_group]) }
-  scope :imaging_or_group, -> { Program.where("program_kind = ? or program_kind = ?", program_kinds[:imaging], program_kinds[:software_group]) }
+  scope :imaging         , -> { where(program_kind: program_kinds[:k_imaging]) }
+  scope :prerequisite    , -> { where(program_kind: program_kinds[:k_prerequisite]) }
+  scope :software_group  , -> { where(program_kind: program_kinds[:k_software_group]) }
+  scope :imaging_or_group, -> { Program.where("program_kind = ? or program_kind = ?", program_kinds[:k_imaging], program_kinds[:k_software_group]) }
 
   # Default scope of active imaging programs means prerequisite queries must b
   # This was causing strange issues: Program.find(x).required_programs
@@ -156,12 +159,13 @@ class Program < ActiveRecord::Base
   # All these are needed as ransackable_scopes though they do the same thing.
   # These are the scopes I've tried to use but failed.  Only the naiive one works.
   # includes(:features).where(features: {id: id}).references(:features) }
-  # includes(:features).merge(Feature.platform(id)) }
+  # includes(:features).merge(Feature.platform(id)) }  # merge generates an array
   # includes(:features).where(features: {id: id}) }
-  # joins(:features).where('features.id' => id) }  # Not chainable
+  # joins(:features).where('features.id' => id) }  # Not chainable: searches for 'features.id = 1 and features.id = 2'
 
   # scope :language, ->(id) { where(id: Feature.find(id).program_ids) }
   scope :platform            , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
+  scope :function            , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
   scope :language            , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
   scope :other_function      , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
   scope :conversion_function , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
@@ -170,7 +174,6 @@ class Program < ActiveRecord::Base
   scope :network_function    , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
   scope :programming_function, ->(id) { where id: Feature.find(id).programs.pluck(:id) }
   scope :interface           , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :function            , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
   scope :speciality          , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
   scope :programming         , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
   scope :network             , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
@@ -178,7 +181,29 @@ class Program < ActiveRecord::Base
   scope :read_format         , ->(id) { where id: ImageFormat.find(id).read_programs.pluck(:id) }
   scope :write_format        , ->(id) { where id: ImageFormat.find(id).write_programs.pluck(:id) }
 
-  scope :for_platform        , ->(id) { (:features).where(features: {category: 'Platform', id: id}) }
+  # scope :read_format         , ->(id) { eager_load(:platforms, :resource_types, :resources, :read_image_formats).where(read_image_formats: {id: id}) }
+
+  # scope :function            , ->(id) { eager_load(:resource_types, :resources, :platforms, :functions).where(features: {id: id}) }
+  # scope :function            , ->(id) { includes(:resource_types, :resources, :functions).where(features: {id: id}) }
+  # scope :for_feature         , ->(id) { eager_load(:platforms, :resource_types, :resources).where(features: {id: id}) }
+  # scope :platform         , ->(id) { includes(:platforms).where(platforms: {id: id}) }
+  # scope :platform         , ->(id) { includes(:platforms).where(features: {id: id, category: "Platform"}).references(:features) }
+  # scope :for_feature , ->(id) { joins(:features).where(features: {id: id}).references(:features) }
+  scope :for_feature,  -> (id)  { includes(:features).references(:features).merge(Feature.platform(id)) }
+
+  # scope :platform, ->(id) { includes(:platforms).references(:platforms).merge(Feature.platforms(id)) }
+  # scope :function, ->(id) { includes(:functions).references(:functions).merge(Feature.functions(id)) }
+
+  # scope :function , ->(id) { joins(:features).where(features: {id: id}).references(:features) }
+  # scope :function , ->(id) { Feature.find(id).programs }
+  # scope :function         , ->(id) { includes(:functions).where(features: {id: id, category: "Function"}).references(:features) }
+#   scope :for_feature         , ->(id) { includes(:platforms, :resource_types, :resources).where(features: {id: id}) }
+#   class << self
+#   %i(platform function).each{|ali| alias_method ali, :for_feature}
+# end
+
+  # scope :for_platform        , ->(id) { (:features).where(features: {category: 'Platform', id: id}) }
+  # scope :ffor_platform       , ->(id) { includes(:platforms).where(platforms: {id: id}).references(:features) }
 
   scope :for_audience        , ->(id) { includes(:features).where(features: {category: 'Audience', id: id}) }
   scope :latest_added        , ->(n = 10) { active.imaging.where.not(add_date: nil).order(add_date: :desc).limit(n) }
@@ -192,7 +217,7 @@ class Program < ActiveRecord::Base
   def self.ransackable_scopes(auth_object = nil)
     %i(platform language interface function read_format write_format) +
       %i(other_function conversion_function display_function header_function network_function programming_function) +
-      %i(speciality programming network author scale_ratings for_audience)
+      %i(speciality programming network author scale_ratings for_audience active imaging)
   end
 
   # def self.ransortable_attributes(auth_object = nil)

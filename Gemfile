@@ -139,6 +139,7 @@ group :development do
   gem "better_errors"
   # gem 'passenger'
 
+gem 'scout_apm'
 
     gem 'capistrano-rbenv',     require: false
     gem 'capistrano-rails',   require: false

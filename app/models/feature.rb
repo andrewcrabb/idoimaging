@@ -53,7 +53,9 @@ class Feature < ActiveRecord::Base
   scope :advanced, -> { where search_level: SEARCH_LEVEL_ADVANCED }
 
   # scope :functions             , -> { where("category like '_%'").order(:category)}
-  scope :functions             , -> { where(category: FUNCTION   ).order(:category)}
+  scope :functions            , ->(id = nil) { id ? where(id: id) : where(category: FUNCTION   ).order(:category)}
+  scope :platforms            , ->(id = nil) { id ? where(id: id) : where(category: PLATFORM    ).order(:value)}
+
   scope :other_functions       , -> { where(category: OTHER      ).order(:value)}
   scope :conversion_functions  , -> { where(category: CONVERSION ).order(:value)}
   scope :display_functions     , -> { where(category: DISPLAY    ).order(:value)}
@@ -66,7 +68,6 @@ class Feature < ActiveRecord::Base
   scope :interfaces           , -> { where(category: INTERFACE   ).order(:value)}
   scope :languages            , -> { where(category: LANGUAGE    ).order(:value)}
   scope :other_features       , -> { where(category: OTHER       ).order(:value)}
-  scope :platforms            , -> { where(category: PLATFORM    ).order(:value)}
   scope :specialities         , -> { where(category: SPECIALITY  ).order(:value)}
   scope :audiences            , -> { where(category: AUDIENCE    ).order(:value)}
   scope :analyses             , -> { where(category: ANALYSIS    ).order(:value)}
