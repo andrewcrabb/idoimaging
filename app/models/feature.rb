@@ -74,6 +74,7 @@ class Feature < ActiveRecord::Base
 
   scope :platform             , ->(id) { where(id: id)}
   scope :interface            , ->(id) { where(id: id)}
+  scope :for_feature            , ->(id) { where(id: id)}
 
   def self.categories
     pluck(:category).uniq.sort

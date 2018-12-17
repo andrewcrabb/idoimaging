@@ -8,20 +8,14 @@ class ProgramsController < ApplicationController
     logger.error("@programs has #{@programs.count} entries") if @programs
     basic_params = %i(function read_format platform name_cont)
     advanced_params = %i(summary_cont interface speciality write_format for_audience language display_function header_function network_function programming_function other_function)
-    logger.error("Before -1")
     qparams = params[:q] ? params[:q].permit(basic_params + advanced_params) : nil
     if qparams
-    logger.error("Before 0: qparams #{qparams} ")
       # You could use the :active and :imaging scopes in the query.  Result is the same as the scopes are chained.
       # @q = Program.active.imaging.ransack(qparams)
       @q = Program.ransack(qparams.merge(active: true, imaging: true))
-    logger.error("Before 1")
       @q.sorts = 'rating desc' if @q.sorts.empty?
-    logger.error("Before 2")
       make_search_params(qparams)
-    logger.error("Before 3")
       @programs = @q.result.includes(:languages, :platforms, :source_urls, :ratings).page(params[:page]).per(10)
-    logger.error("Before 4")
     else
       @q = Program.none.ransack
       @programs = nil
@@ -65,7 +59,7 @@ class ProgramsController < ApplicationController
 
   def describe_search_val(key, val)
     features = Feature.select(:category).distinct.pluck(:category)
-    # logger.debug("features #{features} key #{key}")
+    logger.error("features #{features} key #{key}")
     keycaps = key.titleize.gsub(/ /, '')
     if features.include? keycaps
       Feature.find(val.to_i).value
@@ -73,8 +67,10 @@ class ProgramsController < ApplicationController
       ImageFormat.find(val.to_i).name
     elsif key.match(/author/)
       Author.find(val.to_i).common_name
+    # elsif key.match(/for_audience/)
+
     else
-      logger.error("Can't find key #{key} val #{val}")
+      logger.error("Can't find key #{key} val #{val} keycaps #{keycaps}")
     end
   end
 

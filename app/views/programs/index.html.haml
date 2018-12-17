@@ -24,6 +24,7 @@
         %tbody
           - @programs.each do |program|
             %tr
+              / %td foo
               %td= link_to(program.name, program_path(program))
               %td= program.summary
               %td= program_rating_str(program)

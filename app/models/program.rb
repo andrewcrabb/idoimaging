@@ -37,28 +37,28 @@ class Program < ActiveRecord::Base
 
   # Functions (Feature category = 'function')
   # The lambda on the association is called on the linked class (Feature).  I got it from http://bit.ly/2UOkAFm and http://bit.ly/2PDJAep
-  has_many :other_functions      , -> { other_functions       }, through: :program_features, source: :feature
+  has_many :audience_features    , -> { audience_features     }, through: :program_features, source: :feature
+  has_many :audiences            , -> { audiences             }, through: :program_features, source: :feature
   has_many :conversion_functions , -> { conversion_functions  }, through: :program_features, source: :feature
   has_many :display_functions    , -> { display_functions     }, through: :program_features, source: :feature
+  has_many :distributions        , -> { distributions         }, through: :program_features, source: :feature
+  has_many :functions            , -> { functions             }, through: :program_features, source: :feature
   has_many :header_functions     , -> { header_functions      }, through: :program_features, source: :feature
+  has_many :interfaces           , -> { interfaces            }, through: :program_features, source: :feature
+  has_many :languages            , -> { languages             }, through: :program_features, source: :feature
+  has_many :network_features     , -> { network_features      }, through: :program_features, source: :feature
   has_many :network_functions    , -> { network_functions     }, through: :program_features, source: :feature
+  has_many :other_features       , -> { other_features        }, through: :program_features, source: :feature
+  has_many :other_functions      , -> { other_functions       }, through: :program_features, source: :feature
+  has_many :platforms            , -> { platforms             }, through: :program_features, source: :feature
   has_many :programming_functions, -> { programming_functions }, through: :program_features, source: :feature
+  has_many :specialities         , -> { specialities          }, through: :program_features, source: :feature
 
   # has_many :platforms            , -> { where(category: "Platform") },through: :program_features, source: :feature
   # has_many :platforms            , ->(id = nil) { platforms(id) },through: :program_features, source: :feature
-  has_many :platforms            , -> { platforms },through: :program_features, source: :feature
-  has_many :functions            , -> { functions },through: :program_features, source: :feature
   # has_many :functions            , -> { where(category: "Function") },through: :program_features, source: :feature
   # has_many :functions            , ->(id = nil) { functions(id) },through: :program_features, source: :feature
 
-  has_many :languages            , -> { languages             }, through: :program_features, source: :feature
-  has_many :specialities         , -> { specialities          }, through: :program_features, source: :feature
-  has_many :network_features     , -> { network_features      }, through: :program_features, source: :feature
-  has_many :other_features       , -> { other_features        }, through: :program_features, source: :feature
-  has_many :audience_features    , -> { audience_features     }, through: :program_features, source: :feature
-  has_many :interfaces           , -> { interfaces            }, through: :program_features, source: :feature
-  has_many :distributions        , -> { distributions         }, through: :program_features, source: :feature
-  has_many :audiences            , -> { audiences             }, through: :program_features, source: :feature
 
   has_many :resources                      , as: :resourceful, dependent: :destroy
   has_many :source_urls, -> { source_urls }, as: :resourceful, class_name: 'Resource'
@@ -162,50 +162,39 @@ class Program < ActiveRecord::Base
   # includes(:features).merge(Feature.platform(id)) }  # merge generates an array
   # includes(:features).where(features: {id: id}) }
   # joins(:features).where('features.id' => id) }  # Not chainable: searches for 'features.id = 1 and features.id = 2'
-
+  # scope :for_feature,  -> (id)  { includes(:features).references(:features).merge(Feature.for_feature(id)) }
+  # scope :ffor_feature         , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
+  # scope :fffor_feature         , ->(id) { includes(:features).references(:features).where feature: {id: id} }
+  # scope :platform, ->(id) { includes(:platforms).references(:platforms).merge(Feature.platforms(id)) }
+  # scope :function, ->(id) { includes(:functions).references(:functions).merge(Feature.functions(id)) }
+  # scope :function , ->(id) { joins(:features).where(features: {id: id}).references(:features) }
+  # scope :function , ->(id) { Feature.find(id).programs }
+  # scope :function         , ->(id) { includes(:functions).where(features: {id: id, category: "Function"}).references(:features) }
+  # scope :for_feature         , ->(id) { includes(:platforms, :resource_types, :resources).where(features: {id: id}) }
+  # scope :for_platform        , ->(id) { (:features).where(features: {category: 'Platform', id: id}) }
+  # scope :ffor_platform       , ->(id) { includes(:platforms).where(platforms: {id: id}).references(:features) }
   # scope :language, ->(id) { where(id: Feature.find(id).program_ids) }
-  scope :platform            , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :function            , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :language            , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :other_function      , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :conversion_function , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :display_function    , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :header_function     , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :network_function    , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :programming_function, ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :interface           , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :speciality          , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :programming         , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :network             , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  scope :author              , ->(id) { where id: Author.find(id).programs.pluck(:id) }
-  scope :read_format         , ->(id) { where id: ImageFormat.find(id).read_programs.pluck(:id) }
-  scope :write_format        , ->(id) { where id: ImageFormat.find(id).write_programs.pluck(:id) }
-
+  # scope :platform            , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
+  # scope :function            , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
   # scope :read_format         , ->(id) { eager_load(:platforms, :resource_types, :resources, :read_image_formats).where(read_image_formats: {id: id}) }
-
   # scope :function            , ->(id) { eager_load(:resource_types, :resources, :platforms, :functions).where(features: {id: id}) }
   # scope :function            , ->(id) { includes(:resource_types, :resources, :functions).where(features: {id: id}) }
   # scope :for_feature         , ->(id) { eager_load(:platforms, :resource_types, :resources).where(features: {id: id}) }
   # scope :platform         , ->(id) { includes(:platforms).where(platforms: {id: id}) }
   # scope :platform         , ->(id) { includes(:platforms).where(features: {id: id, category: "Platform"}).references(:features) }
-  # scope :for_feature , ->(id) { joins(:features).where(features: {id: id}).references(:features) }
-  scope :for_feature,  -> (id)  { includes(:features).references(:features).merge(Feature.platform(id)) }
 
-  # scope :platform, ->(id) { includes(:platforms).references(:platforms).merge(Feature.platforms(id)) }
-  # scope :function, ->(id) { includes(:functions).references(:functions).merge(Feature.functions(id)) }
+  scope :author      , ->(id) { where id: Author.find(id).programs }
+  scope :read_format , ->(id) { where id: ImageFormat.find(id).read_programs }
+  scope :write_format, ->(id) { where id: ImageFormat.find(id).write_programs }
+  # scope :for_feature , ->(id) { includes(:platforms, :languages).references(:platforms, :languages).where id: Feature.find(id).programs }
+  scope :for_feature , ->(id) { where id: Feature.find(id).programs }
+  class << self
+    feature_scopes  = %i(display_function for_audience function header_function interface language)
+    feature_scopes += %i(network_function other_function platform programming_function read_format speciality write_format)
+    feature_scopes.each{ |scop| alias_method scop, :for_feature}
+  end
 
-  # scope :function , ->(id) { joins(:features).where(features: {id: id}).references(:features) }
-  # scope :function , ->(id) { Feature.find(id).programs }
-  # scope :function         , ->(id) { includes(:functions).where(features: {id: id, category: "Function"}).references(:features) }
-#   scope :for_feature         , ->(id) { includes(:platforms, :resource_types, :resources).where(features: {id: id}) }
-#   class << self
-#   %i(platform function).each{|ali| alias_method ali, :for_feature}
-# end
-
-  # scope :for_platform        , ->(id) { (:features).where(features: {category: 'Platform', id: id}) }
-  # scope :ffor_platform       , ->(id) { includes(:platforms).where(platforms: {id: id}).references(:features) }
-
-  scope :for_audience        , ->(id) { includes(:features).where(features: {category: 'Audience', id: id}) }
+  # scope :for_audience        , ->(id) { includes(:features).where(features: {category: 'Audience', id: id}) }
   scope :latest_added        , ->(n = 10) { active.imaging.where.not(add_date: nil).order(add_date: :desc).limit(n) }
 
   validates :name, presence: true
