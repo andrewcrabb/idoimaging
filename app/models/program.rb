@@ -26,7 +26,7 @@ class Program < ActiveRecord::Base
   has_many :features, through: :program_features
   has_many :read_program_image_formats
   has_many :write_program_image_formats
-  has_many :read_image_formats, through: :read_program_image_formats, source: :image_format
+  has_many :read_image_formats , through: :read_program_image_formats , source: :image_format
   has_many :write_image_formats, through: :write_program_image_formats, source: :image_format
   has_many :images, as: :imageable, dependent: :destroy
   has_many :ratings, dependent: :destroy
@@ -184,13 +184,13 @@ class Program < ActiveRecord::Base
   # scope :platform         , ->(id) { includes(:platforms).where(features: {id: id, category: "Platform"}).references(:features) }
 
   scope :author      , ->(id) { where id: Author.find(id).programs }
-  scope :read_format , ->(id) { where id: ImageFormat.find(id).read_programs }
+  scope :read_format , ->(id) { where id: ImageFormat.find(id).read_programs}
   scope :write_format, ->(id) { where id: ImageFormat.find(id).write_programs }
   # scope :for_feature , ->(id) { includes(:platforms, :languages).references(:platforms, :languages).where id: Feature.find(id).programs }
   scope :for_feature , ->(id) { where id: Feature.find(id).programs }
   class << self
     feature_scopes  = %i(display_function for_audience function header_function interface language)
-    feature_scopes += %i(network_function other_function platform programming_function read_format speciality write_format)
+    feature_scopes += %i(network_function other_function platform programming_function speciality )
     feature_scopes.each{ |scop| alias_method scop, :for_feature}
   end
 

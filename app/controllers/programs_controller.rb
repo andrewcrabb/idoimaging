@@ -59,7 +59,7 @@ class ProgramsController < ApplicationController
 
   def describe_search_val(key, val)
     features = Feature.select(:category).distinct.pluck(:category)
-    logger.error("features #{features} key #{key}")
+    # logger.error("features #{features} key #{key}")
     keycaps = key.titleize.gsub(/ /, '')
     if features.include? keycaps
       Feature.find(val.to_i).value
