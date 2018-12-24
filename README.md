@@ -1,24 +1,9 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Useful queries:
 
-Things you may want to cover:
+Count of resources per program
+Program.joins(:resources).group("programs.name").count("resources.id")
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Count of source urls per program
+Program.joins(:resources).where("resources.resource_type_id = 2").group("programs.name").count("resources.id")

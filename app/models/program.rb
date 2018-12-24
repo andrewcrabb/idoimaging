@@ -148,7 +148,7 @@ class Program < ActiveRecord::Base
   scope :imaging         , -> { where(program_kind: program_kinds[:k_imaging]) }
   scope :prerequisite    , -> { where(program_kind: program_kinds[:k_prerequisite]) }
   scope :software_group  , -> { where(program_kind: program_kinds[:k_software_group]) }
-  scope :imaging_or_group, -> { Program.where("program_kind = ? or program_kind = ?", program_kinds[:k_imaging], program_kinds[:k_software_group]) }
+  scope :imaging_or_group, -> { where("program_kind = ? or program_kind = ?", program_kinds[:k_imaging], program_kinds[:k_software_group]) }
 
   # Default scope of active imaging programs means prerequisite queries must b
   # This was causing strange issues: Program.find(x).required_programs
@@ -186,7 +186,6 @@ class Program < ActiveRecord::Base
   scope :author      , ->(id) { where id: Author.find(id).programs }
   scope :read_format , ->(id) { where id: ImageFormat.find(id).read_programs}
   scope :write_format, ->(id) { where id: ImageFormat.find(id).write_programs }
-  # scope :for_feature , ->(id) { includes(:platforms, :languages).references(:platforms, :languages).where id: Feature.find(id).programs }
   scope :for_feature , ->(id) { where id: Feature.find(id).programs }
   class << self
     feature_scopes  = %i(display_function for_audience function header_function interface language)
@@ -215,6 +214,22 @@ class Program < ActiveRecord::Base
 
   def self.calculate_ratings
     all.includes(:ratings).order(:name).each { |program| program.calculate_ratings }
+  end
+
+  # All programs with a github resource
+
+  def self.githubs
+    includes(:resources).select{ |p| p.resources.map{ |r| r.github? }.any? }
+  end
+
+  def self.bitbuckets
+    includes(:resources).select{ |p| p.resources.map{ |r| r.bitbucket? }.any? }
+  end
+
+  # All programs without a github resource
+
+  def self.non_githubs
+    includes(:resources).select{ |p| p.resources.map{ |r| r.github? }.none? }
   end
 
   def calculate_ratings
@@ -266,6 +281,20 @@ class Program < ActiveRecord::Base
 
   def added_date
     (add_date or created_at.to_date)
+  end
+
+  def source_url
+    source_urls.count.zero? ? nil : source_urls.first
+  end
+
+  def rev_url
+    rev_urls.count.zero? ? nil : rev_urls.first
+  end
+
+  # Return true if this program has a resource on github
+
+  def github?
+    resources.map{ |r| r.github? }.any?
   end
 
 end

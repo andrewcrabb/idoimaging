@@ -58,6 +58,7 @@ gem 'sprockets'
 gem 'devise', git: 'https://github.com/plataformatec/devise.git', branch: 'master'
 # gem 'devise'
 gem 'kaminari'
+gem 'httparty'
 # ---------------------------  Temp due to error messages after upgrade  --------------------------------------
 # gem 'activeadmin', github: 'activeadmin'
 # Everyone likes their own brand.

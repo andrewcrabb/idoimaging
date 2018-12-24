@@ -221,6 +221,8 @@ GEM
       domain_name (~> 0.5)
     http-form_data (2.1.1)
     http_parser.rb (0.6.0)
+    httparty (0.16.1)
+      multi_xml (>= 0.5.2)
     i18n (1.1.1)
       concurrent-ruby (~> 1.0)
     i18n_data (0.8.0)
@@ -292,6 +294,7 @@ GEM
     money (6.13.1)
       i18n (>= 0.6.4, <= 2)
     multi_json (1.13.1)
+    multi_xml (0.6.0)
     multipart-post (2.0.0)
     mysql2 (0.5.2)
     naught (1.1.0)
@@ -478,6 +481,7 @@ DEPENDENCIES
   haml-rails
   hamlit
   high_voltage
+  httparty
   jbuilder
   jquery-rails
   jquery-ui-rails

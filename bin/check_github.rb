@@ -99,7 +99,8 @@ def compare_latest_version(prog_id, latest)
   # puts "#{prog_id} #{latest_version_date} '#{latest_version_date.class}'"
 end
 
-# Test release date of each program that has a github resource
+# Test release date of each program that has a github resource.
+# Note that rev_url can also be github, but currently all programs with github rev_url also have github source_url
 
 source_urls = Resource.source_urls.github
 puts "#{source_urls.count} source_urls"

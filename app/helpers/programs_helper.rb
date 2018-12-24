@@ -58,7 +58,7 @@ module ProgramsHelper
     render_program_row("Get Source", languages_str(source_url.url, program.languages)) if source_url
   end
 
-  def social_handle_str(program, all_resources, network)
+  def social_handle_str(all_resources, network)
     resources = all_resources.select { |k, v| k.eql? network }
     if resources.count > 0
       content = resources[network].map{ |rsrc| make_handle_str(rsrc, network) }.join(',')

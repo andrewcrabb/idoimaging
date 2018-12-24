@@ -5,6 +5,7 @@ class Resource < ActiveRecord::Base
 
   belongs_to :resourceful, polymorphic: true
   belongs_to :resource_type
+  # has_many :programs, -> { where resourceful_type: "Program" }, foreign_key: :resource_ids
 
   has_many   :redirects
   validates  :resource_type, presence: true
@@ -29,23 +30,25 @@ class Resource < ActiveRecord::Base
     resource_type_id.eql? 9
   end
 
-  scope :blogs           , -> { includes(:resource_type).where(resource_types: {name: ResourceType::BLOG_URL}) }
-  scope :count_urls      , -> { includes(:resource_type).where(resource_types: {name: ResourceType::COUNT_URL}) }
-  scope :facebooks       , -> { includes(:resource_type).where(resource_types: {name: ResourceType::FACEBOOK}) }
-  scope :forums          , -> { includes(:resource_type).where(resource_types: {name: ResourceType::FORUM}) }
-  scope :githubs         , -> { includes(:resource_type).where(resource_types: {name: ResourceType::GITHUB}) }
-  scope :home_urls       , -> { includes(:resource_type).where(resource_types: {name: ResourceType::HOME_URL}) }
-  scope :idi_blog_entries, -> { includes(:resource_type).where(resource_types: {name: ResourceType::IDI_BLOG_ENTRY}) }
-  scope :idi_demos       , -> { includes(:resource_type).where(resource_types: {name: ResourceType::IDI_DEMO}) }
-  scope :idi_wiki_entries, -> { includes(:resource_type).where(resource_types: {name: ResourceType::IDI_WIKI_ENTRY}) }
-  scope :rev_urls        , -> { includes(:resource_type).where(resource_types: {name: ResourceType::REV_URL}) }
-  scope :source_urls     , -> { includes(:resource_type).where(resource_types: {name: ResourceType::SOURCE_URL}) }
-  scope :twitters        , -> { includes(:resource_type).where(resource_types: {name: ResourceType::TWITTER}) }
-  scope :video_urls      , -> { includes(:resource_type).where(resource_types: {name: ResourceType::VIDEO_URL}) }
-  scope :web_demos       , -> { includes(:resource_type).where(resource_types: {name: ResourceType::WEB_DEMO}) }
+  # All of these used to be 'includes'
+  scope :blogs           , -> { joins(:resource_type).where(resource_types: {name: ResourceType::BLOG_URL}) }
+  scope :count_urls      , -> { joins(:resource_type).where(resource_types: {name: ResourceType::COUNT_URL}) }
+  scope :facebooks       , -> { joins(:resource_type).where(resource_types: {name: ResourceType::FACEBOOK}) }
+  scope :forums          , -> { joins(:resource_type).where(resource_types: {name: ResourceType::FORUM}) }
+  scope :githubs         , -> { joins(:resource_type).where(resource_types: {name: ResourceType::GITHUB}) }
+  scope :home_urls       , -> { joins(:resource_type).where(resource_types: {name: ResourceType::HOME_URL}) }
+  scope :idi_blog_entries, -> { joins(:resource_type).where(resource_types: {name: ResourceType::IDI_BLOG_ENTRY}) }
+  scope :idi_demos       , -> { joins(:resource_type).where(resource_types: {name: ResourceType::IDI_DEMO}) }
+  scope :idi_wiki_entries, -> { joins(:resource_type).where(resource_types: {name: ResourceType::IDI_WIKI_ENTRY}) }
+  scope :rev_urls        , -> { joins(:resource_type).where(resource_types: {name: ResourceType::REV_URL}) }
+  scope :source_urls     , -> { joins(:resource_type).where(resource_types: {name: ResourceType::SOURCE_URL}) }
+  scope :twitters        , -> { joins(:resource_type).where(resource_types: {name: ResourceType::TWITTER}) }
+  scope :video_urls      , -> { joins(:resource_type).where(resource_types: {name: ResourceType::VIDEO_URL}) }
+  scope :web_demos       , -> { joins(:resource_type).where(resource_types: {name: ResourceType::WEB_DEMO}) }
   scope :of_programs     , -> { where(resourceful_type: "Program") }
-  scope :github          , -> { where("url like '%github%'") }
-  scope :not_github      , -> { where.not("url like '%github%'") }
+  scope :githubs         , -> { where("url like '%github%'") }
+  scope :bitbuckets      , -> { where("url like '%bitbucket%'") }
+  scope :not_githubs     , -> { where.not("url like '%github%'") }
 
   scope :of_program      , ->(prog_id)   { where(resourceful_type: "Program", resourceful_id: prog_id) }
   scope :of_author       , ->(auth_id)   { where(resourceful_type: "Author" , resourceful_id: auth_id) }
@@ -79,4 +82,7 @@ class Resource < ActiveRecord::Base
     url.include? 'github'
   end
 
+  def bitbucket?
+    url.include? 'bitbucket'
+  end
 end
