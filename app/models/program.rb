@@ -149,6 +149,8 @@ class Program < ActiveRecord::Base
   scope :prerequisite    , -> { where(program_kind: program_kinds[:k_prerequisite]) }
   scope :software_group  , -> { where(program_kind: program_kinds[:k_software_group]) }
   scope :imaging_or_group, -> { where("program_kind = ? or program_kind = ?", program_kinds[:k_imaging], program_kinds[:k_software_group]) }
+  scope :githubs         , -> { joins(:resources).merge(Resource.githubs   ).distinct }
+  scope :bitbuckets      , -> { joins(:resources).merge(Resource.bitbuckets).distinct }
 
   # Default scope of active imaging programs means prerequisite queries must b
   # This was causing strange issues: Program.find(x).required_programs
@@ -218,13 +220,13 @@ class Program < ActiveRecord::Base
 
   # All programs with a github resource
 
-  def self.githubs
-    includes(:resources).select{ |p| p.resources.map{ |r| r.github? }.any? }
-  end
+  # def self.githubs
+  #   includes(:resources).select{ |p| p.resources.map{ |r| r.github? }.any? }
+  # end
 
-  def self.bitbuckets
-    includes(:resources).select{ |p| p.resources.map{ |r| r.bitbucket? }.any? }
-  end
+  # def self.bitbuckets
+  #   includes(:resources).select{ |p| p.resources.map{ |r| r.bitbucket? }.any? }
+  # end
 
   # All programs without a github resource
 

@@ -55,19 +55,6 @@ def find_latest_release(client, github_id, releases)
   return latest_release
 end
 
-def find_latest_release_orig(client, github_id, releases)
-  puts "#{github_id}: #{releases.count} releases"
-  if releases.count.nonzero?
-    begin
-      latest = client.latest_release(github_id)
-      latest_release = [latest.published_at, latest.tag_name]
-    rescue
-      puts "Exception: latest_release(#{github_id})"
-    end
-  end
-  return latest_release
-end
-
 # Create a new Version record for the given program.
 
 def create_new_version(prog, latest)

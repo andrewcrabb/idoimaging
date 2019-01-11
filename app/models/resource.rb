@@ -31,20 +31,20 @@ class Resource < ActiveRecord::Base
   end
 
   # All of these used to be 'includes'
-  scope :blogs           , -> { joins(:resource_type).where(resource_types: {name: ResourceType::BLOG_URL}) }
-  scope :count_urls      , -> { joins(:resource_type).where(resource_types: {name: ResourceType::COUNT_URL}) }
-  scope :facebooks       , -> { joins(:resource_type).where(resource_types: {name: ResourceType::FACEBOOK}) }
-  scope :forums          , -> { joins(:resource_type).where(resource_types: {name: ResourceType::FORUM}) }
-  scope :githubs         , -> { joins(:resource_type).where(resource_types: {name: ResourceType::GITHUB}) }
-  scope :home_urls       , -> { joins(:resource_type).where(resource_types: {name: ResourceType::HOME_URL}) }
-  scope :idi_blog_entries, -> { joins(:resource_type).where(resource_types: {name: ResourceType::IDI_BLOG_ENTRY}) }
-  scope :idi_demos       , -> { joins(:resource_type).where(resource_types: {name: ResourceType::IDI_DEMO}) }
-  scope :idi_wiki_entries, -> { joins(:resource_type).where(resource_types: {name: ResourceType::IDI_WIKI_ENTRY}) }
-  scope :rev_urls        , -> { joins(:resource_type).where(resource_types: {name: ResourceType::REV_URL}) }
-  scope :source_urls     , -> { joins(:resource_type).where(resource_types: {name: ResourceType::SOURCE_URL}) }
-  scope :twitters        , -> { joins(:resource_type).where(resource_types: {name: ResourceType::TWITTER}) }
-  scope :video_urls      , -> { joins(:resource_type).where(resource_types: {name: ResourceType::VIDEO_URL}) }
-  scope :web_demos       , -> { joins(:resource_type).where(resource_types: {name: ResourceType::WEB_DEMO}) }
+  scope :blogs           , -> { joins(:resource_type).merge(ResourceType.blog)}
+  scope :count_urls      , -> { joins(:resource_type).merge(ResourceType.count_url )}
+  scope :facebooks       , -> { joins(:resource_type).merge(ResourceType.facebook )}
+  scope :forums          , -> { joins(:resource_type).merge(ResourceType.forum )}
+  scope :githubs         , -> { joins(:resource_type).merge(ResourceType.github) }
+  scope :home_urls       , -> { joins(:resource_type).merge(ResourceType.home_url )}
+  scope :idi_blog_entries, -> { joins(:resource_type).merge(ResourceType.idi_blog_entry )}
+  scope :idi_demos       , -> { joins(:resource_type).merge(ResourceType.idi_demo )}
+  scope :idi_wiki_entries, -> { joins(:resource_type).merge(ResourceType.idi_wiki_entry )}
+  scope :rev_urls        , -> { joins(:resource_type).merge(ResourceType.rev_url )}
+  scope :source_urls     , -> { joins(:resource_type).merge(ResourceType.source_url )}
+  scope :twitters        , -> { joins(:resource_type).merge(ResourceType.twitter )}
+  scope :video_urls      , -> { joins(:resource_type).merge(ResourceType.video_url )}
+  scope :web_demos       , -> { joins(:resource_type).merge(ResourceType.web_demo )}
   scope :of_programs     , -> { where(resourceful_type: "Program") }
   scope :githubs         , -> { where("url like '%github%'") }
   scope :bitbuckets      , -> { where("url like '%bitbucket%'") }

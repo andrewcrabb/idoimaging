@@ -27,22 +27,23 @@ class ResourceType < ActiveRecord::Base
   # These resources are displayed in a Program's resource list rather than individually.
   RESOURCE_TYPES = [BLOG_ENTRY, FORUM, IDI_BLOG_ENTRY, IDI_DEMO, IDI_WIKI_ENTRY, VIDEO_URL, WEB_DEMO, WIKI]
 
-  scope :blog          , -> { find_by(name: BLOG_URL       ) }  # Blog belonging to a program or person
-  scope :blog_entry    , -> { find_by(name: BLOG_ENTRY     ) }  # Post in third-party blog about a program
-  scope :count_url     , -> { find_by(name: COUNT_URL      ) }
-  scope :facebook      , -> { find_by(name: FACEBOOK       ) }
-  scope :forum         , -> { find_by(name: FORUM          ) }
-  scope :github        , -> { find_by(name: GITHUB         ) }
-  scope :home_url      , -> { find_by(name: HOME_URL       ) }
-  scope :idi_blog_enty , -> { find_by(name: IDI_BLOG_ENTRY ) }  # Post in IDI blog
-  scope :idi_demo      , -> { find_by(name: IDI_DEMO       ) }
-  scope :idi_wiki_entry, -> { find_by(name: IDI_WIKI_ENTRY ) }
-  scope :rev_url       , -> { find_by(name: REV_URL        ) }
-  scope :source_url    , -> { find_by(name: SOURCE_URL     ) }
-  scope :twitter       , -> { find_by(name: TWITTER        ) }
-  scope :video_url     , -> { find_by(name: VIDEO_URL      ) }
-  scope :web_demo      , -> { find_by(name: WEB_DEMO       ) }
-  scope :wiki          , -> { find_by(name: WIKI           ) }
+  scope :blog          , -> { where(name: BLOG_URL       ) }  # Blog belonging to a program or person
+  scope :blog_entry    , -> { where(name: BLOG_ENTRY     ) }  # Post in third-party blog about a program
+  scope :count_url     , -> { where(name: COUNT_URL      ) }
+  scope :facebook      , -> { where(name: FACEBOOK       ) }
+  scope :forum         , -> { where(name: FORUM          ) }
+  scope :github        , -> { where(name: GITHUB         ) }
+  # scope :home_url      , -> { where(name: HOME_URL       ) }
+  scope :home_url      , -> { where(name: HOME_URL       ) }
+  scope :idi_blog_enty , -> { where(name: IDI_BLOG_ENTRY ) }  # Post in IDI blog
+  scope :idi_demo      , -> { where(name: IDI_DEMO       ) }
+  scope :idi_wiki_entry, -> { where(name: IDI_WIKI_ENTRY ) }
+  scope :rev_url       , -> { where(name: REV_URL        ) }
+  scope :source_url    , -> { where(name: SOURCE_URL     ) }
+  scope :twitter       , -> { where(name: TWITTER        ) }
+  scope :video_url     , -> { where(name: VIDEO_URL      ) }
+  scope :web_demo      , -> { where(name: WEB_DEMO       ) }
+  scope :wiki          , -> { where(name: WIKI           ) }
 
   def self.selector_values
     all.order(:name).pluck(:name, :id)
