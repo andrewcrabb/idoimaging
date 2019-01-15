@@ -1,5 +1,12 @@
 class Program < ActiveRecord::Base
   audited
+
+  require_relative './feature'
+
+  # Implement ability to check for updates.
+  require 'checkable'
+  include Checkable
+
   include PgSearch
   pg_search_scope :search_for,
     against: {name: 'A', summary: 'B', description: 'C'},
@@ -18,7 +25,6 @@ class Program < ActiveRecord::Base
       dictionary: "english",
     }
   }
-  require_relative './feature'
 
   has_many :author_programs, dependent: :destroy
   has_many :authors, through: :author_programs
@@ -218,22 +224,6 @@ class Program < ActiveRecord::Base
     all.includes(:ratings).order(:name).each { |program| program.calculate_ratings }
   end
 
-  # All programs with a github resource
-
-  # def self.githubs
-  #   includes(:resources).select{ |p| p.resources.map{ |r| r.github? }.any? }
-  # end
-
-  # def self.bitbuckets
-  #   includes(:resources).select{ |p| p.resources.map{ |r| r.bitbucket? }.any? }
-  # end
-
-  # All programs without a github resource
-
-  def self.non_githubs
-    includes(:resources).select{ |p| p.resources.map{ |r| r.github? }.none? }
-  end
-
   def calculate_ratings
     rating_will_change!
     # logger.debug("*** id #{id} rating #{rating} ***")
@@ -291,12 +281,6 @@ class Program < ActiveRecord::Base
 
   def rev_url
     rev_urls.count.zero? ? nil : rev_urls.first
-  end
-
-  # Return true if this program has a resource on github
-
-  def github?
-    resources.map{ |r| r.github? }.any?
   end
 
 end

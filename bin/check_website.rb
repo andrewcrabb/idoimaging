@@ -6,13 +6,26 @@
 
 require 'httparty'
 
+# My libraries
+require_relative 'checkable.rb'
+
+include Checkable
+
 class CheckWebsite < Thor
 
   desc 'check_all', 'Check all websites'
   def check_all
-    Program.non_githubs.each do |program|
-      check_program(program)
-    end
+    check_programs(Program.non_githubs)
+  end
+
+  desc 'check_github', 'Check all GitHub sites'
+  def check_github
+    check_programs(Program.githubs)
+  end
+
+  desc 'check_bitbucket', 'Check all BitBucket sites'
+  def check_bitbucket
+    check_programs(Program.bitbuckets)
   end
 
   desc 'check NAME', 'Check given program'
@@ -32,30 +45,10 @@ class CheckWebsite < Thor
 
   no_commands do
 
-    def check_program(program)
-      rev_urls = program.rev_urls
-      unless rev_urls.count.nonzero?
-        printf("Program %3d %-40s no rev_url\n", program.id, program.name)
-        return
+    def check_programs(programs)
+      programs.each do |program|
+        program.check_for_update
       end
-
-      ver = program.versions.order(:date).last
-      unless ver and ver.rev_str
-        printf("Program %3d %-40s no rev_str\n", program.id, program.name)
-        return
-      end
-
-      rev_url = rev_urls.first
-      response = HTTParty.get(rev_url.full_url)
-      got_response = response.code.eql?(200) && response.body
-      foundit = got_response ? response.body.include?(ver.rev_str) : false
-
-      ver.last_tested = Date.today
-      ver.last_seen = Date.today if foundit
-      ver.save
-
-      # puts "Program #{program.id} #{program.name} rev_url #{rev_url} last version #{ver.version} date #{ver.date} rev_str #{ver.rev_str} "
-      printf("Program %3d %-40s last version %15s date %12s rev_str %22s found %s in %6d rev_url %s\n", program.id, program.name, ver.version, ver.date, ver.rev_str, foundit.to_s, response.body.length, rev_url.url)
     end
 
     def self.setup

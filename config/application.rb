@@ -19,7 +19,8 @@ module Idoimaging
     # ahc
     config.assets.paths << Rails.root.join('vendor', 'assets', 'components')
 
-
+    # ahc 1/14/19 include /lib path for modules  http://bit.ly/2QLynJn
+    config.autoload_paths += %W(#{config.root}/lib)
 
     # ahc 2/22/17 Handle CORS now I have assets coming from cdn.idoimaging.com
     # http://bit.ly/2lvSKfw
