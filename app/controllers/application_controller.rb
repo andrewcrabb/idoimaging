@@ -32,8 +32,9 @@ class ApplicationController < ActionController::Base
 
   def authenticate_active_admin_user!
     authenticate_user!
-    unless current_user.role?(:admin)
-      flash[:alert] = "You are not authorized to access this resource!"
+    unless current_user.role?(:admin) or current_user.role?(:editor)
+      flash[:alert] = "You are #{current_user.role}: not authorized to access this admin resource"
+      logger.error("User not authorized: #{current_user.email}")
       redirect_to root_path
     end
   end
@@ -42,6 +43,7 @@ class ApplicationController < ActionController::Base
   rescue_from CanCan::AccessDenied do |exception|
     # http://stackoverflow.com/questions/4407719/rails-flash-message-is-not-shown
     flash[:alert] = exception.message
+      logger.error("User exception rescue: #{current_user.email}")
     redirect_to root_url, :alert => exception.message
   end
 

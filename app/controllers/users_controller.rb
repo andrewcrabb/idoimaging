@@ -8,7 +8,7 @@ class UsersController < ApplicationController
 
   def show
     unless @user and current_user.id.to_i.eql?(params[:id].to_i)
-      flash[:alert] = "You are not authorized to access this resource!"
+      flash[:alert] = "You are not authorized to access this resource: #{current_user.id}"
       redirect_to root_path
     end
     @ratings = @user.ratings

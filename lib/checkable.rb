@@ -46,3 +46,4 @@ module Checkable
     end
 
   end
+end

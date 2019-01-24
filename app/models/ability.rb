@@ -23,10 +23,11 @@ class Ability
       # All registered users
       # can {registered user-y permissions}
       case user.role.downcase
-      when User::ADMIN
+      when User::ADMIN.downcase
         can :manage, :all
-      when User::EDITOR
+      when User::EDITOR.downcase
         can :manage, [Program, Author, Resource]
+        # can :manage, :all
       else
         standard_rights
         can :rating, [Program]

@@ -60,12 +60,6 @@ class Program < ActiveRecord::Base
   has_many :programming_functions, -> { programming_functions }, through: :program_features, source: :feature
   has_many :specialities         , -> { specialities          }, through: :program_features, source: :feature
 
-  # has_many :platforms            , -> { where(category: "Platform") },through: :program_features, source: :feature
-  # has_many :platforms            , ->(id = nil) { platforms(id) },through: :program_features, source: :feature
-  # has_many :functions            , -> { where(category: "Function") },through: :program_features, source: :feature
-  # has_many :functions            , ->(id = nil) { functions(id) },through: :program_features, source: :feature
-
-
   has_many :resources                      , as: :resourceful, dependent: :destroy
   has_many :source_urls, -> { source_urls }, as: :resourceful, class_name: 'Resource'
   has_many :home_urls  , -> { home_urls   }, as: :resourceful, class_name: 'Resource'
@@ -157,39 +151,6 @@ class Program < ActiveRecord::Base
   scope :imaging_or_group, -> { where("program_kind = ? or program_kind = ?", program_kinds[:k_imaging], program_kinds[:k_software_group]) }
   scope :githubs         , -> { joins(:resources).merge(Resource.githubs   ).distinct }
   scope :bitbuckets      , -> { joins(:resources).merge(Resource.bitbuckets).distinct }
-
-  # Default scope of active imaging programs means prerequisite queries must b
-  # This was causing strange issues: Program.find(x).required_programs
-  # returns non-empty association, but Program.find(x).required_programs.count returns 0!
-  # default_scope { active.imaging }
-
-  # Return programs for given X
-  # All these are needed as ransackable_scopes though they do the same thing.
-  # These are the scopes I've tried to use but failed.  Only the naiive one works.
-  # includes(:features).where(features: {id: id}).references(:features) }
-  # includes(:features).merge(Feature.platform(id)) }  # merge generates an array
-  # includes(:features).where(features: {id: id}) }
-  # joins(:features).where('features.id' => id) }  # Not chainable: searches for 'features.id = 1 and features.id = 2'
-  # scope :for_feature,  -> (id)  { includes(:features).references(:features).merge(Feature.for_feature(id)) }
-  # scope :ffor_feature         , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  # scope :fffor_feature         , ->(id) { includes(:features).references(:features).where feature: {id: id} }
-  # scope :platform, ->(id) { includes(:platforms).references(:platforms).merge(Feature.platforms(id)) }
-  # scope :function, ->(id) { includes(:functions).references(:functions).merge(Feature.functions(id)) }
-  # scope :function , ->(id) { joins(:features).where(features: {id: id}).references(:features) }
-  # scope :function , ->(id) { Feature.find(id).programs }
-  # scope :function         , ->(id) { includes(:functions).where(features: {id: id, category: "Function"}).references(:features) }
-  # scope :for_feature         , ->(id) { includes(:platforms, :resource_types, :resources).where(features: {id: id}) }
-  # scope :for_platform        , ->(id) { (:features).where(features: {category: 'Platform', id: id}) }
-  # scope :ffor_platform       , ->(id) { includes(:platforms).where(platforms: {id: id}).references(:features) }
-  # scope :language, ->(id) { where(id: Feature.find(id).program_ids) }
-  # scope :platform            , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  # scope :function            , ->(id) { where id: Feature.find(id).programs.pluck(:id) }
-  # scope :read_format         , ->(id) { eager_load(:platforms, :resource_types, :resources, :read_image_formats).where(read_image_formats: {id: id}) }
-  # scope :function            , ->(id) { eager_load(:resource_types, :resources, :platforms, :functions).where(features: {id: id}) }
-  # scope :function            , ->(id) { includes(:resource_types, :resources, :functions).where(features: {id: id}) }
-  # scope :for_feature         , ->(id) { eager_load(:platforms, :resource_types, :resources).where(features: {id: id}) }
-  # scope :platform         , ->(id) { includes(:platforms).where(platforms: {id: id}) }
-  # scope :platform         , ->(id) { includes(:platforms).where(features: {id: id, category: "Platform"}).references(:features) }
 
   scope :author      , ->(id) { where id: Author.find(id).programs }
   scope :read_format , ->(id) { where id: ImageFormat.find(id).read_programs}

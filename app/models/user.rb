@@ -18,15 +18,15 @@ class User < ActiveRecord::Base
   ROLES = %i[ADMIN EDITOR USER]
 
   def role?(r)
-    role and role.include? r.to_s
+    role and role.downcase.include? r.to_s.downcase
   end
 
   def admin?
-  	role and role.eql? ADMIN
+  	role and role.downcase.eql? ADMIN.downcase
   end
 
   def editor?
-  	role and [ADMIN, EDITOR].map{ |r| r.downcase }.include?(role.downcase)
+  	role and [ADMIN, EDITOR].map{ |r| r.downcase.eql? role.downcase }.any?
   end
 
   private
