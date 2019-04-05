@@ -3,6 +3,8 @@
 require 'octokit'
 require 'pp'
 
+module Github
+
 # exit unless Rails.env.eql?("development")
 
 GITHUB_TOKEN = '19f0011ba073a242cea016a04fb318ab55eddae9'
@@ -26,8 +28,25 @@ def make_github_string(url)
   return ret
 end
 
+# Combine release name with its tag name unless identical
+
+def make_release_name(release)
+  [release[:tag_name], release[:name]].uniq.join(' ').strip
+end
+
+def find_latest_release(client, github_id)
+  releases = client.releases(github_id)
+  latest_release = nil
+  if releases.count.nonzero?
+    rhash = releases.map { |rel| [rel[:published_at], make_release_name(rel)] }.to_h
+    latest_release = rhash.sort.last
+  end
+  return latest_release
+end
+
 def find_latest_tag(client, github_id, tags)
   latest_tag = nil
+  tags = client.tags(github_id)
   if tags.count.nonzero?
     # puts "------ tags -------"
     thash = tags.map do |tag|
@@ -38,21 +57,6 @@ def find_latest_tag(client, github_id, tags)
     latest_tag = thash.sort.last
   end
   return latest_tag
-end
-
-# Combine release name with its tag name unless identical
-
-def make_release_name(release)
-  [release[:tag_name], release[:name]].uniq.join(' ').strip
-end
-
-def find_latest_release(client, github_id, releases)
-  latest_release = nil
-  if releases.count.nonzero?
-    rhash = releases.map { |rel| [rel[:published_at], make_release_name(rel)] }.to_h
-    latest_release = rhash.sort.last
-  end
-  return latest_release
 end
 
 # Create a new Version record for the given program.
@@ -86,6 +90,14 @@ def compare_latest_version(prog_id, latest)
   # puts "#{prog_id} #{latest_version_date} '#{latest_version_date.class}'"
 end
 
+def check_github
+  check_url = source_url or rev_url
+  github_id = make_github_string(check_url.url)
+
+end
+
+end
+
 # Test release date of each program that has a github resource.
 # Note that rev_url can also be github, but currently all programs with github rev_url also have github source_url
 
@@ -96,14 +108,12 @@ source_urls.each do |resource|
   # next unless prog_id.eql? 93
   github_id = make_github_string(resource.url)
   next unless github_id
-  releases = client.releases(github_id)
-  tags = client.tags(github_id)
-  repo = client.repository(github_id)
-  latest_release = find_latest_release(client, github_id, releases)
+  # repo = client.repository(github_id)
+  latest_release = find_latest_release(client, github_id)
   latest_tag = find_latest_tag(client, github_id, tags)
   latest = [latest_release, latest_tag].select{ |e| e}.sort{ |a, b| a[0] <=> b[0] }.last
-  outstr = "%4d %-30s: %3d releases, %3d tags" % [resource.resourceful_id, github_id, releases.count, tags.count]
-  outstr += " %s %s '%s'" % ["release", latest_release[0], latest_release[1]] if latest_release
+  # outstr = "%4d %-30s: %3d releases, %3d tags" % [resource.resourceful_id, github_id, releases.count, tags.count]
+  outstr = " %s %s '%s'" % ["release", latest_release[0], latest_release[1]] if latest_release
   outstr += " %s %s '%s'" % ["tag", latest_tag[0], latest_tag[1]] if latest_tag
   outstr += " winner %s '%s'" % [latest[0], latest[1]] if latest
   puts outstr

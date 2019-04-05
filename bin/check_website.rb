@@ -7,7 +7,7 @@
 require 'httparty'
 
 # My libraries
-require_relative 'checkable.rb'
+require_relative '../lib/checkable.rb'
 
 include Checkable
 

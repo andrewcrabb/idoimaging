@@ -26,9 +26,9 @@ module Checkable
       return
     end
 
-    ver = program.versions.order(:date).last
+    ver = versions.order(:date).last
     unless ver and ver.rev_str
-      printf("Program %3d %-40s no rev_str\n", program.id, program.name)
+      printf("Program %3d %-40s no rev_str\n", id, name)
       return
     end
 
