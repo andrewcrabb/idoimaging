@@ -36,8 +36,8 @@ ActiveAdmin.register Program do
     read_format_ids: [], write_format_ids: [], network_features: [], languages: [], feature_ids: [],
     resources_attributes:            [:id, :_destroy, :resource_type_id, :url, :description, :identifier, :resourceful_id, :resourceful_type],
     images_attributes:               [:id, :_destroy, :image, :image_type],
-    versions_attributes:             [:id, :_destroy, :date, :program_id, :version],
-    latest_versions_attributes:      [:id, :_destroy, :date, :program_id, :version],
+    versions_attributes:             [:id, :_destroy, :date, :program_id, :version, :published_on],
+    latest_versions_attributes:      [:id, :_destroy, :date, :program_id, :version, :published_on],
     authors_attributes:              [:id, :_destroy],
     author_programs_attributes:      [:id, :_destroy, :author_id, :program_id],
     program_components_attributes:   [:id, :_destroy, :included_program_id, :including_program_id],
@@ -177,6 +177,7 @@ ActiveAdmin.register Program do
               if r.object.new_record?
                 r.input :date, as: :datepicker
                 r.input :version
+                r.input :published_on, :input_html => { :value => Time.now.to_date.to_s }, as: :hidden
               else
                 r.input :date, as: :string, label: r.object.version, :input_html => { :rows => 1 }
                 # Rather than 'allow_destroy' in order to apply class for styling.
