@@ -7,7 +7,7 @@ class ProgramsController < ApplicationController
   def index
     logger.error("@programs has #{@programs.count} entries") if @programs
     basic_params = %i(function read_format platform name_cont)
-    advanced_params = %i(summary_cont interface speciality write_format for_audience language display_function header_function network_function programming_function other_function)
+    advanced_params = %i(summary_cont interface speciality write_format for_audience language display_function header_function network_function programming_function other_function author)
     qparams = params[:q] ? params[:q].permit(basic_params + advanced_params) : nil
     if qparams
       # You could use the :active and :imaging scopes in the query.  Result is the same as the scopes are chained.

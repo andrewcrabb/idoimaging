@@ -245,8 +245,6 @@ ActiveAdmin.register Program do
       end
       columns do
         column do
-          # render :partial => "has_many_resources", :locals => { f: f }
-
           f.has_many :resources, allow_destroy: true, heading: 'Resources' do |r|
             # logger.debug("resource #{r.object} has id #{r.object.id}")
             url = r.object.url

@@ -47,7 +47,7 @@ ActiveAdmin.register Version do
     column :prev do |ver|
       prog = Program.find(ver.program_id)
       latest = prog.latest_version
-      "#{latest.version}\n#{latest.date.strftime('%m/%d/%y')}"
+      latest ? "#{latest.version}\n#{latest.date.strftime('%m/%d/%y')}" : " -- "
     end
     column  :rev_str
     column :updated_at
