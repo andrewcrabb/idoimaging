@@ -5,7 +5,7 @@ require 'pp'
 
 # exit unless Rails.env.eql?("development")
 
-GITHUB_TOKEN = '19f0011ba073a242cea016a04fb318ab55eddae9'
+GITHUB_TOKEN = 'f00f00f00'
 client = Octokit::Client.new(access_token: GITHUB_TOKEN)
 
 def github_repo(url)
